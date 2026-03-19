@@ -31,6 +31,20 @@ def spectral_gap(A: np.ndarray) -> float:
     return float(magnitudes[0] - magnitudes[1])
 
 
+def damping_ratio(A: np.ndarray) -> float:
+    """Return ζ = |Re(λ₁)|/|λ₁| for the least-stable eigenvalue.
+
+    Operationalises the coherence measure κ̂_t. Values near 1 indicate
+    overdamped recovery; values near 0 indicate underdamped (oscillatory)
+    recovery. Replaces spectral_gap for systems whose slow eigenvalues
+    form a complex conjugate pair.
+    """
+    eigenvalues = linalg.eig(A, right=False)
+    idx = np.argmax(np.real(eigenvalues))
+    lam1 = eigenvalues[idx]
+    return float(np.abs(np.real(lam1)) / np.abs(lam1))
+
+
 def recovery_timescale(A: np.ndarray) -> float:
     """Return 1/|α(A)| — the dominant recovery timescale in time units."""
     alpha = spectral_abscissa(A)
