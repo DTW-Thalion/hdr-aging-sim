@@ -8,6 +8,7 @@ Monte Carlo over plausible J matrices:
   - Test: which entries most affect α?
 """
 
+import os
 import numpy as np
 from scipy.linalg import solve_continuous_lyapunov
 import matplotlib
@@ -17,6 +18,7 @@ import warnings
 warnings.filterwarnings('ignore')
 
 np.random.seed(2026)
+os.makedirs('outputs', exist_ok=True)
 n_axes = 4
 AXES = ['I', 'M', 'N', 'F']
 
@@ -342,8 +344,8 @@ ax.set_title(r'(d) Sensitivity: corr($J_{ij}$, $\alpha$)', fontsize=11)
 plt.colorbar(im, ax=ax, shrink=0.8)
 
 plt.tight_layout(rect=[0, 0, 1, 0.96])
-plt.savefig('figure_uncertainty.pdf', dpi=150, bbox_inches='tight')
-plt.savefig('figure_uncertainty.png', dpi=150, bbox_inches='tight')
+plt.savefig('outputs/figure_uncertainty.pdf', dpi=150, bbox_inches='tight')
+plt.savefig('outputs/figure_uncertainty.png', dpi=150, bbox_inches='tight')
 print("\n  Saved figure_uncertainty.pdf/png")
 
 print("\nDone.")
