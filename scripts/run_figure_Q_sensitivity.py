@@ -13,6 +13,7 @@ Key output: the β* at which "noise increase" becomes indistinguishable
 from "stability erosion" in the α̂ trend.
 """
 
+import os
 import numpy as np
 from scipy.linalg import solve_continuous_lyapunov, inv
 import matplotlib
@@ -22,6 +23,7 @@ import warnings
 warnings.filterwarnings('ignore')
 
 np.random.seed(2026)
+os.makedirs('outputs', exist_ok=True)
 n_axes = 4
 AXES = ['I', 'M', 'N', 'F']
 
@@ -290,7 +292,7 @@ ax.text(0.05, 0.95, summary, transform=ax.transAxes,
         bbox=dict(boxstyle='round', facecolor='wheat', alpha=0.3))
 
 plt.tight_layout(rect=[0, 0, 1, 0.96])
-plt.savefig('figure_Q_sensitivity.pdf', dpi=150, bbox_inches='tight')
-plt.savefig('figure_Q_sensitivity.png', dpi=150, bbox_inches='tight')
+plt.savefig('outputs/figure_Q_sensitivity.pdf', dpi=150, bbox_inches='tight')
+plt.savefig('outputs/figure_Q_sensitivity.png', dpi=150, bbox_inches='tight')
 print("\nSaved figure_Q_sensitivity.pdf/png")
 print("\nDone.")

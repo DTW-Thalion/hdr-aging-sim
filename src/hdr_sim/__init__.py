@@ -12,4 +12,5 @@ from .estimation import (
     sign_concordance,
     estimate_tau_from_recovery,
     generate_stratum,
+    stability_weighted_score,
 )

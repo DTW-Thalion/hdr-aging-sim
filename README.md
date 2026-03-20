@@ -100,3 +100,57 @@ from hdr_sim import (
 | `run_figure_t2d.py` | `outputs/figure_t2d.pdf` | Figure 3 (T2D phase portrait) |
 | `run_figure_recoverability.py` | `outputs/figure_recoverability.pdf` | Figure 4 (recoverability) |
 | `run_figure_uncertainty.py` | `outputs/figure_uncertainty.pdf` | Figure 5 (uncertainty) |
+
+## R3 Revision: Q Sensitivity, Individual Proxy, and NHANES Feasibility
+
+Three additional simulation studies for the R3 manuscript revision:
+
+### Diffusion Covariance (Q) Sensitivity Analysis
+
+Tests whether the α̂ stability trend is robust to age-varying noise intensity.
+
+```bash
+python scripts/run_figure_Q_sensitivity.py
+```
+
+Key finding: The monotone α̂ trend survives even when noise increases 6× from age 30 to 80 (β=5.0). The trend is driven by τ_i degradation, not by Q — confirming that "resilience declines" is not an artifact of "noise increases."
+
+### Stability-Weighted Dysregulation Score (SWDS)
+
+Individual-level stability proxy that resolves the ecological fallacy in Tests 5–6.
+
+```bash
+python scripts/run_figure_individual_proxy.py
+```
+
+Key finding: SWDS (C-index ≈ 0.57) outperforms Mahalanobis distance (ΔC ≈ +0.03), L2 norm (ΔC ≈ +0.01), and age alone (ΔC ≈ +0.05) for predicting stability-dependent outcomes in synthetic data. The eigenvector weighting extracts individual-level information that isotropic measures miss.
+
+### NHANES Real-Data Feasibility Demonstration
+
+End-to-end pipeline on publicly available NHANES 2011-2012 data.
+
+```bash
+pip install pyreadstat pandas  # additional dependencies
+python scripts/run_nhanes_feasibility.py
+```
+
+Key findings (mixed — reported honestly):
+* Pipeline feasibility: ✓ — all steps execute on standard public data (N=2,589)
+* Mean trends: ✓ — metabolic dysfunction and functional decline increase with age
+* Variance-based α̂: ✗ — cross-sectional variance compresses with age due to survivorship bias and medication effects, producing a reversed α̂ trend
+* Diagnosis: identifies a specific data-design requirement (longitudinal within-person covariance, not cross-sectional) rather than a framework failure
+
+Note: NHANES XPT files are downloaded from CDC servers at runtime (~7 MB total). If download fails (e.g., government shutdown), see `data/nhanes/README.md` for manual download instructions.
+
+### Updated Figures Table
+
+| Script | Output | Manuscript location |
+|--------|--------|---------------------|
+| `run_figure2b.py` | `outputs/figure_2b.pdf` | Figure 1 |
+| `run_figure_frailty.py` | `outputs/figure_frailty.pdf` | Figure 2 |
+| `run_figure_t2d.py` | `outputs/figure_t2d.pdf` | Figure 3 |
+| `run_figure_recoverability.py` | `outputs/figure_recoverability.pdf` | Figure 4 |
+| `run_figure_uncertainty.py` | `outputs/figure_uncertainty.pdf` | Figure 5 |
+| `run_figure_Q_sensitivity.py` | `outputs/figure_Q_sensitivity.pdf` | Figure 6 |
+| `run_figure_individual_proxy.py` | `outputs/figure_individual_proxy.pdf` | Figure 7 |
+| `run_nhanes_feasibility.py` | `outputs/figure_nhanes.pdf` | Figure 8 |
