@@ -13,4 +13,10 @@ from .estimation import (
     estimate_tau_from_recovery,
     generate_stratum,
     stability_weighted_score,
+    # R4 Γ-native additions
+    compute_swds_gamma,
+    compute_swds_gamma_batch,
+    gamma_stability_proxy,
+    covariance_sign_concordance,
+    lyapunov_residual_norm,
 )

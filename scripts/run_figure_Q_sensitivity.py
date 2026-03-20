@@ -68,6 +68,7 @@ def run_scenario(q_func, Q_assumed_func, label):
     """
     alpha_true_list = []
     alpha_est_list = []
+    lambda_max_list = []
     for mid in strata_mids:
         tau, J = get_params(mid)
         A_gt = build_A(tau, J)
@@ -88,20 +89,25 @@ def run_scenario(q_func, Q_assumed_func, label):
         alpha_est = np.max(np.real(np.linalg.eigvals(A_hat)))
         alpha_est_list.append(alpha_est)
 
+        # R4: also track λ_max(Γ̂) — does NOT require Q specification
+        lambda_max = np.max(np.linalg.eigvalsh(Gamma_hat))
+        lambda_max_list.append(lambda_max)
+
     trend_true = all(alpha_true_list[i] < alpha_true_list[i+1] for i in range(3))
     trend_est = all(alpha_est_list[i] < alpha_est_list[i+1] for i in range(3))
+    trend_lmax = all(lambda_max_list[i] < lambda_max_list[i+1] for i in range(3))
 
     print(f"\n  {label}")
     for i, mid in enumerate(strata_mids):
         print(f"    Age {mid:.0f}: α_true={alpha_true_list[i]:.4f}, "
-              f"α̂={alpha_est_list[i]:.4f}")
-    print(f"    Monotone trend — true: {trend_true}, estimated: {trend_est}")
+              f"α̂={alpha_est_list[i]:.4f}, λ_max={lambda_max_list[i]:.4f}")
+    print(f"    Monotone trend — true: {trend_true}, α̂: {trend_est}, λ_max: {trend_lmax}")
 
-    return alpha_true_list, alpha_est_list, trend_est
+    return alpha_true_list, alpha_est_list, trend_est, lambda_max_list, trend_lmax
 
 # Scenario 1a: Q fixed, Q assumed correctly
 q_fixed = lambda age: q_base
-a_true_1, a_est_1, trend_1 = run_scenario(q_fixed, q_fixed, "Q fixed, correctly assumed")
+a_true_1, a_est_1, trend_1, lmax_1, lmax_trend_1 = run_scenario(q_fixed, q_fixed, "Q fixed, correctly assumed")
 
 # ============================================================================
 # 2. AGE-VARYING Q: q_i(age) = q_base_i * (1 + β*(age-30)/50)
@@ -117,9 +123,9 @@ results = {}
 
 for beta in beta_values:
     q_age = lambda age, b=beta: q_base * (1 + b * (age - 30) / 50)
-    _, alpha_ests, trend = run_scenario(q_age, q_fixed,
+    _, alpha_ests, trend, lmax_ests, lmax_trend = run_scenario(q_age, q_fixed,
         f"β={beta:.2f} (Q at age 80 = {1+beta:.1f}× Q at age 30)")
-    results[beta] = (alpha_ests, trend)
+    results[beta] = (alpha_ests, trend, lmax_ests, lmax_trend)
 
 # Find the threshold β* where trend breaks
 print("\n" + "=" * 70)
@@ -128,9 +134,12 @@ print("=" * 70)
 print(f"\n  β    Q_80/Q_30   Trend preserved?")
 print(f"  {'—'*45}")
 for beta in beta_values:
-    alpha_ests, trend = results[beta]
+    alpha_ests, trend, lmax_ests, lmax_trend = results[beta]
     ratio = 1 + beta
-    print(f"  {beta:4.2f}   {ratio:5.1f}×        {'YES ✓' if trend else 'NO ✗'}")
+    print(f"  {beta:4.2f}   {ratio:5.1f}×        α̂: {'YES ✓' if trend else 'NO ✗'}   λ_max: {'YES ✓' if lmax_trend else 'NO ✗'}")
+
+print("\n  NOTE: λ_max(Γ̂) does not require Q specification for the trend test")
+print("        — it is robust to Q misspecification by construction.")
 
 # ============================================================================
 # 3. STRATEGY (b): MARGINAL VARIANCE DECOMPOSITION
@@ -174,6 +183,7 @@ q_age_varying = lambda age: q_base * (1 + beta_test * (age - 30) / 50)
 
 alpha_est_estimated_Q = []
 alpha_true_list_3 = []
+lambda_max_list_3 = []
 for mid in strata_mids:
     tau_gt, J_gt = get_params(mid)
     A_gt = build_A(tau_gt, J_gt)
@@ -197,11 +207,17 @@ for mid in strata_mids:
     alpha_est = np.max(np.real(np.linalg.eigvals(A_hat)))
     alpha_est_estimated_Q.append(alpha_est)
 
-    print(f"  Age {mid:.0f}: α_true={alpha_gt:.4f}, α̂={alpha_est:.4f} "
-          f"(Q est. from Γ̂+τ)")
+    # R4: λ_max tracking (Q-free)
+    lambda_max = np.max(np.linalg.eigvalsh(Gamma_hat))
+    lambda_max_list_3.append(lambda_max)
+
+    print(f"  Age {mid:.0f}: α_true={alpha_gt:.4f}, α̂={alpha_est:.4f}, "
+          f"λ_max={lambda_max:.4f} (Q est. from Γ̂+τ)")
 
 trend_3 = all(alpha_est_estimated_Q[i] < alpha_est_estimated_Q[i+1] for i in range(3))
+trend_lmax_3 = all(lambda_max_list_3[i] < lambda_max_list_3[i+1] for i in range(3))
 print(f"\n  Monotone trend preserved with estimated Q: {trend_3}")
+print(f"  λ_max monotone trend (Q-free): {trend_lmax_3}")
 
 
 # ============================================================================
@@ -231,6 +247,7 @@ ax.legend(fontsize=8, loc='lower right')
 ax = axs[0, 1]
 betas_plot = beta_values
 trend_survived = [results[b][1] for b in betas_plot]
+lmax_survived = [results[b][3] for b in betas_plot]
 colors_b = ['green' if t else 'red' for t in trend_survived]
 ax.bar(range(len(betas_plot)), [1+b for b in betas_plot],
        color=colors_b, alpha=0.7, edgecolor='black', linewidth=0.5)
@@ -246,7 +263,7 @@ ax.plot(strata_mids, alpha_true_list_3, 'ko-', linewidth=2, markersize=8,
         label=r'True $\alpha$', zorder=5)
 # Q assumed fixed (wrong)
 q_fixed_wrong = lambda age: q_base
-_, alpha_wrong, _ = run_scenario(q_age_varying, q_fixed,
+_, alpha_wrong, _, lmax_wrong, _ = run_scenario(q_age_varying, q_fixed,
     "β=1.0, Q assumed fixed (wrong)")
 ax.plot(strata_mids, alpha_wrong, 'rs--', linewidth=1.5, markersize=6,
         label=r'$\hat\alpha$ (Q assumed fixed — wrong)')
@@ -285,7 +302,10 @@ summary = (
     "• Test-retest q from within-individual\n"
     "  short-term variability (CGM, serial CRP)\n"
     "• Report sensitivity across β = [0, 2]\n"
-    "  as standard robustness check"
+    "  as standard robustness check\n\n"
+    "R4 NOTE: λ_max(Γ̂) does not require\n"
+    "Q specification — robust to Q\n"
+    "misspecification by construction."
 )
 ax.text(0.05, 0.95, summary, transform=ax.transAxes,
         fontsize=10, verticalalignment='top', fontfamily='monospace',
