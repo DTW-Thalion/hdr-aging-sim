@@ -154,3 +154,28 @@ Note: NHANES XPT files are downloaded from CDC servers at runtime (~7 MB total).
 | `run_figure_Q_sensitivity.py` | `outputs/figure_Q_sensitivity.pdf` | Figure 6 |
 | `run_figure_individual_proxy.py` | `outputs/figure_individual_proxy.pdf` | Figure 7 |
 | `run_nhanes_feasibility.py` | `outputs/figure_nhanes.pdf` | Figure 8 |
+| `run_figure_gamma_equivalence.py` | `outputs/figure_gamma_equivalence.pdf` | Figure X (Γ-native equivalence) |
+| `run_figure_prior_stress.py` | `outputs/figure_prior_stress.pdf` | Figure Y (prior stress tests) |
+
+## R4 Revision: Γ-Native Pivot
+
+### Γ-Native Stability Proxy (SWDS-Γ)
+
+The R4 revision replaces the Lyapunov-inversion pipeline with a Γ-native approach that reads stability information directly from the eigenstructure of the observed covariance matrix Γ̂, without estimating the drift matrix A.
+
+SWDS-Γ(Δx) = Δxᵀ Γ̂ Δx / tr(Γ̂)
+
+Key result: SWDS-Γ produces near-identical individual rankings to the A-based SWDS (Spearman > 0.95) while requiring no Q specification, no Lyapunov inversion, and no commutation assumptions.
+
+### New Estimation Functions
+
+```python
+from hdr_sim import (
+    # ...existing...
+    compute_swds_gamma,          # Γ-native individual stability score
+    compute_swds_gamma_batch,    # Batch computation
+    gamma_stability_proxy,       # λ_max, κ, eigenstructure from Γ̂
+    covariance_sign_concordance, # Tests 3-4 Layer A
+    lyapunov_residual_norm,      # Tests 3-4 Layer B residual
+)
+```

@@ -14,7 +14,7 @@ import os
 import numpy as np
 import pandas as pd
 import pyreadstat
-from scipy.linalg import inv
+from scipy.linalg import inv  # noqa: F401 (kept for compatibility)
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
@@ -167,29 +167,14 @@ for lo, hi in [(40,49), (50,59), (60,69), (70,79)]:
 # ============================================================================
 
 print("\n" + "=" * 70)
-print("COVARIANCE ESTIMATION AND LYAPUNOV INVERSION")
+print("COVARIANCE ESTIMATION AND Γ-NATIVE STABILITY PROXY")
 print("=" * 70)
 
 n_axes = 2
 strata = [(40,49), (50,59), (60,69), (70,79)]
 strata_mids = [44.5, 54.5, 64.5, 74.5]
 
-# Q specification: use youngest-stratum variance as proxy for noise
-# Under weak coupling, Γ_ii ≈ q_i τ_i / 2
-# We use the youngest stratum's variance as the Q reference
-ref_stratum = df_complete[(df_complete['age'] >= 40) & (df_complete['age'] <= 49)]
-X_ref = ref_stratum[['dx_M', 'dx_F']].values
-Gamma_ref = np.cov(X_ref.T)
-# Assume τ_M ~ 0.15 days, τ_F ~ 15 days (literature values)
-tau_assumed = np.array([0.15, 15.0])
-q_est = 2 * np.diag(Gamma_ref) / tau_assumed
-Q_est = np.diag(q_est)
-print(f"  Estimated Q from youngest stratum + literature τ:")
-print(f"    q_M = {q_est[0]:.4f}, q_F = {q_est[1]:.4f}")
-
-alpha_hats = []
-rho_1d_hats = []
-A_hats = {}
+lambda_max_list = []
 Gamma_hats = {}
 
 for (lo, hi), mid in zip(strata, strata_mids):
@@ -198,27 +183,20 @@ for (lo, hi), mid in zip(strata, strata_mids):
     Gamma_hat = np.cov(X.T)
     Gamma_hats[(lo,hi)] = Gamma_hat
 
-    # Lyapunov inversion (symmetric approximation)
-    P_hat = inv(Gamma_hat)
-    A_hat = -Q_est @ P_hat / 2
-    A_hats[(lo,hi)] = A_hat
-
-    alpha_hat = np.max(np.real(np.linalg.eigvals(A_hat)))
-    rho_1d = np.exp(alpha_hat)
-
-    alpha_hats.append(alpha_hat)
-    rho_1d_hats.append(rho_1d)
+    # Γ-native: eigendecomposition of Γ̂ (NO Q specification needed)
+    eigenvalues = np.linalg.eigvalsh(Gamma_hat)
+    lambda_max = np.max(eigenvalues)
+    lambda_max_list.append(lambda_max)
 
     print(f"\n  Age {lo}-{hi} (N={len(sub)}):")
     print(f"    Γ̂ = [[{Gamma_hat[0,0]:.4f}, {Gamma_hat[0,1]:.4f}],")
     print(f"          [{Gamma_hat[1,0]:.4f}, {Gamma_hat[1,1]:.4f}]]")
-    print(f"    α̂ = {alpha_hat:.4f}")
-    print(f"    ρ̂(Δt=1d) = {rho_1d:.4f}")
+    print(f"    λ_max(Γ̂) = {lambda_max:.4f}")
 
-# Monotone trend test
-trend = all(alpha_hats[i] < alpha_hats[i+1] for i in range(3))
-print(f"\n  MONOTONE α̂ TREND: {'YES ✓' if trend else 'NO ✗'}")
-print(f"    α̂: {' → '.join(f'{a:.4f}' for a in alpha_hats)}")
+# Monotone trend test on λ_max
+trend = all(lambda_max_list[i] < lambda_max_list[i+1] for i in range(3))
+print(f"\n  MONOTONE λ_max TREND: {'YES ✓' if trend else 'NO ✗'}")
+print(f"    λ_max: {' → '.join(f'{a:.4f}' for a in lambda_max_list)}")
 
 
 # ============================================================================
@@ -226,19 +204,14 @@ print(f"    α̂: {' → '.join(f'{a:.4f}' for a in alpha_hats)}")
 # ============================================================================
 
 print("\n" + "=" * 70)
-print("INDIVIDUAL-LEVEL STABILITY PROXY (SWDS)")
+print("INDIVIDUAL-LEVEL STABILITY PROXY (SWDS-Γ)")
 print("=" * 70)
 
-def compute_swds(dx, A_hat):
-    """Stability-weighted dysregulation score."""
-    eigvals, eigvecs = np.linalg.eig(A_hat)
-    s = 0.0
-    for k in range(len(eigvals)):
-        proj = np.dot(np.real(eigvecs[:, k]), dx)
-        s += proj**2 / max(abs(np.real(eigvals[k])), 1e-10)
-    return s
+def compute_swds_gamma_local(dx, Gamma_hat):
+    """Γ-native stability-weighted dysregulation score: Δxᵀ Γ̂ Δx / tr(Γ̂)."""
+    return float(dx @ Gamma_hat @ dx / np.trace(Gamma_hat))
 
-# Compute SWDS for each individual
+# Compute SWDS-Γ for each individual
 swds_scores = []
 maha_scores = []
 l2_scores = []
@@ -250,12 +223,11 @@ for _, row in df_complete.iterrows():
     # Find stratum
     for lo, hi in strata:
         if lo <= age <= hi:
-            A_hat = A_hats[(lo, hi)]
             Gamma_hat = Gamma_hats[(lo, hi)]
             break
 
-    swds_scores.append(compute_swds(dx, A_hat))
-    maha_scores.append(np.sqrt(dx @ inv(Gamma_hat) @ dx))
+    swds_scores.append(compute_swds_gamma_local(dx, Gamma_hat))
+    maha_scores.append(np.sqrt(dx @ np.linalg.inv(Gamma_hat) @ dx))
     l2_scores.append(np.linalg.norm(dx))
 
 df_complete = df_complete.copy()
@@ -264,17 +236,17 @@ df_complete['mahalanobis'] = maha_scores
 df_complete['l2'] = l2_scores
 
 # Summary statistics
-print(f"\n  SWDS distribution:")
+print(f"\n  SWDS-Γ distribution:")
 print(f"    Mean: {df_complete['swds'].mean():.3f}")
 print(f"    Median: {df_complete['swds'].median():.3f}")
 print(f"    Correlation with age: {df_complete['swds'].corr(df_complete['age']):.3f}")
 print(f"    Correlation with Mahalanobis: {df_complete['swds'].corr(df_complete['mahalanobis']):.3f}")
 
-# SWDS by age stratum
-print(f"\n  SWDS by age stratum:")
+# SWDS-Γ by age stratum
+print(f"\n  SWDS-Γ by age stratum:")
 for lo, hi in strata:
     sub = df_complete[(df_complete['age'] >= lo) & (df_complete['age'] <= hi)]
-    print(f"    Age {lo}-{hi}: mean SWDS = {sub['swds'].mean():.3f} ± {sub['swds'].std():.3f}")
+    print(f"    Age {lo}-{hi}: mean SWDS-Γ = {sub['swds'].mean():.3f} ± {sub['swds'].std():.3f}")
 
 
 # ============================================================================
@@ -294,19 +266,20 @@ print("""
   STEP 2: Axis construction             ✓  (z-score composite M; reversed grip F)
   STEP 3: Youthful reference            ✓  (ages 40-45 subgroup)
   STEP 4: Cross-sectional Γ̂            ✓  (2×2 covariance per age stratum)
-  STEP 5: Lyapunov inversion α̂         ✓  (monotone trend: {trend_result})
-  STEP 6: Individual SWDS               ✓  (computable per person from single visit)
+  STEP 5: λ_max(Γ̂) stability proxy    ✓  (NO Q SPECIFICATION NEEDED)
+  STEP 6: Individual SWDS-Γ            ✓  (Δxᵀ Γ̂ Δx / tr(Γ̂), per person from single visit)
   STEP 7: Outcome association           —  (requires mortality linkage; not in this demo)
 
-  KEY RESULT: The monotone α̂ trend is observed in real NHANES data
-  using the exact pipeline described in the manuscript, confirming
-  that the estimation approach is feasible with standard cohort biomarkers.
+  KEY RESULT: The Γ-native pipeline (λ_max, SWDS-Γ) executes on real
+  NHANES data without requiring Q specification, Lyapunov inversion,
+  or commutation assumptions. Monotone λ_max trend: {trend_result}
 
   LIMITATIONS OF THIS DEMONSTRATION:
   • 2-axis model only (CRP not available in NHANES 2011-2012)
-  • Q estimated from youngest stratum + literature τ (not independently validated)
   • No outcome linkage in this demo (would require NHANES mortality files)
   • No adjustment for medications or comorbidities
+  • Survivorship bias and medication variance compression remain
+    data-level confounds (not eliminated by Γ-native pipeline)
 """.format(trend_result='YES ✓' if trend else 'NO ✗'))
 
 
@@ -318,13 +291,12 @@ fig, axs = plt.subplots(2, 2, figsize=(12, 10))
 fig.suptitle('NHANES 2011-2012: Real-Data Feasibility Demonstration (2-axis model)',
              fontsize=13, fontweight='bold', y=0.98)
 
-# (a) α̂ trend
+# (a) λ_max(Γ̂) trend
 ax = axs[0, 0]
-ax.plot(strata_mids, alpha_hats, 'ko-', linewidth=2, markersize=8)
-ax.axhline(y=0, color='gray', linestyle='--', alpha=0.5)
+ax.plot(strata_mids, lambda_max_list, 'ko-', linewidth=2, markersize=8)
 ax.set_xlabel('Age stratum midpoint', fontsize=11)
-ax.set_ylabel(r'$\hat\alpha$ (Lyapunov inversion)', fontsize=11)
-ax.set_title(r'(a) $\hat\alpha$ from NHANES cross-sectional data', fontsize=11)
+ax.set_ylabel(r'$\lambda_{\max}(\hat\Gamma)$', fontsize=11)
+ax.set_title(r'(a) $\lambda_{\max}(\hat\Gamma)$ from NHANES cross-sectional data', fontsize=11)
 ax.annotate(f'Monotone: {"YES" if trend else "NO"}',
             xy=(0.05, 0.05), xycoords='axes fraction', fontsize=11,
             fontweight='bold', color='green' if trend else 'red')
@@ -346,9 +318,9 @@ for (lo, hi), color in zip(strata, ['steelblue', 'orange', 'green', 'red']):
     sub = df_complete[(df_complete['age'] >= lo) & (df_complete['age'] <= hi)]
     ax.hist(sub['swds'], bins=30, density=True, alpha=0.4, color=color,
             label=f'{lo}-{hi}')
-ax.set_xlabel('SWDS (stability-weighted dysregulation)', fontsize=11)
+ax.set_xlabel('SWDS-Γ (stability-weighted dysregulation)', fontsize=11)
 ax.set_ylabel('Density', fontsize=11)
-ax.set_title('(c) SWDS distribution by age stratum', fontsize=11)
+ax.set_title('(c) SWDS-Γ distribution by age stratum', fontsize=11)
 ax.legend(fontsize=9)
 
 # (d) SWDS vs age scatterplot
@@ -359,8 +331,8 @@ means = [df_complete[(df_complete['age']>=lo)&(df_complete['age']<=hi)]['swds'].
          for lo,hi in strata]
 ax.plot(strata_mids, means, 'ro-', linewidth=2, markersize=8, label='Stratum mean', zorder=5)
 ax.set_xlabel('Age', fontsize=11)
-ax.set_ylabel('SWDS', fontsize=11)
-ax.set_title('(d) Individual SWDS vs age', fontsize=11)
+ax.set_ylabel('SWDS-Γ', fontsize=11)
+ax.set_title('(d) Individual SWDS-Γ vs age', fontsize=11)
 ax.legend(fontsize=9)
 
 plt.tight_layout(rect=[0, 0, 1, 0.96])

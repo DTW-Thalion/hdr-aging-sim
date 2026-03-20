@@ -239,3 +239,169 @@ def stability_weighted_score(delta_x, A_hat):
         weight = 1.0 / max(abs(eigvals_real[k]), 1e-10)
         score += projection**2 * weight
     return score
+
+
+def compute_swds_gamma(delta_x, Gamma_hat):
+    """
+    Compute the Γ-native stability-weighted dysregulation score (SWDS-Γ).
+
+    SWDS-Γ(Δx) = Δxᵀ Γ̂ Δx / tr(Γ̂)
+
+    Weights individual dysregulation by the population's covariance structure:
+    directions of high variance (= slow-recovering modes, by the Lyapunov
+    connection) contribute more. Trace normalisation ensures cross-stratum
+    comparability.
+
+    Under isotropic noise with A_sym negative definite, produces identical
+    rankings to the A-based SWDS (Proposition in manuscript Appendix F).
+
+    Args:
+        delta_x: individual's state vector Δx (n-dimensional array)
+        Gamma_hat: stratum-level sample covariance matrix (n×n, symmetric PD)
+
+    Returns:
+        SWDS-Γ score (scalar, higher = more vulnerable)
+
+    Reference: Eq. (SWDS-Γ) in Tests 5, HDR Ontology Manuscript R4.
+    """
+    quadratic_form = delta_x @ Gamma_hat @ delta_x
+    trace = np.trace(Gamma_hat)
+    return float(quadratic_form / trace)
+
+
+def compute_swds_gamma_batch(X, Gamma_hat):
+    """
+    Compute SWDS-Γ for a batch of individuals.
+
+    Args:
+        X: array of shape (N, n) — each row is an individual's Δx
+        Gamma_hat: stratum-level sample covariance matrix (n×n)
+
+    Returns:
+        Array of shape (N,) — SWDS-Γ scores
+    """
+    trace = np.trace(Gamma_hat)
+    scores = np.sum((X @ Gamma_hat) * X, axis=1) / trace
+    return scores
+
+
+def gamma_stability_proxy(Gamma_hat):
+    """
+    Extract stability-related quantities directly from the covariance matrix.
+
+    Returns a dictionary with:
+        - lambda_max: dominant eigenvalue of Γ̂ (proxy for 1/|α(A)|)
+        - lambda_min: smallest eigenvalue of Γ̂
+        - kappa: condition number λ_max/λ_min (directional concentration)
+        - eigenvalues: all eigenvalues (descending order)
+        - eigenvectors: corresponding eigenvectors (columns)
+        - trace: tr(Γ̂) = total variance
+
+    The eigenvalue-tracking theorem guarantees:
+        λ_max(Γ) ≥ q_min / (2|α(A)|)
+    for any Hurwitz A. Monotone increase of lambda_max across age strata
+    signals stability erosion.
+
+    Args:
+        Gamma_hat: sample covariance matrix (n×n, symmetric PD)
+
+    Returns:
+        dict with stability proxy quantities
+    """
+    eigenvalues, eigenvectors = np.linalg.eigh(Gamma_hat)
+    idx = np.argsort(eigenvalues)[::-1]
+    eigenvalues = eigenvalues[idx]
+    eigenvectors = eigenvectors[:, idx]
+
+    return {
+        'lambda_max': float(eigenvalues[0]),
+        'lambda_min': float(eigenvalues[-1]),
+        'kappa': float(eigenvalues[0] / max(eigenvalues[-1], 1e-15)),
+        'eigenvalues': eigenvalues,
+        'eigenvectors': eigenvectors,
+        'trace': float(np.sum(eigenvalues)),
+    }
+
+
+def covariance_sign_concordance(Gamma_hat, J_compiled, exclude_ambiguous=True):
+    """
+    Compute off-diagonal sign concordance between observed Γ̂ and
+    predictions from compiled J (Layer A of revised Tests 3-4).
+
+    For same-sign bidirectional pairs (J_ij > 0 and J_ji > 0, or both < 0),
+    the predicted sign of Γ_ij matches sign(J_ij) regardless of noise.
+    For mixed-sign pairs, the predicted sign is ambiguous and these pairs
+    are optionally excluded.
+
+    Args:
+        Gamma_hat: sample covariance matrix (n×n)
+        J_compiled: compiled coupling matrix (n×n, zero diagonal)
+        exclude_ambiguous: if True, exclude mixed-sign bidirectional pairs
+
+    Returns:
+        dict with concordance, n_agree, n_total, n_excluded, pair_details
+    """
+    n = Gamma_hat.shape[0]
+    n_agree = 0
+    n_total = 0
+    n_excluded = 0
+    pair_details = []
+
+    for i in range(n):
+        for j in range(i + 1, n):
+            J_ij = J_compiled[i, j]
+            J_ji = J_compiled[j, i]
+
+            if J_ij == 0 and J_ji == 0:
+                continue
+
+            is_same_sign = (J_ij > 0 and J_ji > 0) or (J_ij < 0 and J_ji < 0)
+            is_ambiguous = not is_same_sign and J_ij != 0 and J_ji != 0
+
+            if exclude_ambiguous and is_ambiguous:
+                n_excluded += 1
+                pair_details.append((i, j, np.sign(Gamma_hat[i, j]),
+                                     'ambiguous', None))
+                continue
+
+            if is_same_sign:
+                predicted_sign = np.sign(J_ij)
+            else:
+                predicted_sign = np.sign(J_ij) if abs(J_ij) >= abs(J_ji) else np.sign(J_ji)
+
+            observed_sign = np.sign(Gamma_hat[i, j])
+            match = (observed_sign == predicted_sign)
+            n_agree += int(match)
+            n_total += 1
+            pair_details.append((i, j, observed_sign, predicted_sign, match))
+
+    concordance = n_agree / n_total if n_total > 0 else 0.0
+
+    return {
+        'concordance': concordance,
+        'n_agree': n_agree,
+        'n_total': n_total,
+        'n_excluded': n_excluded,
+        'pair_details': pair_details,
+    }
+
+
+def lyapunov_residual_norm(A_hat, Gamma_hat, Q):
+    """
+    Compute the Frobenius norm of the Lyapunov residual:
+    ||A Γ + Γ Aᵀ + Q||_F
+
+    Used in Layer B (supplementary) of Tests 3-4.
+    Small residual = A_hat is consistent with (Γ̂, Q).
+    Large residual = inconsistency.
+
+    Args:
+        A_hat: estimated or candidate drift matrix (n×n)
+        Gamma_hat: observed covariance matrix (n×n)
+        Q: assumed diffusion covariance (n×n, typically diagonal)
+
+    Returns:
+        Frobenius norm of the residual (scalar)
+    """
+    residual = A_hat @ Gamma_hat + Gamma_hat @ A_hat.T + Q
+    return float(np.linalg.norm(residual, 'fro'))
