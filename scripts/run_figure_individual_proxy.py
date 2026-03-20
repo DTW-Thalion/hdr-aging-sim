@@ -22,6 +22,7 @@ The proxy is individual-level and can be legitimately compared to
 Rockwood/Fried in Cox models.
 """
 
+import os
 import numpy as np
 from scipy.linalg import solve_continuous_lyapunov, inv
 from scipy.stats import spearmanr
@@ -32,6 +33,7 @@ import warnings
 warnings.filterwarnings('ignore')
 
 np.random.seed(2026)
+os.makedirs('outputs', exist_ok=True)
 n_axes = 4
 AXES = ['I', 'M', 'N', 'F']
 
@@ -353,7 +355,7 @@ ax.legend(fontsize=9)
 ax.set_ylim(0, 1.1)
 
 plt.tight_layout(rect=[0, 0, 1, 0.96])
-plt.savefig('figure_individual_proxy.pdf', dpi=150, bbox_inches='tight')
-plt.savefig('figure_individual_proxy.png', dpi=150, bbox_inches='tight')
+plt.savefig('outputs/figure_individual_proxy.pdf', dpi=150, bbox_inches='tight')
+plt.savefig('outputs/figure_individual_proxy.png', dpi=150, bbox_inches='tight')
 print("\nSaved figure_individual_proxy.pdf/png")
 print("\nDone.")

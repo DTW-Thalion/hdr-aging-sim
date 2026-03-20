@@ -209,3 +209,33 @@ def generate_stratum(age_mid, N, q, meas_noise_sd=0.3):
     X_true = np.random.multivariate_normal(np.zeros(n_axes), Gamma, size=N)
     Y_obs = X_true + meas_noise_sd * np.random.randn(N, n_axes)
     return X_true, Y_obs, Gamma
+
+
+def stability_weighted_score(delta_x, A_hat):
+    """
+    Compute the stability-weighted dysregulation score (SWDS) for an individual.
+
+    s_p = Σ_k (v_k^T Δx_p)² / |Re(λ_k)|
+
+    Penalizes deviation along slow-recovering (near-unstable) modes more heavily.
+    An individual with high load on the dominant eigenvalue direction scores
+    higher (worse) than one with the same total dysregulation on fast-recovering axes.
+
+    Args:
+        delta_x: individual's state vector Δx (n-dimensional array)
+        A_hat: estimated dynamics matrix (n×n)
+    Returns:
+        SWDS score (scalar, higher = more vulnerable)
+
+    Reference: Eq. (SWDS) in Tests 5-6, HDR Ontology Manuscript R3.
+    """
+    eigvals, eigvecs = np.linalg.eig(A_hat)
+    eigvecs_real = np.real(eigvecs)
+    eigvals_real = np.real(eigvals)
+
+    score = 0.0
+    for k in range(len(eigvals)):
+        projection = np.dot(eigvecs_real[:, k], delta_x)
+        weight = 1.0 / max(abs(eigvals_real[k]), 1e-10)
+        score += projection**2 * weight
+    return score

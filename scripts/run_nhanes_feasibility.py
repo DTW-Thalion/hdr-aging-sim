@@ -10,6 +10,7 @@ pipeline without the inflammatory axis. A 3-axis model requires CRP data
 from NHANES 2015-2016 (where grip strength is unavailable).
 """
 
+import os
 import numpy as np
 import pandas as pd
 import pyreadstat
@@ -21,20 +22,58 @@ import warnings
 warnings.filterwarnings('ignore')
 
 np.random.seed(2026)
+os.makedirs('outputs', exist_ok=True)
+os.makedirs('data/nhanes', exist_ok=True)
+
+
+def download_nhanes_2011_2012():
+    """Download NHANES 2011-2012 XPT files if not already present."""
+    import urllib.request
+    base = 'https://wwwn.cdc.gov/Nchs/Data/Nhanes/Public/2011/DataFiles'
+    files = {
+        'demo': 'DEMO_G.XPT',
+        'ghb': 'GHB_G.XPT',
+        'mgx': 'MGX_G.XPT',
+        'bmx': 'BMX_G.XPT',
+    }
+    for name, fn in files.items():
+        path = f'data/nhanes/{name}.XPT'
+        if not os.path.exists(path):
+            url = f'{base}/{fn}'
+            print(f'  Downloading {fn}...', end=' ')
+            try:
+                req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0'})
+                resp = urllib.request.urlopen(req, timeout=30)
+                data = resp.read()
+                with open(path, 'wb') as f:
+                    f.write(data)
+                print(f'OK ({len(data):,} bytes)')
+            except Exception as e:
+                print(f'FAILED: {e}')
+                print(f'  Please download {fn} manually from {url}')
+                print(f'  and place it at {path}')
+                return False
+    return True
+
 
 # ============================================================================
 # 1. LOAD AND MERGE NHANES DATA
 # ============================================================================
+
+print("Checking NHANES data files...")
+if not download_nhanes_2011_2012():
+    print("ERROR: Could not download NHANES data. See instructions above.")
+    exit(1)
 
 print("=" * 70)
 print("LOADING NHANES 2011-2012 DATA")
 print("=" * 70)
 
 # Load XPT files
-demo, meta_d = pyreadstat.read_xport('nhanes_data/demo.XPT')
-ghb, meta_g = pyreadstat.read_xport('nhanes_data/ghb.XPT')
-mgx, meta_m = pyreadstat.read_xport('nhanes_data/mgx.XPT')
-bmx, meta_b = pyreadstat.read_xport('nhanes_data/bmx.XPT')
+demo, meta_d = pyreadstat.read_xport('data/nhanes/demo.XPT')
+ghb, meta_g = pyreadstat.read_xport('data/nhanes/ghb.XPT')
+mgx, meta_m = pyreadstat.read_xport('data/nhanes/mgx.XPT')
+bmx, meta_b = pyreadstat.read_xport('data/nhanes/bmx.XPT')
 
 print(f"  Demographics: {len(demo)} rows, cols: {list(demo.columns[:10])}")
 print(f"  HbA1c:        {len(ghb)} rows, cols: {list(ghb.columns)}")
@@ -325,6 +364,6 @@ ax.set_title('(d) Individual SWDS vs age', fontsize=11)
 ax.legend(fontsize=9)
 
 plt.tight_layout(rect=[0, 0, 1, 0.96])
-plt.savefig('figure_nhanes.pdf', dpi=150, bbox_inches='tight')
-plt.savefig('figure_nhanes.png', dpi=150, bbox_inches='tight')
+plt.savefig('outputs/figure_nhanes.pdf', dpi=150, bbox_inches='tight')
+plt.savefig('outputs/figure_nhanes.png', dpi=150, bbox_inches='tight')
 print("Saved figure_nhanes.pdf/png")
