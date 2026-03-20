@@ -20,6 +20,7 @@ What requires high-frequency data (Tier 2):
   (h) Individual τ_i from perturbation-recovery episodes
 """
 
+import os
 import numpy as np
 from scipy.linalg import expm, solve_continuous_lyapunov, inv
 from scipy.stats import pearsonr
@@ -30,6 +31,7 @@ import warnings
 warnings.filterwarnings('ignore')
 
 np.random.seed(2026)
+os.makedirs('outputs', exist_ok=True)
 n_axes = 4
 AXES = ['I (inflammaging)', 'M (metabolic)', 'N (neuroendocrine)', 'F (functional)']
 AXES_SHORT = ['I', 'M', 'N', 'F']
@@ -440,8 +442,8 @@ ax.set_xticks(Ns)
 ax.set_xticklabels([str(n) for n in Ns])
 
 plt.tight_layout(rect=[0, 0, 1, 0.96])
-plt.savefig('figure_recoverability.pdf', dpi=150, bbox_inches='tight')
-plt.savefig('figure_recoverability.png', dpi=150, bbox_inches='tight')
+plt.savefig('outputs/figure_recoverability.pdf', dpi=150, bbox_inches='tight')
+plt.savefig('outputs/figure_recoverability.png', dpi=150, bbox_inches='tight')
 print("  Saved figure_recoverability.pdf/png")
 
 # ============================================================================
