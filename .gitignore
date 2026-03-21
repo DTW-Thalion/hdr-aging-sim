@@ -5,7 +5,6 @@ dist/
 build/
 .pytest_cache/
 outputs/*.png
-outputs/*.pdf
 
 # NHANES data files (downloaded at runtime, not committed)
 data/nhanes/*.XPT
