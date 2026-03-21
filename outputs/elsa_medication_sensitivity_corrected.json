@@ -1,0 +1,215 @@
+{
+  "description": "Corrected medication sensitivity analysis (R5)",
+  "fixes_applied": [
+    "1a: Matched-sample Cox (same N for all 5 models)",
+    "1b: 3-axis M2 uses exactly R4 covariates (no sysval)",
+    "1c: hemda/hemdb excluded from Cox adjustment covariates",
+    "1d: SWDS-Gamma uses cross-sectional stratum covariance",
+    "1e: Survival time matches R4/diagnostic construction"
+  ],
+  "r4_reference": {
+    "delta_c": 0.0067475639116044706,
+    "note": "R4 used unmatched samples (different N per model)"
+  },
+  "threshold": 0.01,
+  "models": {
+    "3-axis (full sample)": {
+      "n_cox": 5431,
+      "events": 1122,
+      "delta_c_m5_m4": 0.008721233470278644,
+      "passes_threshold": false,
+      "c_indices": {
+        "M1: Age + Sex": {
+          "c_index": 0.6018951673299953,
+          "n": 5431,
+          "events": 1122
+        },
+        "M2: + Biomarkers": {
+          "c_index": 0.6145387547966505,
+          "n": 5431,
+          "events": 1122
+        },
+        "M3: + SWDS-G": {
+          "c_index": 0.6030435104349439,
+          "n": 5431,
+          "events": 1122
+        },
+        "M4: + Rockwood FI": {
+          "c_index": 0.6092545265046148,
+          "n": 5431,
+          "events": 1122
+        },
+        "M5: Full": {
+          "c_index": 0.6179757599748934,
+          "n": 5431,
+          "events": 1122
+        }
+      }
+    },
+    "4-axis (full sample)": {
+      "n_cox": 4818,
+      "events": 988,
+      "delta_c_m5_m4": 0.00713506055688784,
+      "passes_threshold": false,
+      "c_indices": {
+        "M1: Age + Sex": {
+          "c_index": 0.6044797859724839,
+          "n": 4818,
+          "events": 988
+        },
+        "M2: + Biomarkers": {
+          "c_index": 0.6132838631989543,
+          "n": 4818,
+          "events": 988
+        },
+        "M3: + SWDS-G": {
+          "c_index": 0.607714756531693,
+          "n": 4818,
+          "events": 988
+        },
+        "M4: + Rockwood FI": {
+          "c_index": 0.6095099929442734,
+          "n": 4818,
+          "events": 988
+        },
+        "M5: Full": {
+          "c_index": 0.6166450535011613,
+          "n": 4818,
+          "events": 988
+        }
+      }
+    },
+    "4-axis pulse-only N": {
+      "n_cox": 4818,
+      "events": 988,
+      "delta_c_m5_m4": 0.006405759165297287,
+      "passes_threshold": false,
+      "c_indices": {
+        "M1: Age + Sex": {
+          "c_index": 0.6044797859724839,
+          "n": 4818,
+          "events": 988
+        },
+        "M2: + Biomarkers": {
+          "c_index": 0.6132838631989543,
+          "n": 4818,
+          "events": 988
+        },
+        "M3: + SWDS-G": {
+          "c_index": 0.6048575875361791,
+          "n": 4818,
+          "events": 988
+        },
+        "M4: + Rockwood FI": {
+          "c_index": 0.6095099929442734,
+          "n": 4818,
+          "events": 988
+        },
+        "M5: Full": {
+          "c_index": 0.6159157521095707,
+          "n": 4818,
+          "events": 988
+        }
+      }
+    },
+    "4-axis med-naive": {
+      "n_cox": 2866,
+      "events": 540,
+      "delta_c_m5_m4": 0.008557529986672585,
+      "passes_threshold": false,
+      "c_indices": {
+        "M1: Age + Sex": {
+          "c_index": 0.5912812083518436,
+          "n": 2866,
+          "events": 540
+        },
+        "M2: + Biomarkers": {
+          "c_index": 0.6019013771657041,
+          "n": 2866,
+          "events": 540
+        },
+        "M3: + SWDS-G": {
+          "c_index": 0.5913851621501555,
+          "n": 2866,
+          "events": 540
+        },
+        "M4: + Rockwood FI": {
+          "c_index": 0.5999364726788095,
+          "n": 2866,
+          "events": 540
+        },
+        "M5: Full": {
+          "c_index": 0.608494002665482,
+          "n": 2866,
+          "events": 540
+        }
+      }
+    },
+    "3-axis med-naive": {
+      "n_cox": 3233,
+      "events": 618,
+      "delta_c_m5_m4": 0.013112118713932475,
+      "passes_threshold": true,
+      "c_indices": {
+        "M1: Age + Sex": {
+          "c_index": 0.5859717642209398,
+          "n": 3233,
+          "events": 618
+        },
+        "M2: + Biomarkers": {
+          "c_index": 0.6049910689749931,
+          "n": 3233,
+          "events": 618
+        },
+        "M3: + SWDS-G": {
+          "c_index": 0.5861150041220116,
+          "n": 3233,
+          "events": 618
+        },
+        "M4: + Rockwood FI": {
+          "c_index": 0.600029541082715,
+          "n": 3233,
+          "events": 618
+        },
+        "M5: Full": {
+          "c_index": 0.6131416597966475,
+          "n": 3233,
+          "events": 618
+        }
+      }
+    },
+    "4-axis med-robust": {
+      "n_cox": 4818,
+      "events": 988,
+      "delta_c_m5_m4": 0.005974925297352551,
+      "passes_threshold": false,
+      "c_indices": {
+        "M1: Age + Sex": {
+          "c_index": 0.6044797859724839,
+          "n": 4818,
+          "events": 988
+        },
+        "M2: + Biomarkers": {
+          "c_index": 0.6132838631989543,
+          "n": 4818,
+          "events": 988
+        },
+        "M3: + SWDS-G": {
+          "c_index": 0.6050597106580351,
+          "n": 4818,
+          "events": 988
+        },
+        "M4: + Rockwood FI": {
+          "c_index": 0.6095099929442734,
+          "n": 4818,
+          "events": 988
+        },
+        "M5: Full": {
+          "c_index": 0.615484918241626,
+          "n": 4818,
+          "events": 988
+        }
+      }
+    }
+  }
+}

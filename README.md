@@ -101,6 +101,7 @@ from hdr_sim import (
 - **Basin-stratified values**: `J_healthy`, `J_pre_disease`, `J_disease` (SD-per-SD units) replacing the former age-interpolated `J_value_age30`/`J_value_age80`
 - **Age trajectory**: `increasing`, `decreasing`, `stable`, or `unknown`
 - **Evidence metadata**: sign, magnitude tier (S/M/W/unknown), confidence grade (A/B/C), primary PMID, evidence type, and rationale with citations
+- **Expanded evidence columns** (R5): all supporting PMIDs, study design tags, evidence source count, convergence note, and quantitative prior for each entry (see Data and Code Availability)
 
 **How it works**: At import time, `hdr_sim.csv_loader` loads the CSV, extracts the 4-axis subset (I, M, N, F) for the healthy and disease basins, and applies a calibration scalar (c ≈ 0.30) to map SD-per-SD literature values to simulation coupling rates (day⁻¹). The calibration scalar is computed via Brent's method to match the target spectral abscissa α(30) ≈ −0.134. This preserves the literature-derived relative coupling structure while maintaining dynamical stability.
 
@@ -223,3 +224,24 @@ from hdr_sim import (
     lyapunov_residual_norm,      # Tests 3-4 Layer B residual
 )
 ```
+
+## R5 Revision: Medication Sensitivity and Corrected Cox Models
+
+### Corrected Medication Sensitivity Analysis
+
+The R5 revision adds corrected medication sensitivity analyses with matched-sample Cox models.
+
+```bash
+python scripts/run_medication_sensitivity.py
+```
+
+Key corrections in R5:
+- **1a**: All 5 nested Cox models run on the same matched sample (same N)
+- **1b**: 3-axis M2 uses exactly R4 covariates (no sysval)
+- **1c**: hemda/hemdb excluded from Cox adjustment covariates
+- **1d**: SWDS-Γ uses cross-sectional stratum covariance
+- **1e**: Survival time construction matches R4 exactly
+
+### Reproducibility
+
+`outputs/elsa_results_ledger.json` contains SHA-256 hashes of all data files and every numerical result reported in Appendix H. Use this to verify that your ELSA data extract and pipeline output match ours.

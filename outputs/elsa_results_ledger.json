@@ -1,0 +1,132 @@
+{
+  "pipeline_version": "v1.4-R5",
+  "manuscript_section": "Appendix H \u2014 ELSA Cohort Validation",
+  "generated_by": "scripts/run_medication_sensitivity.py",
+  "data_files": {
+    "harmonised": {
+      "name": "gh_elsa_h_hdr_subset.tab",
+      "sha256": "ffce0818e361aa2d396ce7bb5133224832ed5e2bcd3194c273d254514fde9843",
+      "rows": 21679,
+      "cols": 212
+    },
+    "supplement": {
+      "name": "elsa_supplementary_variables.tab",
+      "sha256": "76d52bdc46ed40d59473582fb33b51241020f1e5287e4013040f8a6af649ae42",
+      "rows": 39528,
+      "cols": 43
+    },
+    "nurse_consolidated": {
+      "name": "elsa_nurse_biomarkers_consolidated.tab",
+      "sha256": "6eb5debeddb20aaf4804154b81444fc72d27ef342560297ef6eb0239582f7cdd",
+      "rows": 38558,
+      "cols": 41
+    },
+    "eol": {
+      "name": "h_elsa_eol_a2.tab",
+      "sha256": "e69651a39fb4ab535010125b91cfbef69fe155dd1cc527eb74870d6a3af163ba",
+      "rows": 983,
+      "cols": 215
+    }
+  },
+  "software": {
+    "python": ">=3.9",
+    "numpy": ">=1.24",
+    "scipy": ">=1.10",
+    "pandas": ">=2.0",
+    "lifelines": ">=0.27",
+    "matplotlib": ">=3.7"
+  },
+  "results": {
+    "sample": {
+      "n_persons": 14841,
+      "n_person_visits": 37142,
+      "n_complete_3axis": 20934,
+      "n_complete_4axis": 21158,
+      "n_baseline_cox_3axis": 5431,
+      "n_baseline_cox_4axis": 5231,
+      "n_events_3axis": 1122,
+      "n_events_4axis": 1094,
+      "median_followup_years": 20.0
+    },
+    "cross_sectional_lambda_max": {
+      "note": "Wave 2 cross-sectional covariance \u03bb_max by age stratum (3-axis)",
+      "50-59": 1.4936,
+      "60-69": 1.4756,
+      "70-79": 1.1829,
+      "80+": 1.2069
+    },
+    "visit_pair_lambda_max": {
+      "note": "Within-person residual covariance \u03bb_max by baseline age stratum (3-axis)",
+      "50-59": 0.2227,
+      "60-69": 0.2153,
+      "70-79": 0.2353,
+      "80+": 0.1373
+    },
+    "cox_3axis_full_matched": {
+      "description": "3-axis Cox models on matched sample (same N for all 5 models)",
+      "N": 5431,
+      "events": 1122,
+      "M1": 0.6019,
+      "M2": 0.6145,
+      "M3": 0.6030,
+      "M4": 0.6093,
+      "M5": 0.6180,
+      "delta_C_M5_M4": 0.0087
+    },
+    "cox_3axis_mednative": {
+      "description": "3-axis Cox on medication-naive subsample",
+      "N": 3233,
+      "events": 618,
+      "M1": 0.5860,
+      "M2": 0.6050,
+      "M3": 0.5861,
+      "M4": 0.6000,
+      "M5": 0.6131,
+      "delta_C_M5_M4": 0.0131
+    },
+    "cox_4axis_full": {
+      "description": "4-axis Cox models on matched sample",
+      "N": 4818,
+      "events": 988,
+      "M1": 0.6045,
+      "M2": 0.6133,
+      "M3": 0.6077,
+      "M4": 0.6095,
+      "M5": 0.6166,
+      "delta_C_M5_M4": 0.0071
+    },
+    "cox_4axis_mednative": {
+      "description": "4-axis Cox on medication-naive subsample",
+      "N": 2866,
+      "events": 540,
+      "M1": 0.5913,
+      "M2": 0.6019,
+      "M3": 0.5914,
+      "M4": 0.5999,
+      "M5": 0.6085,
+      "delta_C_M5_M4": 0.0086
+    },
+    "cox_4axis_pulse_only_N": {
+      "description": "4-axis with pulse-only neuroendocrine axis",
+      "N": 4818,
+      "events": 988,
+      "delta_C_M5_M4": 0.0064
+    },
+    "cox_4axis_med_robust": {
+      "description": "4-axis with HbA1c-only metabolic axis (statin-robust)",
+      "N": 4818,
+      "events": 988,
+      "delta_C_M5_M4": 0.0060
+    },
+    "fi_baseline": {
+      "note": "Rockwood Frailty Index at wave 2 baseline (complete 3-axis sample)",
+      "n": 5440,
+      "mean": 0.12,
+      "sd": 0.15
+    },
+    "r4_reference": {
+      "delta_c": 0.0067,
+      "note": "R4 used unmatched samples (different N per model)"
+    }
+  }
+}
