@@ -47,5 +47,5 @@ def pytest_sessionfinish(session, exitstatus):
 
     lines.append("")
 
-    with open(RESULTS_FILE, 'a') as f:
+    with open(RESULTS_FILE, 'a', encoding='utf-8') as f:
         f.write("\n".join(lines) + "\n")
