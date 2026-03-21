@@ -276,3 +276,45 @@ class TestMissingValueFilter:
         assert np.isnan(result['hscrp'].iloc[2])
         assert np.isnan(result['hba1c'].iloc[0])
         assert result['hba1c'].iloc[1] == 5.5
+
+
+# ---------------------------------------------------------------------------
+# Z-score vs reference
+# ---------------------------------------------------------------------------
+class TestZscoreVsRef:
+    """Test zscore_vs_ref helper function."""
+
+    def test_zscore_known_values(self):
+        """Z-score against reference with known mean/std."""
+        from run_elsa_validation import zscore_vs_ref
+        import pandas as pd
+
+        ref = pd.DataFrame({'x': [10.0, 20.0, 30.0, 40.0, 50.0,
+                                   10.0, 20.0, 30.0, 40.0, 50.0, 30.0]})
+        series = pd.Series([30.0, 50.0, 10.0])
+        result = zscore_vs_ref(series, ref, 'x')
+        # ref mean = 30, ref std ≈ 13.48
+        assert abs(result.iloc[0]) < 0.01  # 30 is the mean
+        assert result.iloc[1] > 0  # 50 above mean
+        assert result.iloc[2] < 0  # 10 below mean
+
+    def test_zscore_missing_col_fallback(self):
+        """When ref doesn't have the column, fall back to series stats."""
+        from run_elsa_validation import zscore_vs_ref
+        import pandas as pd
+
+        ref = pd.DataFrame({'other': [1, 2, 3]})
+        series = pd.Series([10.0, 20.0, 30.0, 40.0, 50.0])
+        result = zscore_vs_ref(series, ref, 'x')
+        # Should use series mean/std
+        assert abs(result.mean()) < 0.01  # z-scores should center near 0
+
+    def test_zscore_small_ref_fallback(self):
+        """When ref has <=10 values, fall back to series stats."""
+        from run_elsa_validation import zscore_vs_ref
+        import pandas as pd
+
+        ref = pd.DataFrame({'x': [1.0, 2.0, 3.0]})  # Only 3 values
+        series = pd.Series([10.0, 20.0, 30.0, 40.0, 50.0])
+        result = zscore_vs_ref(series, ref, 'x')
+        assert abs(result.mean()) < 0.01

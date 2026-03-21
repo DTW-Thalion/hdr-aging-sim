@@ -5,16 +5,23 @@ Phase 3: ELSA Cohort Validation Pipeline
 Executes the Γ-native stability analysis on longitudinal data from the
 English Longitudinal Study of Ageing (ELSA), Waves 2–11.
 
+Runs BOTH a 3-axis model (I, M, F) and a 4-axis model (I, M, N, F)
+with enriched biomarker composites, plus benchmark comparisons.
+
 Requires ELSA data files in data/elsa/ (see data/elsa/README.md for access).
 
 Usage:
     python scripts/run_elsa_validation.py
 
 Outputs:
-    outputs/figure_elsa_validation.pdf  — 6-panel validation figure
-    (console)                           — summary statistics
+    outputs/figure_elsa_validation_3axis.pdf  — 6-panel validation figure (3-axis)
+    outputs/figure_elsa_validation_4axis.pdf  — 6-panel validation figure (4-axis)
+    outputs/figure_elsa_4axis_comparison.pdf  — 3-axis vs 4-axis comparison
+    outputs/elsa_4axis_results.json           — machine-readable results ledger
+    (console)                                 — summary statistics
 """
 
+import json
 import os
 import sys
 import warnings
@@ -68,6 +75,23 @@ BIOMARKER_COLS = {
 }
 GRIP_COLS = ['mmgsd1', 'mmgsd2', 'mmgsd3']
 
+# Bootstrap configuration
+N_BOOTSTRAP = 1000
+
+# Model definitions
+MODELS = {
+    '3-axis': {
+        'axes': ['dx_I', 'dx_M', 'dx_F'],
+        'complete_col': 'complete_3axis',
+        'label': 'I, M, F (3-axis)',
+    },
+    '4-axis': {
+        'axes': ['dx_I_4', 'dx_M_4', 'dx_N_4', 'dx_F_4'],
+        'complete_col': 'complete_4axis',
+        'label': 'I, M, N, F (4-axis)',
+    },
+}
+
 # ---------------------------------------------------------------------------
 # File discovery
 # ---------------------------------------------------------------------------
@@ -75,10 +99,11 @@ FILE_PATTERNS = {
     'harmonised': 'gh_elsa_h_hdr_subset',
     'supplement': 'elsa_supplementary_variables',
     'eol': 'h_elsa_eol_a2',
+    'nurse_consolidated': 'elsa_nurse_biomarkers_consolidated',
+    # Legacy nurse file patterns (fallback if consolidated not found)
     'nurse_w2': 'wave_2_nurse_data',
     'nurse_w4': 'wave_4_nurse_data',
     'nurse_w6': 'wave_6_elsa_nurse_data',
-    # nurse_w8 SKIPPED — subset of w8w9 (half sample only, 3525 rows)
     'nurse_w8w9': 'elsa_nurse_w8w9',
     'nurse_w11': 'wave_11_elsa_nurse_data',
 }
@@ -135,6 +160,21 @@ def detect_and_convert_hba1c(series):
         return converted, 'DCCT'
     else:
         return series.copy(), 'IFCC'
+
+
+# ---------------------------------------------------------------------------
+# Z-score helper
+# ---------------------------------------------------------------------------
+def zscore_vs_ref(series, ref_df, col_name):
+    """Z-score a series against the youthful reference subgroup."""
+    ref_vals = ref_df[col_name].dropna() if col_name in ref_df.columns else pd.Series(dtype=float)
+    if len(ref_vals) > 10:
+        mu, sigma = ref_vals.mean(), ref_vals.std()
+    else:
+        mu = series.mean()
+        sigma = series.std()
+    sigma = max(sigma, 1e-6)
+    return (series - mu) / sigma
 
 
 # ---------------------------------------------------------------------------
@@ -253,7 +293,7 @@ def load_all_files():
     """Load and return all ELSA data files."""
     files = {}
     print("=" * 70)
-    print("ELSA Cohort Validation Pipeline — Phase 3")
+    print("ELSA Cohort Validation Pipeline — Phase 3 (3-axis + 4-axis)")
     print("=" * 70)
     print("\nStep 1: Loading data files")
     print("-" * 40)
@@ -263,17 +303,29 @@ def load_all_files():
         if path:
             df = load_tab(path)
             files[key] = df
-            print(f"  {key:15s}: {os.path.basename(path)} — "
+            print(f"  {key:20s}: {os.path.basename(path)} — "
                   f"{df.shape[0]:,} rows × {df.shape[1]:,} cols")
         else:
-            print(f"  {key:15s}: NOT FOUND (looked for '{pattern}')")
+            # Only warn for required files, not legacy nurse files when
+            # consolidated is present
+            if key.startswith('nurse_w') and 'nurse_consolidated' in files:
+                pass  # consolidated available, legacy not needed
+            elif key == 'nurse_consolidated':
+                print(f"  {key:20s}: NOT FOUND (will try legacy nurse files)")
+            else:
+                print(f"  {key:20s}: NOT FOUND (looked for '{pattern}')")
 
     assert 'harmonised' in files, \
         "Harmonised subset (gh_elsa_h_hdr_subset.tab) is required"
 
-    nurse_keys = [k for k in files if k.startswith('nurse_')]
-    assert len(nurse_keys) >= 2, \
-        f"Need >=2 nurse files, found {len(nurse_keys)}"
+    # Check we have nurse data (consolidated or legacy)
+    if 'nurse_consolidated' in files:
+        print("\n  Using consolidated nurse file (all waves)")
+    else:
+        nurse_keys = [k for k in files if k.startswith('nurse_w')]
+        assert len(nurse_keys) >= 2, \
+            f"Need consolidated nurse file or >=2 legacy nurse files, found {len(nurse_keys)}"
+        print(f"\n  Using {len(nurse_keys)} legacy nurse files")
 
     return files
 
@@ -284,78 +336,119 @@ def load_all_files():
 def extract_nurse_biomarkers(files):
     """
     Extract biomarkers from nurse files and merge into a long-format panel.
+    Supports both the consolidated file and legacy per-wave files.
     Returns DataFrame with columns: idauniq, wave, hscrp, hba1c, bmival,
-    grip_max, sysval, diaval, chol, hdl, ldl, trig, cfib, hgb.
+    grip_max, sysval, diaval, pulval, chol, hdl, ldl, trig, cfib, hgb,
+    wstval, mmcrsa, mmcrav, wbc, igf1, hemda, hemdb, hemdab.
     """
     print("\nStep 2: Extracting nurse biomarkers")
     print("-" * 40)
 
-    # Map nurse file keys to wave numbers
-    # nurse_w8 SKIPPED — it's a subset of w8w9 (half sample only)
-    nurse_wave_map = {
-        'nurse_w2': 2,
-        'nurse_w4': 4,
-        'nurse_w6': 6,
-        'nurse_w8w9': 8,  # Combined W8+W9, treated as single wave 8 timepoint
-        'nurse_w11': 11,
-    }
-
     target_cols = ['idauniq', 'hscrp', 'hba1c', 'bmival', 'sysval', 'diaval',
-                   'chol', 'hdl', 'ldl', 'trig', 'cfib', 'hgb',
+                   'pulval', 'chol', 'hdl', 'ldl', 'trig', 'cfib', 'hgb',
                    'mmgsd1', 'mmgsd2', 'mmgsd3',
                    'mmgsn1', 'mmgsn2', 'mmgsn3',
-                   'wbc', 'igf1', 'htval', 'wtval']
+                   'wbc', 'igf1', 'htval', 'wtval',
+                   'wstval', 'mmcrsa', 'mmcrav',
+                   'hemda', 'hemdb', 'hemdab',
+                   'statins', 'statina']
 
-    all_waves = []
     hba1c_units = {}
 
-    for key, wave in nurse_wave_map.items():
-        if key not in files:
-            continue
+    if 'nurse_consolidated' in files:
+        # --- Consolidated file path ---
+        df = files['nurse_consolidated'].copy()
+        df = filter_missing(df, exclude_cols=['idauniq', 'wave'])
 
-        df = files[key].copy()
-        df.columns = [c.lower() for c in df.columns]
-
-        # Select available target columns
+        # Select available target columns + wave
         available = [c for c in target_cols if c in df.columns]
-        missing = [c for c in target_cols if c not in df.columns]
-        if missing:
-            print(f"  {key} (wave {wave}): missing cols: "
-                  f"{', '.join(missing[:5])}{'...' if len(missing) > 5 else ''}")
+        missing_cols = [c for c in target_cols if c not in df.columns and c != 'idauniq']
+        if missing_cols:
+            print(f"  Consolidated file missing cols: "
+                  f"{', '.join(missing_cols[:8])}{'...' if len(missing_cols) > 8 else ''}")
 
-        sub = df[available].copy()
-        sub = filter_missing(sub, exclude_cols=['idauniq'])
+        panel = df[available + ['wave']].copy()
 
-        # Map alternate BMI column name (W8/9 may use 'bmi' not 'bmival')
-        if 'bmi' in df.columns and 'bmival' not in sub.columns:
-            sub['bmival'] = pd.to_numeric(df['bmi'], errors='coerce')
-            sub.loc[sub['bmival'] < 0, 'bmival'] = np.nan
+        # Map alternate BMI column name
+        if 'bmi' in df.columns and 'bmival' not in panel.columns:
+            panel['bmival'] = pd.to_numeric(df['bmi'], errors='coerce')
+            panel.loc[panel['bmival'] < 0, 'bmival'] = np.nan
 
-        # HbA1c unit detection and conversion
-        if 'hba1c' in sub.columns:
-            sub['hba1c'], unit = detect_and_convert_hba1c(sub['hba1c'])
-            hba1c_units[wave] = unit
-            print(f"  {key} (wave {wave}): HbA1c detected as {unit}, "
-                  f"N={sub['hba1c'].notna().sum():,}")
+        # HbA1c unit detection and conversion per wave
+        for w in sorted(panel['wave'].unique()):
+            w_mask = panel['wave'] == w
+            if 'hba1c' in panel.columns and panel.loc[w_mask, 'hba1c'].notna().any():
+                converted, unit = detect_and_convert_hba1c(panel.loc[w_mask, 'hba1c'])
+                panel.loc[w_mask, 'hba1c'] = converted
+                hba1c_units[int(w)] = unit
+                n_valid = panel.loc[w_mask, 'hba1c'].notna().sum()
+                print(f"  Wave {int(w)}: HbA1c detected as {unit}, N={n_valid:,}")
 
         # Compute grip_max (max of dominant hand trials)
-        grip_dom = [c for c in GRIP_COLS if c in sub.columns]
+        grip_dom = [c for c in GRIP_COLS if c in panel.columns]
         if grip_dom:
-            sub['grip_max'] = sub[grip_dom].max(axis=1)
+            panel['grip_max'] = panel[grip_dom].max(axis=1)
         else:
-            sub['grip_max'] = np.nan
+            panel['grip_max'] = np.nan
 
-        sub['wave'] = wave
+        # Report per-wave completeness
+        for w in sorted(panel['wave'].unique()):
+            wdata = panel[panel['wave'] == w]
+            n_complete = wdata[['hscrp', 'hba1c', 'grip_max']].dropna().shape[0]
+            print(f"  Wave {int(w)}: {wdata.shape[0]:,} people, "
+                  f"{n_complete:,} with complete 3-axis biomarkers")
 
-        # If w8w9 and w8 both loaded, prefer w8w9 (it's the merged file)
-        all_waves.append(sub)
+    else:
+        # --- Legacy per-wave file path ---
+        nurse_wave_map = {
+            'nurse_w2': 2,
+            'nurse_w4': 4,
+            'nurse_w6': 6,
+            'nurse_w8w9': 8,
+            'nurse_w11': 11,
+        }
 
-        n_complete = sub[['hscrp', 'hba1c', 'grip_max']].dropna().shape[0]
-        print(f"  {key} (wave {wave}): {sub.shape[0]:,} people, "
-              f"{n_complete:,} with complete 3-axis biomarkers")
+        all_waves = []
+        for key, wave in nurse_wave_map.items():
+            if key not in files:
+                continue
 
-    # Concatenate all waves; if w8 and w8w9 overlap, deduplicate
-    panel = pd.concat(all_waves, ignore_index=True)
+            df = files[key].copy()
+            df.columns = [c.lower() for c in df.columns]
+
+            available = [c for c in target_cols if c in df.columns]
+            missing = [c for c in target_cols if c not in df.columns]
+            if missing:
+                print(f"  {key} (wave {wave}): missing cols: "
+                      f"{', '.join(missing[:5])}{'...' if len(missing) > 5 else ''}")
+
+            sub = df[available].copy()
+            sub = filter_missing(sub, exclude_cols=['idauniq'])
+
+            if 'bmi' in df.columns and 'bmival' not in sub.columns:
+                sub['bmival'] = pd.to_numeric(df['bmi'], errors='coerce')
+                sub.loc[sub['bmival'] < 0, 'bmival'] = np.nan
+
+            if 'hba1c' in sub.columns:
+                sub['hba1c'], unit = detect_and_convert_hba1c(sub['hba1c'])
+                hba1c_units[wave] = unit
+                print(f"  {key} (wave {wave}): HbA1c detected as {unit}, "
+                      f"N={sub['hba1c'].notna().sum():,}")
+
+            grip_dom = [c for c in GRIP_COLS if c in sub.columns]
+            if grip_dom:
+                sub['grip_max'] = sub[grip_dom].max(axis=1)
+            else:
+                sub['grip_max'] = np.nan
+
+            sub['wave'] = wave
+            all_waves.append(sub)
+
+            n_complete = sub[['hscrp', 'hba1c', 'grip_max']].dropna().shape[0]
+            print(f"  {key} (wave {wave}): {sub.shape[0]:,} people, "
+                  f"{n_complete:,} with complete 3-axis biomarkers")
+
+        panel = pd.concat(all_waves, ignore_index=True)
 
     # Deduplicate: keep one row per (idauniq, wave), preferring non-NaN
     panel = panel.sort_values(['idauniq', 'wave', 'hscrp'],
@@ -523,7 +616,7 @@ def harmonised_to_long(harm, waves=[2, 4, 6, 8]):
 def build_analysis_panel(panel, harm_long, mort, supp):
     """
     Merge nurse biomarkers with demographics (long), mortality, supplementary.
-    Construct 3-axis model variables and SWDS-Γ.
+    Construct BOTH 3-axis and 4-axis model variables.
     """
     print("\nStep 3: Building analysis panel")
     print("-" * 40)
@@ -567,19 +660,20 @@ def build_analysis_panel(panel, harm_long, mort, supp):
         n_filled = mask.sum()
         merged.loc[mask, 'bmival'] = merged.loc[mask, 'bmi_harmonised']
         if n_filled > 0:
-            # Per-wave breakdown
             for w in sorted(merged['wave'].unique()):
                 w_filled = ((merged['wave'] == w) & mask).sum()
                 if w_filled > 0:
                     print(f"  Wave {w}: filled {w_filled:,} missing bmival "
                           f"from harmonised bmi_harmonised")
 
-    # --- Construct 3-axis model ---
-    print("\n  Constructing 3-axis model (I, M, F)...")
-
-    # Reference: youngest age stratum (50–55) at wave 2 for z-score reference
+    # --- Reference subgroup for z-scoring ---
     ref_mask = (merged['wave'] == 2) & (merged['age'] >= 50) & (merged['age'] <= 55)
     ref = merged.loc[ref_mask]
+
+    # =====================================================================
+    # 3-AXIS MODEL (I, M, F) — preserved from original
+    # =====================================================================
+    print("\n  Constructing 3-axis model (I, M, F)...")
 
     # Δx_I: z-score of log(CRP)
     merged['log_crp'] = np.log(merged['hscrp'].clip(lower=0.01))
@@ -625,6 +719,94 @@ def build_analysis_panel(panel, harm_long, mort, supp):
     n_complete = merged['complete_3axis'].sum()
     print(f"  Complete 3-axis observations: {n_complete:,} / {len(merged):,}")
 
+    # =====================================================================
+    # 4-AXIS MODEL (I, M, N, F) — NEW
+    # =====================================================================
+    print("\n  Constructing 4-axis model (I, M, N, F)...")
+
+    # Δx_I (4-axis): log(CRP) + fibrinogen composite
+    merged['cfib_z'] = zscore_vs_ref(merged.get('cfib', pd.Series(dtype=float)), ref, 'cfib')
+    merged['dx_I_4'] = merged[['dx_I', 'cfib_z']].mean(axis=1, skipna=True)
+    # Fall back to dx_I if fibrinogen missing
+    merged.loc[merged['dx_I_4'].isna() & merged['dx_I'].notna(), 'dx_I_4'] = \
+        merged.loc[merged['dx_I_4'].isna() & merged['dx_I'].notna(), 'dx_I']
+
+    # Δx_M (4-axis): HbA1c + total/HDL ratio + triglycerides composite
+    if 'chol' in merged.columns and 'hdl' in merged.columns:
+        merged['chol_hdl_ratio'] = merged['chol'] / merged['hdl'].clip(lower=0.1)
+        merged['chol_hdl_ratio_z'] = zscore_vs_ref(merged['chol_hdl_ratio'], ref, 'chol_hdl_ratio')
+    else:
+        merged['chol_hdl_ratio'] = np.nan
+        merged['chol_hdl_ratio_z'] = np.nan
+
+    if 'trig' in merged.columns:
+        merged['log_trig'] = np.log(merged['trig'].clip(lower=0.01))
+        merged['log_trig_z'] = zscore_vs_ref(merged['log_trig'], ref, 'log_trig')
+    else:
+        merged['log_trig'] = np.nan
+        merged['log_trig_z'] = np.nan
+
+    # Waist circumference (cap at 180 to remove 999.9 error codes)
+    if 'wstval' in merged.columns:
+        n_wst_flagged = (merged['wstval'] > 180).sum()
+        merged.loc[merged['wstval'] > 180, 'wstval'] = np.nan
+        if n_wst_flagged > 0:
+            print(f"  Flagged {n_wst_flagged} wstval > 180 → NaN (error codes)")
+        merged['wstval_z'] = zscore_vs_ref(merged['wstval'], ref, 'wstval')
+    else:
+        merged['wstval_z'] = np.nan
+
+    # Composite: average of available z-scores (HbA1c_z already exists from 3-axis)
+    m_components = ['hba1c_z', 'chol_hdl_ratio_z', 'log_trig_z']
+    merged['dx_M_4'] = merged[m_components].mean(axis=1, skipna=True)
+
+    # Δx_N (4-axis): SBP + DBP + pulse composite
+    if 'sysval' in merged.columns:
+        merged['sysval_z'] = zscore_vs_ref(merged['sysval'], ref, 'sysval')
+    else:
+        merged['sysval_z'] = np.nan
+    if 'diaval' in merged.columns:
+        merged['diaval_z'] = zscore_vs_ref(merged['diaval'], ref, 'diaval')
+    else:
+        merged['diaval_z'] = np.nan
+    if 'pulval' in merged.columns:
+        merged['pulval_z'] = zscore_vs_ref(merged['pulval'], ref, 'pulval')
+    else:
+        merged['pulval_z'] = np.nan
+
+    n_components = ['sysval_z', 'diaval_z', 'pulval_z']
+    merged['dx_N_4'] = merged[n_components].mean(axis=1, skipna=True)
+
+    # Δx_F (4-axis): grip strength + gait speed composite
+    # Grip: REVERSE coded (higher grip = healthier, so negate z-score)
+    merged['grip_z_rev'] = -zscore_vs_ref(merged['grip_max'], ref, 'grip_max')
+    # Gait speed: REVERSE coded (higher speed = healthier)
+    if 'walk_speed' in merged.columns:
+        merged['walk_z_rev'] = -zscore_vs_ref(merged['walk_speed'], ref, 'walk_speed')
+    else:
+        merged['walk_z_rev'] = np.nan
+    f_components = ['grip_z_rev', 'walk_z_rev']
+    merged['dx_F_4'] = merged[f_components].mean(axis=1, skipna=True)
+
+    # Complete 4-axis flag
+    merged['complete_4axis'] = (
+        merged['dx_I_4'].notna() &
+        merged['dx_M_4'].notna() &
+        merged['dx_N_4'].notna() &
+        merged['dx_F_4'].notna()
+    )
+
+    n_complete_4 = merged['complete_4axis'].sum()
+    n_persons_4 = merged.loc[merged['complete_4axis'], 'idauniq'].nunique()
+    print(f"  4-axis complete: {n_complete_4:,} person-visits, "
+          f"{n_persons_4:,} unique persons")
+
+    # Per-wave 4-axis completeness
+    for w in sorted(merged['wave'].unique()):
+        wdata = merged[merged['wave'] == w]
+        n4 = wdata['complete_4axis'].sum()
+        print(f"    Wave {w}: {n4:,} complete 4-axis")
+
     # People with >=2 complete visits (for longitudinal analysis)
     visit_counts = merged.loc[merged['complete_3axis']].groupby('idauniq').size()
     longitudinal_ids = visit_counts[visit_counts >= 2].index
@@ -634,25 +816,36 @@ def build_analysis_panel(panel, harm_long, mort, supp):
     print(f"  Longitudinal panel (>=2 visits): {n_long_people:,} people, "
           f"{n_long:,} visits")
 
+    # 4-axis longitudinal
+    visit_counts_4 = merged.loc[merged['complete_4axis']].groupby('idauniq').size()
+    longitudinal_ids_4 = visit_counts_4[visit_counts_4 >= 2].index
+    merged['in_longitudinal_4'] = merged['idauniq'].isin(longitudinal_ids_4)
+    n_long_4 = merged['in_longitudinal_4'].sum()
+    n_long_people_4 = len(longitudinal_ids_4)
+    print(f"  4-axis longitudinal (>=2 visits): {n_long_people_4:,} people, "
+          f"{n_long_4:,} visits")
+
     return merged
 
 
 # ---------------------------------------------------------------------------
-# Step 4: Cross-sectional Γ̂ analysis
+# Step 4: Cross-sectional Γ̂ analysis (parameterized)
 # ---------------------------------------------------------------------------
-def cross_sectional_gamma(merged):
+def cross_sectional_gamma(merged, model_key='3-axis'):
     """
     Compute cross-sectional Γ̂ per age stratum per wave.
-    Returns dict of results.
+    Returns DataFrame of results.
     """
-    print("\nStep 4: Cross-sectional Γ̂ analysis")
+    model = MODELS[model_key]
+    axes = model['axes']
+    complete_col = model['complete_col']
+    print(f"\nStep 4: Cross-sectional Γ̂ analysis ({model['label']})")
     print("-" * 40)
 
-    axes = ['dx_I', 'dx_M', 'dx_F']
     results = []
 
     for wave in sorted(merged['wave'].unique()):
-        wave_data = merged[(merged['wave'] == wave) & merged['complete_3axis']]
+        wave_data = merged[(merged['wave'] == wave) & merged[complete_col]]
         if len(wave_data) < 20:
             continue
 
@@ -688,18 +881,22 @@ def cross_sectional_gamma(merged):
 
 
 # ---------------------------------------------------------------------------
-# Step 5: Within-person Γ̂ analysis
+# Step 5: Within-person Γ̂ analysis (parameterized)
 # ---------------------------------------------------------------------------
-def within_person_gamma(merged):
+def within_person_gamma(merged, model_key='3-axis'):
     """
     Compute within-person covariance Γ̂_within per age stratum.
     Uses within-person residuals (removes individual fixed effects).
     """
-    print("\nStep 5: Within-person Γ̂ analysis (key result)")
+    model = MODELS[model_key]
+    axes = model['axes']
+    complete_col = model['complete_col']
+    in_long_col = 'in_longitudinal' if model_key == '3-axis' else 'in_longitudinal_4'
+
+    print(f"\nStep 5: Within-person Γ̂ analysis ({model['label']})")
     print("-" * 40)
 
-    axes = ['dx_I', 'dx_M', 'dx_F']
-    long_data = merged[merged['in_longitudinal'] & merged['complete_3axis']].copy()
+    long_data = merged[merged[in_long_col] & merged[complete_col]].copy()
 
     # Compute within-person means
     person_means = long_data.groupby('idauniq')[axes].mean()
@@ -766,18 +963,22 @@ def within_person_gamma(merged):
 
 
 # ---------------------------------------------------------------------------
-# Step 5b: Visit-pair within-person analysis
+# Step 5b: Visit-pair within-person analysis (parameterized + bootstrap)
 # ---------------------------------------------------------------------------
-def visit_pair_gamma(merged):
+def visit_pair_gamma(merged, model_key='3-axis', n_bootstrap=N_BOOTSTRAP):
     """
-    Alternative within-person approach: consecutive visit-pair residuals.
+    Visit-pair Δ(Δx) analysis with bootstrap CIs and monotone-trend test.
     Δ(Δx) = Δx(wave k+1) - Δx(wave k) for each individual.
     """
-    print("\nStep 5b: Visit-pair Δ(Δx) analysis")
+    model = MODELS[model_key]
+    axes = model['axes']
+    complete_col = model['complete_col']
+    in_long_col = 'in_longitudinal' if model_key == '3-axis' else 'in_longitudinal_4'
+
+    print(f"\nStep 5b: Visit-pair Δ(Δx) analysis ({model['label']})")
     print("-" * 40)
 
-    axes = ['dx_I', 'dx_M', 'dx_F']
-    long_data = merged[merged['in_longitudinal'] & merged['complete_3axis']].copy()
+    long_data = merged[merged[in_long_col] & merged[complete_col]].copy()
     long_data = long_data.sort_values(['idauniq', 'wave'])
 
     # Compute consecutive differences
@@ -810,37 +1011,103 @@ def visit_pair_gamma(merged):
         X = stratum[axes].values
         Gamma_change = np.cov(X.T)
         proxy = gamma_stability_proxy(Gamma_change)
+
+        # Full off-diagonal structure
+        offdiag_info = {}
+        n_axes = len(axes)
+        for i in range(n_axes):
+            for j in range(i + 1, n_axes):
+                pair_label = f'{axes[i]}_{axes[j]}'
+                offdiag_info[pair_label] = Gamma_change[i, j]
+
+        # Bootstrap CI for λ_max
+        boot_lambdas = []
+        stratum_ids = stratum['idauniq'].unique()
+        rng = np.random.RandomState(SEED)
+        for _ in range(n_bootstrap):
+            boot_ids = rng.choice(stratum_ids, size=len(stratum_ids), replace=True)
+            boot_data = pd.concat([stratum[stratum['idauniq'] == uid] for uid in boot_ids],
+                                  ignore_index=True)
+            if len(boot_data) < 10:
+                continue
+            X_boot = boot_data[axes].values
+            G_boot = np.cov(X_boot.T)
+            bp = gamma_stability_proxy(G_boot)
+            boot_lambdas.append(bp['lambda_max'])
+
+        boot_lambdas = np.array(boot_lambdas)
+        ci_lo = np.percentile(boot_lambdas, 2.5) if len(boot_lambdas) > 0 else np.nan
+        ci_hi = np.percentile(boot_lambdas, 97.5) if len(boot_lambdas) > 0 else np.nan
+
         results.append({
             'age_group': label,
+            'age_lo': lo,
+            'age_hi': hi,
             'age_mid': (lo + hi) / 2,
             'n_pairs': len(stratum),
             'lambda_max': proxy['lambda_max'],
+            'lambda_max_ci_lo': ci_lo,
+            'lambda_max_ci_hi': ci_hi,
+            'Gamma_change': Gamma_change,
+            **offdiag_info,
         })
         print(f"  {label}: {len(stratum):,} pairs, "
-              f"λ_max(Γ_change)={proxy['lambda_max']:.4f}")
+              f"λ_max(Γ_change)={proxy['lambda_max']:.4f} "
+              f"[{ci_lo:.4f}, {ci_hi:.4f}]")
 
-    return pd.DataFrame(results)
+    results_df = pd.DataFrame(results)
+
+    # Jonckheere-Terpstra test for monotone trend
+    if len(results_df) >= 3:
+        # Use Kendall τ as approximation (scipy doesn't have JT directly)
+        tau, p = stats.kendalltau(results_df['age_mid'], results_df['lambda_max'])
+        print(f"\n  Monotone trend test (Kendall τ): τ={tau:.3f}, p={p:.4f}")
+
+    # Report off-diagonal structure
+    if len(results_df) > 0:
+        print("\n  Off-diagonal Γ̂_change structure (largest age increase):")
+        offdiag_cols = [c for c in results_df.columns if '_dx_' in c or c.startswith('dx_')]
+        offdiag_cols = [c for c in results_df.columns
+                        if c not in ['age_group', 'age_lo', 'age_hi', 'age_mid',
+                                     'n_pairs', 'lambda_max', 'lambda_max_ci_lo',
+                                     'lambda_max_ci_hi', 'Gamma_change']]
+        for col in offdiag_cols:
+            vals = results_df[col].values
+            if len(vals) >= 2:
+                change = vals[-1] - vals[0]
+                print(f"    {col}: youngest={vals[0]:.4f}, oldest={vals[-1]:.4f}, "
+                      f"Δ={change:+.4f}")
+
+    return results_df
 
 
 # ---------------------------------------------------------------------------
-# Step 6: Compute individual SWDS-Γ
+# Step 6: Compute individual SWDS-Γ (parameterized)
 # ---------------------------------------------------------------------------
-def compute_individual_swds(merged, within_results):
+def compute_individual_swds(merged, within_results, model_key='3-axis'):
     """Compute SWDS-Γ for each individual at each visit."""
-    print("\nStep 6: Computing individual SWDS-Γ scores")
+    model = MODELS[model_key]
+    axes = model['axes']
+    complete_col = model['complete_col']
+    score_col = f'swds_gamma{"" if model_key == "3-axis" else "_4"}'
+
+    print(f"\nStep 6: Computing individual SWDS-Γ scores ({model['label']})")
     print("-" * 40)
 
-    axes = ['dx_I', 'dx_M', 'dx_F']
-    complete = merged[merged['complete_3axis']].copy()
+    complete = merged[merged[complete_col]].copy()
 
     # Build stratum covariance lookup
     gamma_lookup = {}
-    for _, row in within_results.iterrows():
-        gamma_lookup[(row['age_lo'], row['age_hi'])] = row['Gamma_within']
+    if len(within_results) > 0 and 'Gamma_within' in within_results.columns:
+        for _, row in within_results.iterrows():
+            gamma_lookup[(row['age_lo'], row['age_hi'])] = row['Gamma_within']
 
     # Fallback: use cross-sectional covariance from the whole sample
-    X_all = complete[axes].values
-    Gamma_global = np.cov(X_all.T)
+    X_all = complete[axes].dropna().values
+    if len(X_all) > len(axes):
+        Gamma_global = np.cov(X_all.T)
+    else:
+        Gamma_global = np.eye(len(axes))
 
     def get_gamma(age):
         for (lo, hi), G in gamma_lookup.items():
@@ -859,16 +1126,87 @@ def compute_individual_swds(merged, within_results):
         score = compute_swds_gamma(dx, G)
         swds_scores.append(score)
 
-    complete = complete.copy()
-    complete['swds_gamma'] = swds_scores
+    complete[score_col] = swds_scores
 
-    print(f"  SWDS-Γ computed for {complete['swds_gamma'].notna().sum():,} observations")
+    print(f"  SWDS-Γ computed for {complete[score_col].notna().sum():,} observations")
     print(f"  SWDS-Γ distribution: "
-          f"mean={complete['swds_gamma'].mean():.3f}, "
-          f"median={complete['swds_gamma'].median():.3f}, "
-          f"SD={complete['swds_gamma'].std():.3f}")
+          f"mean={complete[score_col].mean():.3f}, "
+          f"median={complete[score_col].median():.3f}, "
+          f"SD={complete[score_col].std():.3f}")
 
     return complete
+
+
+# ---------------------------------------------------------------------------
+# Benchmark scores (R1): Mahalanobis, z-sum
+# ---------------------------------------------------------------------------
+def compute_benchmark_scores(complete, within_results, model_key='4-axis'):
+    """
+    Compute benchmark scores for comparison with SWDS-Γ:
+      - Mahalanobis distance: Δx^T Γ̂^{-1} Δx (weights by INVERSE covariance)
+      - Z-scored sum: ||Δx||²/n (unweighted — no eigenvalue structure)
+    """
+    model = MODELS[model_key]
+    axes = model['axes']
+    complete_col = model['complete_col']
+    n_axes = len(axes)
+
+    print(f"\nStep 6b: Computing benchmark scores ({model['label']})")
+    print("-" * 40)
+
+    sub = complete[complete[complete_col]].copy()
+
+    # Build stratum covariance lookup
+    gamma_lookup = {}
+    if len(within_results) > 0 and 'Gamma_within' in within_results.columns:
+        for _, row in within_results.iterrows():
+            gamma_lookup[(row['age_lo'], row['age_hi'])] = row['Gamma_within']
+
+    X_all = sub[axes].dropna().values
+    if len(X_all) > n_axes:
+        Gamma_global = np.cov(X_all.T)
+    else:
+        Gamma_global = np.eye(n_axes)
+
+    def get_gamma(age):
+        for (lo, hi), G in gamma_lookup.items():
+            if lo <= age < hi:
+                return G
+        return Gamma_global
+
+    mahal_scores = []
+    zsum_scores = []
+    for idx, row in sub.iterrows():
+        dx = row[axes].values.astype(float)
+        if np.any(np.isnan(dx)):
+            mahal_scores.append(np.nan)
+            zsum_scores.append(np.nan)
+            continue
+
+        G = get_gamma(row['age'])
+
+        # Z-sum: ||Δx||²/n (unweighted)
+        zsum = np.dot(dx, dx) / n_axes
+        zsum_scores.append(zsum)
+
+        # Mahalanobis: Δx^T Γ̂^{-1} Δx
+        try:
+            G_inv = np.linalg.inv(G)
+            mahal = dx @ G_inv @ dx
+        except np.linalg.LinAlgError:
+            mahal = np.nan
+        mahal_scores.append(mahal)
+
+    sub['mahalanobis'] = mahal_scores
+    sub['z_sum'] = zsum_scores
+
+    for name, col in [('Mahalanobis', 'mahalanobis'), ('Z-sum', 'z_sum')]:
+        s = sub[col].dropna()
+        if len(s) > 0:
+            print(f"  {name}: mean={s.mean():.3f}, median={s.median():.3f}, "
+                  f"SD={s.std():.3f}")
+
+    return sub
 
 
 # ---------------------------------------------------------------------------
@@ -904,14 +1242,18 @@ def compute_frailty_indices(complete):
 
 
 # ---------------------------------------------------------------------------
-# Step 8: Cox proportional hazards (5 nested models)
+# Step 8: Cox proportional hazards (parameterized, with benchmarks)
 # ---------------------------------------------------------------------------
-def run_cox_models(complete, mort, demo):
+def run_cox_models(complete, mort, demo, model_key='3-axis',
+                   include_benchmarks=False):
     """
-    Run 5 nested Cox models for mortality prediction.
+    Run nested Cox models for mortality prediction.
     Returns dict of model results.
     """
-    print("\nStep 8: Cox proportional hazards models")
+    model = MODELS[model_key]
+    swds_col = f'swds_gamma{"" if model_key == "3-axis" else "_4"}'
+
+    print(f"\nStep 8: Cox proportional hazards models ({model['label']})")
     print("-" * 40)
 
     try:
@@ -925,7 +1267,6 @@ def run_cox_models(complete, mort, demo):
     # Use baseline (wave 2) observations only for survival analysis
     baseline = complete[complete['wave'] == 2].copy()
     if len(baseline) < 50:
-        # Try earliest available wave
         earliest_wave = complete['wave'].min()
         baseline = complete[complete['wave'] == earliest_wave].copy()
         print(f"  Using wave {earliest_wave} as baseline (wave 2 had <50)")
@@ -949,7 +1290,6 @@ def run_cox_models(complete, mort, demo):
     baseline_year = baseline['interview_year'].fillna(
         NURSE_WAVE_YEARS.get(int(baseline['wave'].iloc[0]), 2004))
 
-    # Find last known alive year
     last_iwy_cols = [f'iwy_w{w}' for w in range(10, 0, -1)
                      if f'iwy_w{w}' in baseline.columns]
     if last_iwy_cols:
@@ -974,10 +1314,6 @@ def run_cox_models(complete, mort, demo):
         print("  Insufficient events for Cox models")
         return None
 
-    # Covariates now use canonical long-format names from harmonised_to_long
-    # 'smoking', 'diabetes', 'highbp' are already columns in baseline
-    # 'hemda', 'hemdb' come from supplementary merge
-
     # Base covariates
     base_covs = ['age', 'sex']
 
@@ -999,10 +1335,16 @@ def run_cox_models(complete, mort, demo):
     models = {
         'M1: Age + Sex': base_covs + adj_covs,
         'M2: + Biomarkers': base_covs + bio_covs + adj_covs,
-        'M3: + SWDS-Γ': base_covs + ['swds_gamma'] + adj_covs,
+        f'M3: + SWDS-Γ': base_covs + [swds_col] + adj_covs,
         'M4: + Rockwood FI': base_covs + ['rockwood_fi'] + adj_covs,
-        'M5: Full': base_covs + bio_covs + ['swds_gamma', 'rockwood_fi'] + adj_covs,
+        'M5: Full': base_covs + bio_covs + [swds_col, 'rockwood_fi'] + adj_covs,
     }
+
+    # Add benchmark models if requested
+    if include_benchmarks:
+        models['M3a: + Mahalanobis'] = base_covs + ['mahalanobis'] + adj_covs
+        models['M3b: + Z-sum'] = base_covs + ['z_sum'] + adj_covs
+        models['M3c: + SWDS-Γ'] = base_covs + [swds_col] + adj_covs
 
     results = {}
     for name, covs in models.items():
@@ -1042,7 +1384,7 @@ def run_cox_models(complete, mort, demo):
             print(f"  {name}: FAILED — {e}")
             results[name] = {'c_index': np.nan, 'n': len(surv_data)}
 
-    # Delta C and LRT
+    # Delta C: M5 vs M4
     if (results.get('M5: Full', {}).get('c_index') and
             results.get('M4: + Rockwood FI', {}).get('c_index')):
         dc = (results['M5: Full']['c_index'] -
@@ -1052,27 +1394,121 @@ def run_cox_models(complete, mort, demo):
             print("  ✓ SWDS-Γ adds >=0.01 C-index over Rockwood FI")
         else:
             print(f"  ~ SWDS-Γ adds {dc:+.4f} C-index (below 0.01 threshold)")
+        results['_delta_c_m5_m4'] = dc
+
+    # Benchmark comparisons
+    if include_benchmarks:
+        print("\n  --- Benchmark C-index comparison ---")
+        for m in ['M3a: + Mahalanobis', 'M3b: + Z-sum', 'M3c: + SWDS-Γ']:
+            c = results.get(m, {}).get('c_index', np.nan)
+            if not np.isnan(c):
+                print(f"  {m}: C = {c:.4f}")
 
     return results
+
+
+# ---------------------------------------------------------------------------
+# Medication stratification analysis (4-axis)
+# ---------------------------------------------------------------------------
+def medication_stratification(merged, model_key='4-axis'):
+    """
+    Stratified analysis by medication use for the 4-axis model:
+      (a) Γ̂_change separately for antihypertensive vs non
+      (b) N-axis variance by statin use
+      (c) Medication-stable subgroup
+    """
+    model = MODELS[model_key]
+    axes = model['axes']
+    complete_col = model['complete_col']
+    in_long_col = 'in_longitudinal_4' if model_key == '4-axis' else 'in_longitudinal'
+
+    print(f"\nStep 8c: Medication stratification ({model['label']})")
+    print("-" * 40)
+
+    long_data = merged[merged[in_long_col] & merged[complete_col]].copy()
+    long_data = long_data.sort_values(['idauniq', 'wave'])
+
+    # --- (a) Stratified Γ̂_change by antihypertensive use ---
+    if 'hemda' in long_data.columns:
+        for med_status, label in [(0, 'No antihypertensives'), (1, 'On antihypertensives')]:
+            sub = long_data[long_data['hemda'] == med_status]
+            diffs = []
+            for uid, group in sub.groupby('idauniq'):
+                if len(group) < 2:
+                    continue
+                for i in range(len(group) - 1):
+                    row_a = group.iloc[i]
+                    row_b = group.iloc[i + 1]
+                    diff = {ax: row_b[ax] - row_a[ax] for ax in axes}
+                    diff['age_mid'] = (row_a['age'] + row_b['age']) / 2
+                    diffs.append(diff)
+
+            if len(diffs) >= 20:
+                diff_df = pd.DataFrame(diffs)
+                X = diff_df[axes].values
+                G_change = np.cov(X.T)
+                proxy = gamma_stability_proxy(G_change)
+                print(f"  {label}: {len(diffs)} pairs, "
+                      f"λ_max(Γ_change)={proxy['lambda_max']:.4f}")
+
+                # N-axis variance (Γ_N,N) — if 4-axis, N is index 2
+                if model_key == '4-axis':
+                    n_idx = 2  # dx_N_4 is 3rd axis
+                    print(f"    Γ̂_N,N = {G_change[n_idx, n_idx]:.4f}")
+            else:
+                print(f"  {label}: insufficient pairs ({len(diffs)})")
+    else:
+        print("  hemda column not available — skipping antihypertensive stratification")
+
+    # --- (b) N-axis variance by statin use ---
+    statin_col = None
+    for candidate in ['statins', 'statina']:
+        if candidate in long_data.columns and long_data[candidate].notna().sum() > 50:
+            statin_col = candidate
+            break
+
+    if statin_col:
+        print(f"\n  Statin stratification (using {statin_col}):")
+        for status, label in [(0, 'Non-statin'), (1, 'Statin users')]:
+            sub = long_data[long_data[statin_col] == status]
+            if len(sub) >= 20 and model_key == '4-axis':
+                X = sub[axes].values
+                G = np.cov(X.T)
+                n_idx = 2  # dx_N_4
+                print(f"    {label}: N={len(sub)}, Γ̂_N,N = {G[n_idx, n_idx]:.4f}")
+    else:
+        print("  Statin column not available — skipping statin stratification")
+
+    # --- (c) Medication-stable subgroup ---
+    if 'hemda' in long_data.columns:
+        person_hemda = long_data.groupby('idauniq')['hemda'].agg(['nunique', 'count'])
+        stable = person_hemda[(person_hemda['nunique'] == 1) & (person_hemda['count'] >= 2)]
+        n_stable = len(stable)
+        n_total = person_hemda[person_hemda['count'] >= 2].shape[0]
+        print(f"\n  Medication-stable subgroup: {n_stable:,} / {n_total:,} "
+              f"persons with stable hemda across waves")
 
 
 # ---------------------------------------------------------------------------
 # Step 9: Figures
 # ---------------------------------------------------------------------------
 def make_figures(cross_results, within_results, visit_pair_results,
-                 complete, cox_results):
-    """Generate 6-panel figure."""
-    print("\nStep 9: Generating figures")
+                 complete, cox_results, model_key='3-axis'):
+    """Generate 6-panel figure for a single model."""
+    model = MODELS[model_key]
+    score_col = f'swds_gamma{"" if model_key == "3-axis" else "_4"}'
+    suffix = '3axis' if model_key == '3-axis' else '4axis'
+
+    print(f"\nStep 9: Generating figures ({model['label']})")
     print("-" * 40)
 
-    fig, axes = plt.subplots(2, 3, figsize=(15, 10))
-    fig.suptitle('ELSA Cohort Validation — Γ-Native Pipeline (Phase 3)',
+    fig, axes_arr = plt.subplots(2, 3, figsize=(15, 10))
+    fig.suptitle(f'ELSA Cohort Validation — {model["label"]}',
                  fontsize=14, fontweight='bold')
 
     # Panel (a): Cross-sectional λ_max by age stratum
-    ax = axes[0, 0]
+    ax = axes_arr[0, 0]
     if len(cross_results) > 0:
-        # Average across waves per age group
         cs_agg = cross_results.groupby('age_group').agg(
             lambda_max_mean=('lambda_max', 'mean'),
             lambda_max_se=('lambda_max', 'sem'),
@@ -1091,7 +1527,7 @@ def make_figures(cross_results, within_results, visit_pair_results,
                 transform=ax.transAxes)
 
     # Panel (b): Within-person λ_max by age stratum
-    ax = axes[0, 1]
+    ax = axes_arr[0, 1]
     if len(within_results) > 0:
         wr = within_results.sort_values('age_mid')
         ax.plot(wr['age_mid'], wr['lambda_max'], 'o-',
@@ -1100,7 +1536,6 @@ def make_figures(cross_results, within_results, visit_pair_results,
         ax.set_ylabel('λ_max(Γ̂_within)')
         ax.set_title('(b) Within-person λ_max(Γ̂_within)')
 
-        # Add N annotation
         for _, row in wr.iterrows():
             ax.annotate(f"N={row['n_people']:,}",
                         (row['age_mid'], row['lambda_max']),
@@ -1111,13 +1546,13 @@ def make_figures(cross_results, within_results, visit_pair_results,
                 transform=ax.transAxes)
 
     # Panel (c): SWDS-Γ distribution by age stratum
-    ax = axes[0, 2]
-    if complete is not None and 'swds_gamma' in complete.columns:
+    ax = axes_arr[0, 2]
+    if complete is not None and score_col in complete.columns:
         for (lo, hi), label in zip(AGE_STRATA, AGE_STRATA_LABELS):
             sub = complete[(complete['age'] >= lo) & (complete['age'] < hi)
-                           & complete['swds_gamma'].notna()]
+                           & complete[score_col].notna()]
             if len(sub) > 10:
-                ax.hist(sub['swds_gamma'], bins=30, alpha=0.5, label=label,
+                ax.hist(sub[score_col], bins=30, alpha=0.5, label=label,
                         density=True)
         ax.set_xlabel('SWDS-Γ')
         ax.set_ylabel('Density')
@@ -1128,17 +1563,16 @@ def make_figures(cross_results, within_results, visit_pair_results,
                 transform=ax.transAxes)
 
     # Panel (d): SWDS-Γ vs age scatter
-    ax = axes[1, 0]
-    if complete is not None and 'swds_gamma' in complete.columns:
-        valid = complete[complete['swds_gamma'].notna()]
-        ax.scatter(valid['age'], valid['swds_gamma'], alpha=0.1, s=5,
+    ax = axes_arr[1, 0]
+    if complete is not None and score_col in complete.columns:
+        valid = complete[complete[score_col].notna()]
+        ax.scatter(valid['age'], valid[score_col], alpha=0.1, s=5,
                    color='grey')
 
-        # Stratum means
         for (lo, hi), label in zip(AGE_STRATA, AGE_STRATA_LABELS):
             sub = valid[(valid['age'] >= lo) & (valid['age'] < hi)]
             if len(sub) > 0:
-                ax.plot((lo + hi) / 2, sub['swds_gamma'].mean(), 'ro',
+                ax.plot((lo + hi) / 2, sub[score_col].mean(), 'ro',
                         markersize=10, zorder=5)
 
         ax.set_xlabel('Age')
@@ -1149,9 +1583,9 @@ def make_figures(cross_results, within_results, visit_pair_results,
                 transform=ax.transAxes)
 
     # Panel (e): C-index comparison
-    ax = axes[1, 1]
+    ax = axes_arr[1, 1]
     if cox_results:
-        model_names = list(cox_results.keys())
+        model_names = [k for k in cox_results.keys() if not k.startswith('_')]
         c_indices = [cox_results[m].get('c_index', np.nan) for m in model_names]
         valid_mask = [not np.isnan(c) for c in c_indices]
         model_names = [m for m, v in zip(model_names, valid_mask) if v]
@@ -1178,20 +1612,20 @@ def make_figures(cross_results, within_results, visit_pair_results,
                 transform=ax.transAxes)
 
     # Panel (f): Kaplan-Meier by SWDS-Γ tertile
-    ax = axes[1, 2]
+    ax = axes_arr[1, 2]
     try:
         from lifelines import KaplanMeierFitter
 
-        if (complete is not None and 'swds_gamma' in complete.columns
+        if (complete is not None and score_col in complete.columns
                 and 'time' in complete.columns):
             surv_data = complete[
-                complete['swds_gamma'].notna() &
+                complete[score_col].notna() &
                 complete['time'].notna() &
                 (complete['time'] > 0)
             ].copy()
 
             if len(surv_data) > 50 and surv_data['deceased'].sum() > 10:
-                tertiles = pd.qcut(surv_data['swds_gamma'], 3,
+                tertiles = pd.qcut(surv_data[score_col], 3,
                                    labels=['T1 (low)', 'T2 (mid)', 'T3 (high)'])
                 surv_data['tertile'] = tertiles
 
@@ -1223,20 +1657,121 @@ def make_figures(cross_results, within_results, visit_pair_results,
 
     plt.tight_layout(rect=[0, 0, 1, 0.95])
 
-    output_path = os.path.join(OUTPUT_DIR, 'figure_elsa_validation.pdf')
+    output_path = os.path.join(OUTPUT_DIR, f'figure_elsa_validation_{suffix}.pdf')
     with PdfPages(output_path) as pdf:
         pdf.savefig(fig, dpi=150)
     plt.close(fig)
     print(f"\n  Saved: {output_path}")
 
 
+def make_comparison_figure(results_3, results_4):
+    """Generate comparison figure: 3-axis vs 4-axis λ_max trends and ΔC."""
+    print("\nStep 9b: Generating comparison figure")
+    print("-" * 40)
+
+    fig, axes_arr = plt.subplots(1, 3, figsize=(15, 5))
+    fig.suptitle('3-axis vs 4-axis Model Comparison',
+                 fontsize=14, fontweight='bold')
+
+    # Panel (a): visit-pair λ_max trends
+    ax = axes_arr[0]
+    for label, res, color in [('3-axis', results_3.get('visit_pair', pd.DataFrame()),
+                                'steelblue'),
+                               ('4-axis', results_4.get('visit_pair', pd.DataFrame()),
+                                'darkred')]:
+        if len(res) > 0:
+            r = res.sort_values('age_mid')
+            ax.plot(r['age_mid'], r['lambda_max'], 'o-', color=color,
+                    linewidth=2, markersize=8, label=label)
+            if 'lambda_max_ci_lo' in r.columns:
+                ax.fill_between(r['age_mid'], r['lambda_max_ci_lo'],
+                               r['lambda_max_ci_hi'], alpha=0.2, color=color)
+    ax.set_xlabel('Age stratum midpoint')
+    ax.set_ylabel('λ_max(Γ̂_change)')
+    ax.set_title('(a) Visit-pair λ_max trends')
+    ax.legend()
+
+    # Panel (b): C-index comparison
+    ax = axes_arr[1]
+    cox_3 = results_3.get('cox', {})
+    cox_4 = results_4.get('cox', {})
+    model_labels = ['M1', 'M2', 'M3', 'M4', 'M5']
+    for label_set, cox_res, color, offset in [('3-axis', cox_3, 'steelblue', -0.15),
+                                               ('4-axis', cox_4, 'darkred', 0.15)]:
+        c_vals = []
+        for ml in model_labels:
+            found = False
+            for k, v in (cox_res or {}).items():
+                if k.startswith(ml) and not k.startswith('_'):
+                    c_vals.append(v.get('c_index', np.nan))
+                    found = True
+                    break
+            if not found:
+                c_vals.append(np.nan)
+
+        valid = [(i, c) for i, c in enumerate(c_vals) if not np.isnan(c)]
+        if valid:
+            x_pos = [v[0] + offset for v in valid]
+            ax.bar(x_pos, [v[1] for v in valid], width=0.25, color=color,
+                   alpha=0.8, label=label_set)
+
+    ax.set_xticks(range(len(model_labels)))
+    ax.set_xticklabels(model_labels)
+    ax.set_ylabel('C-index')
+    ax.set_title('(b) Cox model C-indices')
+    ax.legend()
+    ax.set_ylim(0.5, None)
+
+    # Panel (c): ΔC comparison
+    ax = axes_arr[2]
+    dc_3 = cox_3.get('_delta_c_m5_m4', np.nan) if cox_3 else np.nan
+    dc_4 = cox_4.get('_delta_c_m5_m4', np.nan) if cox_4 else np.nan
+
+    labels = []
+    values = []
+    colors = []
+    if not np.isnan(dc_3):
+        labels.append('3-axis')
+        values.append(dc_3)
+        colors.append('steelblue')
+    if not np.isnan(dc_4):
+        labels.append('4-axis')
+        values.append(dc_4)
+        colors.append('darkred')
+
+    if values:
+        ax.bar(labels, values, color=colors, alpha=0.8)
+        ax.axhline(0.01, color='green', linestyle='--', alpha=0.7,
+                   label='≥0.01 threshold')
+        ax.axhline(0, color='grey', linestyle='-', alpha=0.3)
+        ax.set_ylabel('ΔC (M5 vs M4)')
+        ax.set_title('(c) ΔC: SWDS-Γ over Rockwood FI')
+        ax.legend()
+    else:
+        ax.text(0.5, 0.5, 'No ΔC data', ha='center', va='center',
+                transform=ax.transAxes)
+
+    plt.tight_layout(rect=[0, 0, 1, 0.92])
+
+    output_path = os.path.join(OUTPUT_DIR, 'figure_elsa_4axis_comparison.pdf')
+    with PdfPages(output_path) as pdf:
+        pdf.savefig(fig, dpi=150)
+    plt.close(fig)
+    print(f"  Saved: {output_path}")
+
+
 # ---------------------------------------------------------------------------
 # Step 10: Summary statistics
 # ---------------------------------------------------------------------------
-def print_summary(merged, cross_results, within_results, complete, cox_results):
-    """Print comprehensive summary block."""
-    print("\n" + "=" * 70)
-    print("SUMMARY STATISTICS")
+def print_summary(merged, cross_results, within_results, complete, cox_results,
+                  model_key='3-axis'):
+    """Print comprehensive summary block for a model."""
+    model = MODELS[model_key]
+    complete_col = model['complete_col']
+    score_col = f'swds_gamma{"" if model_key == "3-axis" else "_4"}'
+
+    print(f"\n{'=' * 70}")
+    print(f"SUMMARY STATISTICS — {model['label']}")
     print("=" * 70)
 
     # N per wave
@@ -1244,12 +1779,13 @@ def print_summary(merged, cross_results, within_results, complete, cox_results):
     for wave in sorted(merged['wave'].unique()):
         w_data = merged[merged['wave'] == wave]
         n_total = len(w_data)
-        n_complete = w_data['complete_3axis'].sum()
+        n_complete = w_data[complete_col].sum()
         print(f"  Wave {wave:2d}: {n_total:6,} total, "
-              f"{n_complete:6,} with complete 3-axis biomarkers")
+              f"{n_complete:6,} with complete {model['label']} biomarkers")
 
     # Longitudinal panel
-    long = merged[merged['in_longitudinal']]
+    in_long_col = 'in_longitudinal' if model_key == '3-axis' else 'in_longitudinal_4'
+    long = merged[merged[in_long_col]]
     print(f"\n  Longitudinal panel (>=2 complete visits): "
           f"{long['idauniq'].nunique():,} people")
 
@@ -1269,22 +1805,22 @@ def print_summary(merged, cross_results, within_results, complete, cox_results):
 
     # λ_max trends
     if len(cross_results) > 0:
-        print("\n--- Cross-sectional λ_max(Γ̂) trend ---")
+        print(f"\n--- Cross-sectional λ_max(Γ̂) trend ---")
         cs_agg = cross_results.groupby('age_group')['lambda_max'].mean()
         for ag in AGE_STRATA_LABELS:
             if ag in cs_agg.index:
                 print(f"  {ag}: λ_max = {cs_agg[ag]:.4f}")
 
     if len(within_results) > 0:
-        print("\n--- Within-person λ_max(Γ̂_within) trend ---")
+        print(f"\n--- Within-person λ_max(Γ̂_within) trend ---")
         for _, row in within_results.sort_values('age_mid').iterrows():
             print(f"  {row['age_group']}: λ_max = {row['lambda_max']:.4f} "
                   f"(N={row['n_people']:,})")
 
     # SWDS-Γ
-    if complete is not None and 'swds_gamma' in complete.columns:
-        print("\n--- SWDS-Γ distribution ---")
-        s = complete['swds_gamma'].dropna()
+    if complete is not None and score_col in complete.columns:
+        print(f"\n--- SWDS-Γ distribution ---")
+        s = complete[score_col].dropna()
         print(f"  N = {len(s):,}")
         print(f"  Mean = {s.mean():.4f}, Median = {s.median():.4f}, "
               f"SD = {s.std():.4f}")
@@ -1292,8 +1828,10 @@ def print_summary(merged, cross_results, within_results, complete, cox_results):
 
     # Cox results
     if cox_results:
-        print("\n--- Cox model C-indices ---")
+        print(f"\n--- Cox model C-indices ---")
         for name, res in cox_results.items():
+            if name.startswith('_'):
+                continue
             c = res.get('c_index', np.nan)
             n = res.get('n', 0)
             ev = res.get('events', 0)
@@ -1304,7 +1842,174 @@ def print_summary(merged, cross_results, within_results, complete, cox_results):
 
 
 # ---------------------------------------------------------------------------
-# Main
+# 4-axis data quality diagnostics
+# ---------------------------------------------------------------------------
+def print_4axis_diagnostics(merged):
+    """Print data quality diagnostics specific to the 4-axis model."""
+    print("\n" + "=" * 70)
+    print("4-AXIS DATA QUALITY DIAGNOSTICS")
+    print("=" * 70)
+
+    # Per-wave N for each axis
+    print("\n--- Per-wave N for each 4-axis component ---")
+    for w in sorted(merged['wave'].unique()):
+        wdata = merged[merged['wave'] == w]
+        n_i = wdata['dx_I_4'].notna().sum()
+        n_m = wdata['dx_M_4'].notna().sum()
+        n_n = wdata['dx_N_4'].notna().sum()
+        n_f = wdata['dx_F_4'].notna().sum()
+        n_all = wdata['complete_4axis'].sum()
+        print(f"  Wave {w}: I={n_i:,}, M={n_m:,}, N={n_n:,}, F={n_f:,}, "
+              f"complete={n_all:,}")
+
+    # Correlation matrix of 4-axis scores
+    four_axes = ['dx_I_4', 'dx_M_4', 'dx_N_4', 'dx_F_4']
+    complete = merged[merged['complete_4axis']]
+    if len(complete) > 20:
+        corr = complete[four_axes].corr()
+        print("\n--- Correlation matrix of 4-axis scores ---")
+        print(corr.to_string(float_format=lambda x: f'{x:.3f}'))
+
+        # Flag high correlations
+        for i in range(len(four_axes)):
+            for j in range(i + 1, len(four_axes)):
+                r = corr.iloc[i, j]
+                if abs(r) > 0.8:
+                    print(f"  ⚠ High correlation: {four_axes[i]} vs {four_axes[j]} "
+                          f"r = {r:.3f}")
+
+    # Overlap: 4-axis-complete that are also 3-axis-complete
+    both_complete = (merged['complete_4axis'] & merged['complete_3axis']).sum()
+    four_complete = merged['complete_4axis'].sum()
+    three_complete = merged['complete_3axis'].sum()
+    if four_complete > 0:
+        pct = 100 * both_complete / four_complete
+        print(f"\n--- Overlap ---")
+        print(f"  4-axis-complete observations: {four_complete:,}")
+        print(f"  3-axis-complete observations: {three_complete:,}")
+        print(f"  Both complete: {both_complete:,} ({pct:.1f}% of 4-axis)")
+        pct_of_3 = 100 * both_complete / three_complete if three_complete > 0 else 0
+        print(f"  3-axis that are also 4-axis: {pct_of_3:.1f}%")
+
+    # Flag extreme triglycerides
+    if 'trig' in merged.columns:
+        n_extreme_trig = (merged['trig'] > 20).sum()
+        if n_extreme_trig > 0:
+            print(f"\n  ⚠ Triglycerides > 20: {n_extreme_trig} observations "
+                  f"(extreme but possibly genuine)")
+
+
+# ---------------------------------------------------------------------------
+# Data quality diagnostics (original)
+# ---------------------------------------------------------------------------
+def print_data_quality(merged):
+    """Print data quality diagnostics after all merges."""
+    print("\n" + "=" * 70)
+    print("DATA QUALITY DIAGNOSTICS")
+    print("=" * 70)
+
+    # Axis completeness by wave
+    for w in sorted(merged['wave'].unique()):
+        wdata = merged[merged['wave'] == w]
+        n_total = len(wdata)
+        n_crp = wdata['hscrp'].notna().sum()
+        n_hba1c = wdata['hba1c'].notna().sum()
+        n_grip = wdata['grip_max'].notna().sum()
+        n_bmi = wdata['bmival'].notna().sum()
+        n_3axis = wdata['complete_3axis'].sum() if 'complete_3axis' in wdata.columns else 0
+        print(f"  Wave {w}: N={n_total:,}, CRP={n_crp:,}, HbA1c={n_hba1c:,}, "
+              f"grip={n_grip:,}, BMI={n_bmi:,}, complete 3-axis={n_3axis:,}")
+
+    # Longitudinal panel
+    if 'complete_3axis' in merged.columns:
+        complete_visits = merged[merged['complete_3axis']].groupby('idauniq')['wave'].nunique()
+        for nv in [1, 2, 3, 4]:
+            print(f"  Persons with >={nv} complete waves: {(complete_visits >= nv).sum():,}")
+
+
+# ---------------------------------------------------------------------------
+# JSON results output
+# ---------------------------------------------------------------------------
+def write_results_json(results_3, results_4, output_path):
+    """Write machine-readable results ledger."""
+    print(f"\nWriting results to {output_path}")
+
+    def safe_val(v):
+        if isinstance(v, (np.integer, np.int64)):
+            return int(v)
+        if isinstance(v, (np.floating, np.float64)):
+            return float(v) if not np.isnan(v) else None
+        if isinstance(v, np.ndarray):
+            return v.tolist()
+        if isinstance(v, pd.DataFrame):
+            return None
+        return v
+
+    def extract_cox(cox_res):
+        if not cox_res:
+            return {}
+        out = {}
+        for k, v in cox_res.items():
+            if k.startswith('_'):
+                out[k] = safe_val(v)
+            elif isinstance(v, dict):
+                out[k] = {kk: safe_val(vv) for kk, vv in v.items()
+                          if kk != 'model'}
+        return out
+
+    def extract_df(df, exclude_cols=None):
+        if df is None or len(df) == 0:
+            return []
+        exclude = set(exclude_cols or [])
+        records = []
+        for _, row in df.iterrows():
+            record = {}
+            for col in df.columns:
+                if col in exclude:
+                    continue
+                record[col] = safe_val(row[col])
+            records.append(record)
+        return records
+
+    ledger = {
+        '3-axis': {
+            'cross_sectional': extract_df(results_3.get('cross'),
+                                           exclude_cols=['Gamma_hat']),
+            'within_person': extract_df(results_3.get('within'),
+                                         exclude_cols=['Gamma_within']),
+            'visit_pair': extract_df(results_3.get('visit_pair'),
+                                      exclude_cols=['Gamma_change']),
+            'cox_models': extract_cox(results_3.get('cox')),
+        },
+        '4-axis': {
+            'cross_sectional': extract_df(results_4.get('cross'),
+                                           exclude_cols=['Gamma_hat']),
+            'within_person': extract_df(results_4.get('within'),
+                                         exclude_cols=['Gamma_within']),
+            'visit_pair': extract_df(results_4.get('visit_pair'),
+                                      exclude_cols=['Gamma_change']),
+            'cox_models': extract_cox(results_4.get('cox')),
+        },
+    }
+
+    # Prominent ΔC comparison
+    dc_3 = results_3.get('cox', {}).get('_delta_c_m5_m4', None) if results_3.get('cox') else None
+    dc_4 = results_4.get('cox', {}).get('_delta_c_m5_m4', None) if results_4.get('cox') else None
+    ledger['critical_result'] = {
+        'delta_c_3axis': safe_val(dc_3),
+        'delta_c_4axis': safe_val(dc_4),
+        'threshold': 0.01,
+        '3axis_exceeds_threshold': dc_3 is not None and dc_3 >= 0.01,
+        '4axis_exceeds_threshold': dc_4 is not None and dc_4 >= 0.01,
+    }
+
+    with open(output_path, 'w') as f:
+        json.dump(ledger, f, indent=2)
+    print(f"  Saved: {output_path}")
+
+
+# ---------------------------------------------------------------------------
+# Main: construct_survival_data
 # ---------------------------------------------------------------------------
 def construct_survival_data(harm, eol, baseline_wave=2):
     """
@@ -1373,7 +2078,6 @@ def construct_survival_data(harm, eol, baseline_wave=2):
 
         has_eol = surv['raxyear'].notna() & (surv['raxyear'] > 0) & (surv['event'] == 1)
         if has_eol.any():
-            # Compute baseline year for each person
             bly = harm.set_index('idauniq')[baseline_year_col]
             surv['_bly'] = surv['idauniq'].map(bly)
             refine_mask = has_eol & surv['_bly'].notna()
@@ -1395,33 +2099,8 @@ def construct_survival_data(harm, eol, baseline_wave=2):
 
 
 # ---------------------------------------------------------------------------
-# Data quality diagnostics (Patch 7)
+# Main
 # ---------------------------------------------------------------------------
-def print_data_quality(merged):
-    """Print data quality diagnostics after all merges."""
-    print("\n" + "=" * 70)
-    print("DATA QUALITY DIAGNOSTICS")
-    print("=" * 70)
-
-    # Axis completeness by wave
-    for w in sorted(merged['wave'].unique()):
-        wdata = merged[merged['wave'] == w]
-        n_total = len(wdata)
-        n_crp = wdata['hscrp'].notna().sum()
-        n_hba1c = wdata['hba1c'].notna().sum()
-        n_grip = wdata['grip_max'].notna().sum()
-        n_bmi = wdata['bmival'].notna().sum()
-        n_3axis = wdata['complete_3axis'].sum() if 'complete_3axis' in wdata.columns else 0
-        print(f"  Wave {w}: N={n_total:,}, CRP={n_crp:,}, HbA1c={n_hba1c:,}, "
-              f"grip={n_grip:,}, BMI={n_bmi:,}, complete 3-axis={n_3axis:,}")
-
-    # Longitudinal panel
-    if 'complete_3axis' in merged.columns:
-        complete_visits = merged[merged['complete_3axis']].groupby('idauniq')['wave'].nunique()
-        for nv in [1, 2, 3, 4]:
-            print(f"  Persons with >={nv} complete waves: {(complete_visits >= nv).sum():,}")
-
-
 def main():
     warnings.filterwarnings('ignore', category=RuntimeWarning)
     warnings.filterwarnings('ignore', message='DataFrame is highly fragmented')
@@ -1443,26 +2122,12 @@ def main():
           f"({harm_long['idauniq'].nunique():,} people x "
           f"{harm_long['wave'].nunique()} waves)")
 
-    # Step 3: Build panel
+    # Step 3: Build panel (constructs BOTH 3-axis and 4-axis)
     merged = build_analysis_panel(panel, harm_long, mort, supp)
 
     # Data quality diagnostics
     print_data_quality(merged)
-
-    # Step 4: Cross-sectional Gamma
-    cross_results = cross_sectional_gamma(merged)
-
-    # Step 5: Within-person Gamma
-    within_results = within_person_gamma(merged)
-
-    # Step 5b: Visit-pair analysis
-    visit_pair_results = visit_pair_gamma(merged)
-
-    # Step 6: Individual SWDS-Gamma
-    complete = compute_individual_swds(merged, within_results)
-
-    # Step 7: Rockwood FI
-    complete = compute_frailty_indices(complete)
+    print_4axis_diagnostics(merged)
 
     # Step 8a: Construct proper survival data from harmonised iwstat
     eol = files.get('eol')
@@ -1474,20 +2139,103 @@ def main():
         eol_clean = None
     surv = construct_survival_data(harm, eol_clean, baseline_wave=2)
 
-    # Merge survival data into complete
-    complete = complete.merge(surv[['idauniq', 'time_years', 'event']],
-                              on='idauniq', how='left')
-    complete['time'] = complete['time_years']
+    # =====================================================================
+    # RUN ANALYSES FOR BOTH MODELS
+    # =====================================================================
+    results_3 = {}
+    results_4 = {}
 
-    # Step 8b: Cox models
-    cox_results = run_cox_models(complete, mort, harm)
+    for model_key, results_dict in [('3-axis', results_3), ('4-axis', results_4)]:
+        print(f"\n{'#' * 70}")
+        print(f"# RUNNING {MODELS[model_key]['label'].upper()} ANALYSIS")
+        print(f"{'#' * 70}")
 
-    # Step 9: Figures
-    make_figures(cross_results, within_results, visit_pair_results,
-                 complete, cox_results)
+        # Step 4: Cross-sectional Gamma
+        cross_results = cross_sectional_gamma(merged, model_key=model_key)
+        results_dict['cross'] = cross_results
 
-    # Step 10: Summary
-    print_summary(merged, cross_results, within_results, complete, cox_results)
+        # Step 5: Within-person Gamma
+        within_results = within_person_gamma(merged, model_key=model_key)
+        results_dict['within'] = within_results
+
+        # Step 5b: Visit-pair analysis (with bootstrap)
+        visit_pair_results = visit_pair_gamma(merged, model_key=model_key)
+        results_dict['visit_pair'] = visit_pair_results
+
+        # Step 6: Individual SWDS-Gamma
+        complete = compute_individual_swds(merged, within_results,
+                                           model_key=model_key)
+
+        # Step 7: Rockwood FI (only compute once)
+        if 'rockwood_fi' not in complete.columns:
+            complete = compute_frailty_indices(complete)
+
+        # Merge survival data
+        if 'time_years' not in complete.columns:
+            complete = complete.merge(surv[['idauniq', 'time_years', 'event']],
+                                      on='idauniq', how='left')
+            complete['time'] = complete['time_years']
+            complete['deceased'] = complete['event']
+
+        # Step 6b: Benchmark scores (4-axis only)
+        if model_key == '4-axis':
+            complete = compute_benchmark_scores(complete, within_results,
+                                                 model_key=model_key)
+
+        results_dict['complete'] = complete
+
+        # Step 8: Cox models
+        include_benchmarks = (model_key == '4-axis')
+        cox_results = run_cox_models(complete, mort, harm,
+                                      model_key=model_key,
+                                      include_benchmarks=include_benchmarks)
+        results_dict['cox'] = cox_results
+
+        # Step 9: Figures
+        make_figures(cross_results, within_results, visit_pair_results,
+                     complete, cox_results, model_key=model_key)
+
+        # Step 10: Summary
+        print_summary(merged, cross_results, within_results, complete,
+                      cox_results, model_key=model_key)
+
+    # Medication stratification (4-axis only)
+    medication_stratification(merged, model_key='4-axis')
+
+    # Comparison figure
+    make_comparison_figure(results_3, results_4)
+
+    # =====================================================================
+    # CRITICAL RESULT
+    # =====================================================================
+    print("\n" + "=" * 70)
+    print("CRITICAL RESULT: ΔC COMPARISON")
+    print("=" * 70)
+
+    dc_3 = results_3.get('cox', {}).get('_delta_c_m5_m4', np.nan) if results_3.get('cox') else np.nan
+    dc_4 = results_4.get('cox', {}).get('_delta_c_m5_m4', np.nan) if results_4.get('cox') else np.nan
+
+    print(f"\n  3-axis ΔC(M5 vs M4) = {dc_3:+.4f}" if not np.isnan(dc_3)
+          else "\n  3-axis ΔC: not available")
+    print(f"  4-axis ΔC(M5 vs M4) = {dc_4:+.4f}" if not np.isnan(dc_4)
+          else "  4-axis ΔC: not available")
+    print(f"  Prespecified threshold: ≥0.01")
+
+    if not np.isnan(dc_4):
+        if dc_4 >= 0.01:
+            print(f"\n  ✓ 4-axis SWDS-Γ EXCEEDS the ≥0.01 threshold (ΔC = {dc_4:+.4f})")
+        else:
+            print(f"\n  ✗ 4-axis SWDS-Γ does NOT exceed the ≥0.01 threshold (ΔC = {dc_4:+.4f})")
+
+    if not np.isnan(dc_3) and not np.isnan(dc_4):
+        improvement = dc_4 - dc_3
+        print(f"  4-axis improvement over 3-axis: {improvement:+.4f}")
+
+    print("=" * 70)
+
+    # JSON output
+    json_path = os.path.join(OUTPUT_DIR, 'elsa_4axis_results.json')
+    write_results_json(results_3, results_4, json_path)
 
 
 if __name__ == '__main__':
