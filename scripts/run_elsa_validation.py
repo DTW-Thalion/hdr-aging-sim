@@ -1020,18 +1020,21 @@ def visit_pair_gamma(merged, model_key='3-axis', n_bootstrap=N_BOOTSTRAP):
                 pair_label = f'{axes[i]}_{axes[j]}'
                 offdiag_info[pair_label] = Gamma_change[i, j]
 
-        # Bootstrap CI for λ_max
+        # Bootstrap CI for λ_max (vectorized resampling)
         boot_lambdas = []
         stratum_ids = stratum['idauniq'].unique()
+        # Pre-index: map each ID to its row indices for fast lookup
+        id_to_rows = {uid: idx_list for uid, idx_list in
+                      stratum.groupby('idauniq').apply(
+                          lambda g: g[axes].values, include_groups=False).items()}
+        all_id_arrays = list(id_to_rows.keys())
         rng = np.random.RandomState(SEED)
         for _ in range(n_bootstrap):
-            boot_ids = rng.choice(stratum_ids, size=len(stratum_ids), replace=True)
-            boot_data = pd.concat([stratum[stratum['idauniq'] == uid] for uid in boot_ids],
-                                  ignore_index=True)
-            if len(boot_data) < 10:
+            boot_ids = rng.choice(all_id_arrays, size=len(all_id_arrays), replace=True)
+            boot_rows = np.vstack([id_to_rows[uid] for uid in boot_ids])
+            if len(boot_rows) < 10:
                 continue
-            X_boot = boot_data[axes].values
-            G_boot = np.cov(X_boot.T)
+            G_boot = np.cov(boot_rows.T)
             bp = gamma_stability_proxy(G_boot)
             boot_lambdas.append(bp['lambda_max'])
 
@@ -1935,6 +1938,8 @@ def write_results_json(results_3, results_4, output_path):
     print(f"\nWriting results to {output_path}")
 
     def safe_val(v):
+        if isinstance(v, (np.bool_,)):
+            return bool(v)
         if isinstance(v, (np.integer, np.int64)):
             return int(v)
         if isinstance(v, (np.floating, np.float64)):
@@ -1999,8 +2004,8 @@ def write_results_json(results_3, results_4, output_path):
         'delta_c_3axis': safe_val(dc_3),
         'delta_c_4axis': safe_val(dc_4),
         'threshold': 0.01,
-        '3axis_exceeds_threshold': dc_3 is not None and dc_3 >= 0.01,
-        '4axis_exceeds_threshold': dc_4 is not None and dc_4 >= 0.01,
+        '3axis_exceeds_threshold': bool(dc_3 is not None and dc_3 >= 0.01),
+        '4axis_exceeds_threshold': bool(dc_4 is not None and dc_4 >= 0.01),
     }
 
     with open(output_path, 'w') as f:
