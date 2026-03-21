@@ -316,3 +316,29 @@ plt.savefig('outputs/figure_Q_sensitivity.pdf', dpi=150, bbox_inches='tight')
 plt.savefig('outputs/figure_Q_sensitivity.png', dpi=150, bbox_inches='tight')
 print("\nSaved figure_Q_sensitivity.pdf/png")
 print("\nDone.")
+
+# ============================================================================
+# PERSISTENT RESULTS
+# ============================================================================
+try:
+    import sys as _sys
+    _sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
+    from src.hdr_sim.results_writer import ResultsWriter
+
+    alpha_trends = [results[b][1] for b in beta_values]
+    lambda_trends = [results[b][3] for b in beta_values]
+
+    with ResultsWriter("Q-Sensitivity Analysis",
+                        "Tests robustness of stability trends to age-varying noise") as rw:
+        rw.add_heading("Trend Survival")
+        rw.add_table(
+            ["β", "Q₈₀/Q₃₀", "α̂ trend", "λ_max trend"],
+            [[f"{b:.2f}", f"{1+b:.1f}×",
+              "✅" if at else "❌", "✅" if lt else "❌"]
+             for b, at, lt in zip(beta_values, alpha_trends, lambda_trends)]
+        )
+        rw.add_pass_fail("α̂ trend survives all β ≤ 5.0", all(alpha_trends))
+        rw.add_pass_fail("λ_max trend survives all β ≤ 5.0", all(lambda_trends))
+        rw.add_text("\n*Note: λ_max(Γ̂) does not require Q specification — robust by construction.*")
+except ImportError:
+    pass  # results writing is optional

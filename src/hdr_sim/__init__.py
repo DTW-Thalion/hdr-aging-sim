@@ -1,4 +1,5 @@
 """HDR Aging Dynamics Simulation and Estimation Library."""
+from .results_writer import ResultsWriter, clear_results
 from .estimation import (
     get_params,
     build_A,
