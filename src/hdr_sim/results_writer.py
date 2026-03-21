@@ -86,7 +86,7 @@ class ResultsWriter:
         section.extend(self.lines)
         section.append("")  # trailing newline
 
-        with open(RESULTS_FILE, 'a') as f:
+        with open(RESULTS_FILE, 'a', encoding='utf-8') as f:
             f.write("\n".join(section) + "\n")
 
 
@@ -109,5 +109,5 @@ def clear_results():
 > Re-run `bash run_all_with_results.sh` or individual scripts to regenerate.
 
 """
-    with open(RESULTS_FILE, 'w') as f:
+    with open(RESULTS_FILE, 'w', encoding='utf-8') as f:
         f.write(header)
