@@ -1489,6 +1489,79 @@ def main():
     # Step 10: Summary
     print_summary(merged, cross_results, within_results, complete, cox_results)
 
+    # ========================================================================
+    # PERSISTENT RESULTS
+    # ========================================================================
+    try:
+        from hdr_sim.results_writer import ResultsWriter
+
+        N_longitudinal = merged[merged['in_longitudinal']]['idauniq'].nunique()
+        N_visits = merged[merged['in_longitudinal'] & merged['complete_3axis']].shape[0]
+
+        with ResultsWriter("ELSA Cohort Validation (Phase 3)",
+                            "Within-person Γ-native pipeline on ELSA longitudinal data") as rw:
+            rw.add_heading("Sample")
+            rw.add_metric("Persons with ≥2 nurse visits", N_longitudinal)
+            rw.add_metric("Total person-visits", N_visits)
+
+            # Cross-sectional λ_max
+            rw.add_heading("Cross-Sectional λ_max(Γ̂) (replicates NHANES)")
+            if len(cross_results) > 0:
+                cs_agg = cross_results.groupby('age_group')['lambda_max'].mean()
+                for ag in AGE_STRATA_LABELS:
+                    if ag in cs_agg.index:
+                        rw.add_metric(f"λ_max {ag}", f"{cs_agg[ag]:.4f}")
+                cs_vals = [cs_agg.get(ag, np.nan) for ag in AGE_STRATA_LABELS
+                           if ag in cs_agg.index]
+                cs_monotone = all(cs_vals[i] < cs_vals[i+1]
+                                  for i in range(len(cs_vals)-1))
+                rw.add_pass_fail("Cross-sectional λ_max monotone", cs_monotone,
+                                 "May fail (same confound as NHANES)")
+
+            # Within-person λ_max — KEY RESULT
+            rw.add_heading("Within-Person λ_max(Γ̂_within) — KEY RESULT")
+            if len(within_results) > 0:
+                wr = within_results.sort_values('age_mid')
+                for _, row in wr.iterrows():
+                    rw.add_metric(f"λ_max {row['age_group']}",
+                                  f"{row['lambda_max']:.4f}")
+                wp_vals = wr['lambda_max'].tolist()
+                wp_monotone = all(wp_vals[i] < wp_vals[i+1]
+                                  for i in range(len(wp_vals)-1))
+                rw.add_pass_fail(
+                    "Within-person λ_max monotone increasing", wp_monotone,
+                    "PRIMARY TEST — stability erosion from longitudinal data")
+
+            # Cox models
+            if cox_results:
+                rw.add_heading("Cox Models (5 nested)")
+                cox_rows = []
+                for name, res in cox_results.items():
+                    c = res.get('c_index', np.nan)
+                    if not np.isnan(c):
+                        short = name.split(':')[0]
+                        cox_rows.append([short, f"{c:.4f}"])
+                if cox_rows:
+                    rw.add_table(["Model", "C-index"], cox_rows)
+
+                m5_c = cox_results.get('M5: Full', {}).get('c_index')
+                m4_c = cox_results.get('M4: + Rockwood FI', {}).get('c_index')
+                if m5_c and m4_c and not np.isnan(m5_c) and not np.isnan(m4_c):
+                    delta_c = m5_c - m4_c
+                    rw.add_pass_fail(
+                        "SWDS-Γ adds value beyond Rockwood FI (ΔC ≥ 0.01)",
+                        delta_c >= 0.01)
+
+            # Rockwood FI
+            if 'rockwood_fi' in complete.columns:
+                rw.add_heading("Rockwood FI")
+                fi_valid = complete['rockwood_fi'].dropna()
+                rw.add_metric("FI observations", len(fi_valid))
+                if len(fi_valid) > 0:
+                    rw.add_metric("Mean FI", f"{fi_valid.mean():.3f}")
+    except ImportError:
+        pass  # results writing is optional
+
 
 if __name__ == '__main__':
     main()
