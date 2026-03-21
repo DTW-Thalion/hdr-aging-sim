@@ -156,6 +156,7 @@ Note: NHANES XPT files are downloaded from CDC servers at runtime (~7 MB total).
 | `run_nhanes_feasibility.py` | `outputs/figure_nhanes.pdf` | Figure 8 |
 | `run_figure_gamma_equivalence.py` | `outputs/figure_gamma_equivalence.pdf` | Figure X (Γ-native equivalence) |
 | `run_figure_prior_stress.py` | `outputs/figure_prior_stress.pdf` | Figure Y (prior stress tests) |
+| `run_elsa_validation.py` | `outputs/figure_elsa_validation.pdf` | Figure Z (ELSA cohort validation) |
 
 ## R4 Revision: Γ-Native Pivot
 
@@ -166,6 +167,22 @@ The R4 revision replaces the Lyapunov-inversion pipeline with a Γ-native approa
 SWDS-Γ(Δx) = Δxᵀ Γ̂ Δx / tr(Γ̂)
 
 Key result: SWDS-Γ produces near-identical individual rankings to the A-based SWDS (Spearman > 0.95) while requiring no Q specification, no Lyapunov inversion, and no commutation assumptions.
+
+### Phase 3: ELSA Cohort Validation
+
+The ELSA validation (`scripts/run_elsa_validation.py`) executes the full Γ-native pipeline on longitudinal data from the English Longitudinal Study of Ageing. Requires ELSA data files in `data/elsa/` (see `data/elsa/README.md` for access).
+
+```bash
+pip install lifelines  # additional dependency for Cox models
+python scripts/run_elsa_validation.py
+```
+
+Key analyses:
+* Cross-sectional λ_max(Γ̂) by age stratum (replicates NHANES approach for comparison)
+* Within-person λ_max(Γ̂_within) by age stratum (key result — tests stability erosion using within-person covariance, avoiding survivorship/medication confounds)
+* Individual SWDS-Γ scores and distribution
+* 5 nested Cox mortality models (age+sex, +biomarkers, +SWDS-Γ, +Rockwood FI, full)
+* Kaplan-Meier survival by SWDS-Γ tertile
 
 ### New Estimation Functions
 
