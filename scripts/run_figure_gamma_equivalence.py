@@ -333,3 +333,47 @@ print(f"  C-index Age:                         {c_age:.4f}")
 print(f"  Bootstrap T* (Layer A threshold):    {T_star:.4f}")
 print(f"  Bootstrap concordance mean ± SD:     {np.mean(concordance_bootstrap):.4f} ± {np.std(concordance_bootstrap):.4f}")
 print("\nDone.")
+
+# ============================================================================
+# PERSISTENT RESULTS
+# ============================================================================
+try:
+    from src.hdr_sim.results_writer import ResultsWriter
+
+    # Compute Spearman correlation between alpha_true and lambda_max
+    from scipy.stats import spearmanr as _spearmanr
+    rho_lambda, _ = _spearmanr(alpha_true_list, lambda_max_list)
+
+    c_indices = {
+        'SWDS-Γ': c_swds_g,
+        'SWDS (A-based)': c_swds_a,
+        'Mahalanobis': c_maha,
+        'L2': c_l2,
+        'Age': c_age,
+    }
+
+    mean_conc = np.mean(concordance_bootstrap)
+    sd_conc = np.std(concordance_bootstrap)
+
+    with ResultsWriter("Γ-Native Equivalence Study",
+                        "Confirms SWDS-Γ ≈ SWDS and λ_max(Γ̂) tracks stability") as rw:
+        rw.add_heading("λ_max(Γ̂) Stability Tracking")
+        rw.add_pass_fail("λ_max monotone increasing with age", lmax_monotone)
+        rw.add_metric("Spearman(α_true, λ_max)", f"{rho_lambda:.4f}")
+
+        rw.add_heading("SWDS-Γ vs SWDS Ranking Equivalence")
+        for mid, corr in zip(strata_mids, spearman_list):
+            rw.add_metric(f"Spearman (age {int(mid)})", f"{corr:.4f}")
+        rw.add_pass_fail("All rank correlations > 0.93",
+                         all(r > 0.93 for r in spearman_list))
+
+        rw.add_heading("C-Index Comparison")
+        rw.add_table(["Score", "C-index"],
+                     [[k, f"{v:.4f}"] for k, v in c_indices.items()])
+
+        rw.add_heading("T* Calibration (Layer A)")
+        rw.add_metric("Bootstrap mean concordance", f"{mean_conc:.3f}")
+        rw.add_metric("Bootstrap SD", f"{sd_conc:.3f}")
+        rw.add_metric("T* (mean - 2×SD)", f"{T_star:.3f}")
+except ImportError:
+    pass  # results writing is optional
