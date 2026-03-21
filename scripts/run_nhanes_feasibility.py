@@ -339,3 +339,31 @@ plt.tight_layout(rect=[0, 0, 1, 0.96])
 plt.savefig('outputs/figure_nhanes.pdf', dpi=150, bbox_inches='tight')
 plt.savefig('outputs/figure_nhanes.png', dpi=150, bbox_inches='tight')
 print("Saved figure_nhanes.pdf/png")
+
+# ============================================================================
+# PERSISTENT RESULTS
+# ============================================================================
+try:
+    from src.hdr_sim.results_writer import ResultsWriter
+
+    N_complete = len(df_complete)
+    lambda_monotone = trend
+    swds_mean = df_complete['swds'].mean()
+    swds_age_corr = df_complete['swds'].corr(df_complete['age'])
+
+    with ResultsWriter("NHANES Feasibility",
+                        "End-to-end pipeline demo on NHANES 2011-2012") as rw:
+        rw.add_metric("Complete cases", N_complete)
+        rw.add_metric("Axes", "2 (metabolic + functional)")
+
+        rw.add_heading("λ_max(Γ̂) by Age Stratum")
+        for (lo, hi), lmax in zip(strata, lambda_max_list):
+            rw.add_metric(f"Age {lo}-{hi}", f"{lmax:.4f}")
+        rw.add_pass_fail("λ_max monotone increasing", lambda_monotone,
+                         "Expected to FAIL in cross-sectional data (survivorship/medication confound)")
+
+        rw.add_heading("SWDS-Γ")
+        rw.add_metric("Mean SWDS-Γ", f"{swds_mean:.3f}")
+        rw.add_metric("Correlation with age", f"{swds_age_corr:.3f}")
+except ImportError:
+    pass  # results writing is optional

@@ -10,8 +10,9 @@ for Multi-Axis Physiological Decline."
 ## Key result
 
 The simulation shows that a 4-axis linear dynamical system with biologically parameterised
-recovery times (τ_i) and inter-axis coupling (J), when degraded according to known
-age-related trajectories, produces:
+recovery times (τ_i) and inter-axis coupling (J) loaded from the literature-derived
+`data/J_matrix_compiled.csv`, when degraded according to known age-related trajectories,
+produces:
 
 - Progressive drift of the spectral abscissa toward instability (α → 0⁻)
 - Critical slowing-down: recovery timescale diverges as α → 0
@@ -27,6 +28,12 @@ Nat Commun).
 
 ```bash
 pip install numpy scipy matplotlib
+```
+
+For the NHANES feasibility script, additional dependencies are needed:
+
+```bash
+pip install pandas pyreadstat
 ```
 
 ## Usage
@@ -87,15 +94,35 @@ from hdr_sim import (
 )
 ```
 
-### Machine-Readable Coupling Matrix
+### Machine-Readable Coupling Matrix (CSV-Driven Architecture)
 
-`data/J_matrix_compiled.csv` contains all 56 off-diagonal entries of the 8×8 J matrix with sign, magnitude tier (S/M/W), confidence grade (A/B/C), interpolated values at ages 30 and 80, primary evidence PMID, evidence type, and brief rationale.
+`data/J_matrix_compiled.csv` is the **single source of truth** for J coupling values. It contains all 56 off-diagonal entries of the 8×8 mechanistic coupling matrix with:
+
+- **Basin-stratified values**: `J_healthy`, `J_pre_disease`, `J_disease` (SD-per-SD units) replacing the former age-interpolated `J_value_age30`/`J_value_age80`
+- **Age trajectory**: `increasing`, `decreasing`, `stable`, or `unknown`
+- **Evidence metadata**: sign, magnitude tier (S/M/W/unknown), confidence grade (A/B/C), primary PMID, evidence type, and rationale with citations
+
+**How it works**: At import time, `hdr_sim.csv_loader` loads the CSV, extracts the 4-axis subset (I, M, N, F) for the healthy and disease basins, and applies a calibration scalar (c ≈ 0.30) to map SD-per-SD literature values to simulation coupling rates (day⁻¹). The calibration scalar is computed via Brent's method to match the target spectral abscissa α(30) ≈ −0.134. This preserves the literature-derived relative coupling structure while maintaining dynamical stability.
+
+```python
+from hdr_sim import load_J_csv, build_J_basin, get_J_anchors
+
+# Load full 8-axis matrix for any basin
+rows = load_J_csv()
+J_8x8 = build_J_basin(rows, basin='disease',
+                       axes=('I','M','E','mito','P','C','N','F'))
+
+# Get calibrated 4-axis anchors used by the simulation
+J_30, J_80, c = get_J_anchors()  # c ≈ 0.30
+```
+
+The full 8×8 CSV contains entries derived from systematic review of 58 references using evidence triangulation (statistical, molecular, causal). See White (2026), "The Mechanistic Coupling Matrix J_mech" for methodology.
 
 ### Figures
 
 | Script | Output | Manuscript location |
 |--------|--------|---------------------|
-| `run_figure2b.py` | `outputs/figure_2b.pdf` | Figure 1 (spectral-abscissa drift) |
+| `run_figure2b.py` | `outputs/figure_2b.pdf` | Figure 1 (spectral-abscissa drift; script named after original Fig 2b in early drafts) |
 | `run_figure_frailty.py` | `outputs/figure_frailty.pdf` | Figure 2 (frailty dynamics) |
 | `run_figure_t2d.py` | `outputs/figure_t2d.pdf` | Figure 3 (T2D phase portrait) |
 | `run_figure_recoverability.py` | `outputs/figure_recoverability.pdf` | Figure 4 (recoverability) |
@@ -156,6 +183,7 @@ Note: NHANES XPT files are downloaded from CDC servers at runtime (~7 MB total).
 | `run_nhanes_feasibility.py` | `outputs/figure_nhanes.pdf` | Figure 8 |
 | `run_figure_gamma_equivalence.py` | `outputs/figure_gamma_equivalence.pdf` | Figure X (Γ-native equivalence) |
 | `run_figure_prior_stress.py` | `outputs/figure_prior_stress.pdf` | Figure Y (prior stress tests) |
+| `run_elsa_validation.py` | `outputs/figure_elsa_validation.pdf` | Figure Z (ELSA cohort validation) |
 
 ## R4 Revision: Γ-Native Pivot
 
@@ -166,6 +194,22 @@ The R4 revision replaces the Lyapunov-inversion pipeline with a Γ-native approa
 SWDS-Γ(Δx) = Δxᵀ Γ̂ Δx / tr(Γ̂)
 
 Key result: SWDS-Γ produces near-identical individual rankings to the A-based SWDS (Spearman > 0.95) while requiring no Q specification, no Lyapunov inversion, and no commutation assumptions.
+
+### Phase 3: ELSA Cohort Validation
+
+The ELSA validation (`scripts/run_elsa_validation.py`) executes the full Γ-native pipeline on longitudinal data from the English Longitudinal Study of Ageing. Requires ELSA data files in `data/elsa/` (see `data/elsa/README.md` for access).
+
+```bash
+pip install lifelines  # additional dependency for Cox models
+python scripts/run_elsa_validation.py
+```
+
+Key analyses:
+* Cross-sectional λ_max(Γ̂) by age stratum (replicates NHANES approach for comparison)
+* Within-person λ_max(Γ̂_within) by age stratum (key result — tests stability erosion using within-person covariance, avoiding survivorship/medication confounds)
+* Individual SWDS-Γ scores and distribution
+* 5 nested Cox mortality models (age+sex, +biomarkers, +SWDS-Γ, +Rockwood FI, full)
+* Kaplan-Meier survival by SWDS-Γ tertile
 
 ### New Estimation Functions
 

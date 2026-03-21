@@ -207,3 +207,30 @@ print(f"  Mean Layer A (Γ̂ concordance):     {np.mean(layer_a_concordance):.3f
 print(f"  Prior contribution (correct-null): {prior_contribution:+.3f}")
 print(f"  Data contribution (null-chance):   {data_contribution:+.3f}")
 print("\nDone.")
+
+# ============================================================================
+# PERSISTENT RESULTS
+# ============================================================================
+try:
+    from src.hdr_sim.results_writer import ResultsWriter
+
+    mean_gamma = np.mean(layer_a_concordance)
+
+    with ResultsWriter("Prior Stress Tests",
+                        "Quantifies prior vs data contribution for Tests 3-4 Layer B") as rw:
+        rw.add_heading("Mean Concordance by Condition")
+        rw.add_metric("Correct prior", f"{mean_correct:.3f}")
+        rw.add_metric("Null prior", f"{mean_null:.3f}")
+        rw.add_metric("Adversarial prior", f"{mean_adv:.3f}")
+        rw.add_metric("Layer A (Γ̂ signs)", f"{mean_gamma:.3f}")
+
+        rw.add_heading("Decomposition")
+        rw.add_metric("Prior contribution (correct − null)", f"{prior_contribution:+.3f}")
+        rw.add_metric("Data contribution (null − chance)", f"{data_contribution:+.3f}")
+
+        rw.add_pass_fail("Null prior ≈ chance (confirms Tier-3)",
+                         abs(mean_null - 0.5) < 0.05)
+        rw.add_pass_fail("Adversarial < null (prior matters)",
+                         mean_adv < mean_null)
+except ImportError:
+    pass  # results writing is optional

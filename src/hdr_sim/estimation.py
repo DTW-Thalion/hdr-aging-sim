@@ -5,8 +5,11 @@ Implements Lyapunov-inversion stability estimation, constrained OU drift
 estimation, partial correlation computation, and recovery time constant
 estimation from perturbation-recovery episodes.
 
-Used by: run_figure_recoverability.py, run_figure_uncertainty.py
-Reference: HDR Ontology Manuscript R2, Appendices C-F
+Used by: run_figure_recoverability.py, run_figure_uncertainty.py,
+    run_figure_Q_sensitivity.py, run_figure_individual_proxy.py,
+    run_figure_gamma_equivalence.py, run_figure_prior_stress.py,
+    run_nhanes_feasibility.py
+Reference: HDR Ontology Manuscript R2–R4, Appendices C-F
 """
 
 import numpy as np
@@ -14,30 +17,16 @@ from scipy.linalg import expm, solve_continuous_lyapunov, inv
 from scipy.optimize import minimize
 
 
-def get_params(age, n_axes=4):
+def get_params(age):
     """
     Return (tau, J) at a given age for the 4-axis model (I, M, N, F).
     Linear interpolation from age 30 to age 80.
-    Parameters match Section 2.6 of the ontology manuscript.
+
+    Delegates to aging_params.tau_of_age / J_of_age, which load coupling
+    values from data/J_matrix_compiled.csv at import time.
     """
-    t = np.clip((age - 30) / 50, 0, 1)
-    tau_30 = np.array([7.0, 0.1, 0.01, 8.0])
-    tau_80 = np.array([21.0, 0.4, 0.04, 42.0])
-    tau = tau_30 * (1 - t) + tau_80 * t
-    J_30 = np.array([
-        [0.0,   0.015, 0.005, -0.04],
-        [0.02,  0.0,   0.005, -0.06],
-        [0.01,  0.008, 0.0,   -0.03],
-        [0.01,  0.01,  0.005,  0.0],
-    ])
-    J_80 = np.array([
-        [0.0,   0.08,  0.025, -0.015],
-        [0.10,  0.0,   0.025, -0.02],
-        [0.05,  0.04,  0.0,   -0.01],
-        [0.06,  0.06,  0.03,   0.0],
-    ])
-    J = J_30 * (1 - t) + J_80 * t
-    return tau, J
+    from .aging_params import tau_of_age, J_of_age
+    return tau_of_age(age), J_of_age(age)
 
 
 def build_A(tau, J):
