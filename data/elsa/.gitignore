@@ -1,6 +1,0 @@
-# ELSA data files — not redistributable (UK Data Service terms)
-# To reproduce: register at ukdataservice.ac.uk, download SN 5050
-*.tab
-*.TAB
-*.dta
-*.sav
