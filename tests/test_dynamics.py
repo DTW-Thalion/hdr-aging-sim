@@ -6,6 +6,7 @@ from scipy import linalg
 
 from hdr_sim.dynamics import build_A, spectral_abscissa, recovery_timescale, spectral_radius_discrete
 from hdr_sim.aging_params import tau_of_age, J_of_age
+from hdr_sim.csv_loader import load_J_csv, build_J_basin
 
 
 def _A_at_age(age):
@@ -84,3 +85,32 @@ def test_recovery_ratio():
     rt_80 = recovery_timescale(_A_at_age(80))
     ratio = rt_80 / rt_30
     assert 3.0 <= ratio <= 15.0, f"Recovery ratio = {ratio}, expected 3-15×"
+
+
+def test_csv_loaded():
+    """J matrices should be loaded from CSV, not hardcoded."""
+    rows = load_J_csv()
+    assert len(rows) == 56, f"Expected 56 CSV rows, got {len(rows)}"
+    # Verify that J_of_age(30) signs match CSV healthy-basin signs
+    J_csv = build_J_basin(rows, 'healthy', ('I', 'M', 'N', 'F'))
+    J_sim = J_of_age(30)
+    for i in range(4):
+        for j in range(4):
+            if i == j:
+                continue
+            if J_csv[i, j] != 0:
+                assert np.sign(J_sim[i, j]) == np.sign(J_csv[i, j]), (
+                    f"Sign mismatch at [{i},{j}]: sim={J_sim[i,j]}, csv={J_csv[i,j]}"
+                )
+
+
+def test_csv_basin_structure():
+    """Disease-basin couplings should be stronger than healthy-basin."""
+    rows = load_J_csv()
+    J_h = build_J_basin(rows, 'healthy', ('I', 'M', 'N', 'F'))
+    J_d = build_J_basin(rows, 'disease', ('I', 'M', 'N', 'F'))
+    # Positive entries should be larger in disease basin
+    mask = J_h > 0
+    assert np.all(J_d[mask] >= J_h[mask]), (
+        "Expected disease-basin positive couplings >= healthy-basin"
+    )
