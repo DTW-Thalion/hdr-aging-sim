@@ -1,0 +1,31 @@
+{
+  "n_at_risk": 4562,
+  "n_events": 676,
+  "event_rate_pct": 17.893065113816835,
+  "median_fu": 11.0,
+  "n_matched": 3778,
+  "n_matched_events": 676,
+  "models": {
+    "M1: Age + Sex": {
+      "c_index": 0.7570040888442096,
+      "n": 3778,
+      "events": 676
+    },
+    "M3: + SWDS-G": {
+      "c_index": 0.7632684321619635,
+      "n": 3778,
+      "events": 676
+    },
+    "M4: + Deficits": {
+      "c_index": 0.7871393418959476,
+      "n": 3778,
+      "events": 676
+    },
+    "M5: + SWDS-G + Deficits": {
+      "c_index": 0.7903336668033406,
+      "n": 3778,
+      "events": 676
+    }
+  },
+  "delta_c_m5_m4": 0.0031943249073930202
+}

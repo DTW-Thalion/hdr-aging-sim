@@ -1,0 +1,180 @@
+{
+  "description": "ELSA sensitivity extras (O1, O2, O3)",
+  "o3_reference_sensitivity": {
+    "n_ref_primary": 966,
+    "n_ref_alt": 1963,
+    "dc_primary": 0.008721233470278644,
+    "dc_alt": 0.008782974743584249,
+    "m5_c_primary": 0.6179757599748934,
+    "m5_c_alt": 0.618037501248199,
+    "dc_difference": 6.174127330560442e-05,
+    "status": "ROBUST"
+  },
+  "o1_calibration": {
+    "M4: + Rockwood FI": {
+      "calibration": [
+        {
+          "decile": 0,
+          "n": 559,
+          "mean_predicted": 0.020381614655811234,
+          "observed_km": 0.007155635062611854
+        },
+        {
+          "decile": 1,
+          "n": 528,
+          "mean_predicted": 0.023390593583833632,
+          "observed_km": 0.009469696969696573
+        },
+        {
+          "decile": 2,
+          "n": 543,
+          "mean_predicted": 0.02563876552782598,
+          "observed_km": 0.001841620626150564
+        },
+        {
+          "decile": 3,
+          "n": 545,
+          "mean_predicted": 0.027970083744706657,
+          "observed_km": 0.009174311926605005
+        },
+        {
+          "decile": 4,
+          "n": 541,
+          "mean_predicted": 0.030628130735789686,
+          "observed_km": 0.007393715341958651
+        },
+        {
+          "decile": 5,
+          "n": 544,
+          "mean_predicted": 0.03363851558828734,
+          "observed_km": 0.023897058823529105
+        },
+        {
+          "decile": 6,
+          "n": 542,
+          "mean_predicted": 0.03731619421983719,
+          "observed_km": 0.04059040590405927
+        },
+        {
+          "decile": 7,
+          "n": 543,
+          "mean_predicted": 0.042058774608725,
+          "observed_km": 0.04972375690607711
+        },
+        {
+          "decile": 8,
+          "n": 543,
+          "mean_predicted": 0.04891750297292586,
+          "observed_km": 0.05893186003683215
+        },
+        {
+          "decile": 9,
+          "n": 543,
+          "mean_predicted": 0.06368878800537225,
+          "observed_km": 0.14548802946592976
+        }
+      ],
+      "hl_chi2": 103.24438288108902,
+      "hl_df": 8,
+      "hl_p": 0.0
+    },
+    "M5: Full": {
+      "calibration": [
+        {
+          "decile": 0,
+          "n": 544,
+          "mean_predicted": 0.01945079170924963,
+          "observed_km": 0.009191176470587425
+        },
+        {
+          "decile": 1,
+          "n": 543,
+          "mean_predicted": 0.02267697018700674,
+          "observed_km": 0.001841620626150564
+        },
+        {
+          "decile": 2,
+          "n": 543,
+          "mean_predicted": 0.02507316995514367,
+          "observed_km": 0.0055248618784524695
+        },
+        {
+          "decile": 3,
+          "n": 543,
+          "mean_predicted": 0.02749048852233072,
+          "observed_km": 0.007366482504603367
+        },
+        {
+          "decile": 4,
+          "n": 543,
+          "mean_predicted": 0.030163460158611915,
+          "observed_km": 0.011049723756905605
+        },
+        {
+          "decile": 5,
+          "n": 543,
+          "mean_predicted": 0.03343722654344169,
+          "observed_km": 0.020257826887660757
+        },
+        {
+          "decile": 6,
+          "n": 542,
+          "mean_predicted": 0.03713704962894211,
+          "observed_km": 0.04981549815498154
+        },
+        {
+          "decile": 7,
+          "n": 544,
+          "mean_predicted": 0.04202219888595499,
+          "observed_km": 0.038602941176469896
+        },
+        {
+          "decile": 8,
+          "n": 543,
+          "mean_predicted": 0.04945529406669992,
+          "observed_km": 0.0478821362799261
+        },
+        {
+          "decile": 9,
+          "n": 543,
+          "mean_predicted": 0.06685647831678815,
+          "observed_km": 0.16206261510128905
+        }
+      ],
+      "hl_chi2": 121.56771993572934,
+      "hl_df": 8,
+      "hl_p": 0.0
+    }
+  },
+  "o2_frailty_transition": {
+    "n_at_risk": 4562,
+    "n_events": 676,
+    "event_rate_pct": 17.893065113816835,
+    "median_fu": 11.0,
+    "n_matched": 3778,
+    "n_matched_events": 676,
+    "models": {
+      "M1: Age + Sex": {
+        "c_index": 0.7570040888442096,
+        "n": 3778,
+        "events": 676
+      },
+      "M3: + SWDS-G": {
+        "c_index": 0.7632684321619635,
+        "n": 3778,
+        "events": 676
+      },
+      "M4: + Deficits": {
+        "c_index": 0.7871393418959476,
+        "n": 3778,
+        "events": 676
+      },
+      "M5: + SWDS-G + Deficits": {
+        "c_index": 0.7903336668033406,
+        "n": 3778,
+        "events": 676
+      }
+    },
+    "delta_c_m5_m4": 0.0031943249073930202
+  }
+}
