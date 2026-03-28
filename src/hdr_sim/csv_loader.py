@@ -1,8 +1,11 @@
-"""Load J coupling matrix from data/J_matrix_compiled.csv.
+"""Load J coupling matrix from CSV.
 
-The CSV contains all 56 off-diagonal entries of the 8-axis mechanistic
-coupling matrix J_mech, with basin-stratified values (healthy, pre-disease,
-disease) in SD-per-SD units derived from systematic literature review.
+The default CSV (data/J_matrix_compiled_9x9.csv) contains all 72
+off-diagonal entries of the 9-axis mechanistic coupling matrix J_mech,
+with basin-stratified values (healthy, pre-disease, disease) in SD-per-SD
+units derived from systematic literature review.  The legacy 8-axis
+version (data/J_matrix_compiled.csv, 56 entries) is retained for
+reproducibility of prior analyses.
 
 This module extracts any axis subset and applies a calibration scalar
 to map SD-per-SD literature values to simulation coupling rates (day^-1).
@@ -19,10 +22,10 @@ from scipy.optimize import brentq
 # ---------------------------------------------------------------------------
 
 def _default_csv_path():
-    """Return path to J_matrix_compiled.csv relative to the package root."""
+    """Return path to J_matrix_compiled_9x9.csv relative to the package root."""
     pkg_dir = os.path.dirname(os.path.abspath(__file__))          # src/hdr_sim/
     repo_root = os.path.dirname(os.path.dirname(pkg_dir))         # repo root
-    return os.path.join(repo_root, 'data', 'J_matrix_compiled.csv')
+    return os.path.join(repo_root, 'data', 'J_matrix_compiled_9x9.csv')
 
 
 def load_J_csv(csv_path=None):
@@ -70,14 +73,16 @@ def build_J_basin(rows, basin='healthy', axes=('I', 'M', 'N', 'F')):
         One of 'healthy', 'pre_disease', 'disease'.
     axes : tuple[str]
         Axis labels in desired order.  Default is the 4-axis model
-        ('I', 'M', 'N', 'F').
+        ('I', 'M', 'N', 'F').  Works with any subset of the 9-axis
+        model ('I', 'M', 'E', 'mito', 'P', 'C', 'N', 'F', 'B').
 
     Returns
     -------
     J : np.ndarray, shape (n, n)
         Coupling matrix in SD-per-SD units.
         Convention: J[i,j] = effect of axes[j] on axes[i].
-        Diagonal is zero.  Missing / unknown entries are 0.0.
+        Diagonal is zero.  Missing / unknown / qualitative-only entries
+        are 0.0.
     """
     col = _BASIN_COL[basin]
     n = len(axes)
@@ -90,7 +95,7 @@ def build_J_basin(rows, basin='healthy', axes=('I', 'M', 'N', 'F')):
         if src not in axis_idx or tgt not in axis_idx:
             continue
         val_str = row[col].strip()
-        if val_str == '' or val_str == 'NA':
+        if val_str in ('', 'NA', 'qual_only', 'unknown'):
             continue
         j = axis_idx[src]   # source = column
         i = axis_idx[tgt]   # target = row
@@ -177,7 +182,15 @@ _TAU_80 = np.array([25.0, 0.30, 0.04, 42.0])
 _DEFAULT_AXES = ('I', 'M', 'N', 'F')
 
 
-def get_J_anchors(axes=_DEFAULT_AXES, target_alpha=_TARGET_ALPHA_30):
+def _legacy_csv_path():
+    """Return path to legacy 8-axis J_matrix_compiled.csv."""
+    pkg_dir = os.path.dirname(os.path.abspath(__file__))
+    repo_root = os.path.dirname(os.path.dirname(pkg_dir))
+    return os.path.join(repo_root, 'data', 'J_matrix_compiled.csv')
+
+
+def get_J_anchors(axes=_DEFAULT_AXES, target_alpha=_TARGET_ALPHA_30,
+                  csv_path=None):
     """Return calibrated (J_30, J_80) anchor matrices loaded from CSV.
 
     The CSV's basin-stratified SD-per-SD values are scaled by a single
@@ -192,6 +205,10 @@ def get_J_anchors(axes=_DEFAULT_AXES, target_alpha=_TARGET_ALPHA_30):
         Axis labels.  Default ('I', 'M', 'N', 'F').
     target_alpha : float
         Target spectral abscissa at age 30.
+    csv_path : str or None
+        Path to CSV.  If None, uses the legacy 8-axis CSV
+        (``data/J_matrix_compiled.csv``) to preserve existing
+        simulation calibration.
 
     Returns
     -------
@@ -202,7 +219,7 @@ def get_J_anchors(axes=_DEFAULT_AXES, target_alpha=_TARGET_ALPHA_30):
     calibration_scalar : float
         The scalar applied: J_sim = c * J_csv.
     """
-    rows = load_J_csv()
+    rows = load_J_csv(csv_path or _legacy_csv_path())
     J_healthy = build_J_basin(rows, basin='healthy', axes=axes)
     J_disease = build_J_basin(rows, basin='disease', axes=axes)
 
