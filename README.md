@@ -96,28 +96,48 @@ from hdr_sim import (
 
 ### Machine-Readable Coupling Matrix (CSV-Driven Architecture)
 
-`data/J_matrix_compiled.csv` is the **single source of truth** for J coupling values. It contains all 56 off-diagonal entries of the 8×8 mechanistic coupling matrix with:
+The machine-readable coupling matrix is provided in `data/J_matrix_compiled_9x9.csv` (9×9, 72 off-diagonal entries); the legacy 8×8 version is retained as `data/J_matrix_compiled.csv` for reproducibility of prior analyses.
 
-- **Basin-stratified values**: `J_healthy`, `J_pre_disease`, `J_disease` (SD-per-SD units) replacing the former age-interpolated `J_value_age30`/`J_value_age80`
+`data/J_matrix_compiled_9x9.csv` is the **single source of truth** for the 9×9 coupling matrix J_mech. It contains all 72 off-diagonal entries of the 9 regulatory capacity axes:
+
+| Axis | Name | τ (days) |
+|------|------|----------|
+| I | Inflammatory resolution capacity | 7–25 |
+| M | Metabolic regulatory gain | 0.1–0.3 |
+| E | Epigenetic maintenance fidelity | ~1000 |
+| mito | Mitochondrial bioenergetic capacity | 1–3 |
+| P | Proteostatic clearance capacity | 0.5–2 |
+| C | Circadian oscillator amplitude | 1–3 |
+| N | Neuroendocrine feedback gain | 0.5–2 |
+| F | Functional reserve (musculoskeletal) | 8–42 |
+| B | Bone remodelling regulatory balance | 90–120 |
+
+CSV columns include:
+
+- **Basin-stratified values**: `J_healthy`, `J_pre_disease`, `J_disease` (SD-per-SD units)
 - **Age trajectory**: `increasing`, `decreasing`, `stable`, or `unknown`
-- **Evidence metadata**: sign, magnitude tier (S/M/W/unknown), confidence grade (A/B/C), primary PMID, evidence type, and rationale with citations
-- **Expanded evidence columns** (R5): all supporting PMIDs, study design tags, evidence source count, convergence note, and quantitative prior for each entry (see Data and Code Availability)
+- **Evidence metadata**: sign, magnitude tier (S/M/W/unknown), confidence grade (A/B/C), primary PMID, evidence type, mechanism brief, and biomarker role notes
+
+Sign distribution (9×9): 57 positive (pathological), 11 negative (protective), 4 unknown.
 
 **How it works**: At import time, `hdr_sim.csv_loader` loads the CSV, extracts the 4-axis subset (I, M, N, F) for the healthy and disease basins, and applies a calibration scalar (c ≈ 0.30) to map SD-per-SD literature values to simulation coupling rates (day⁻¹). The calibration scalar is computed via Brent's method to match the target spectral abscissa α(30) ≈ −0.134. This preserves the literature-derived relative coupling structure while maintaining dynamical stability.
+
+The ELSA validation uses a 3-axis reduction (I, M, F) and is unaffected by the B-axis addition.
 
 ```python
 from hdr_sim import load_J_csv, build_J_basin, get_J_anchors
 
-# Load full 8-axis matrix for any basin
+# Load full 9-axis matrix for any basin (default: 9x9 CSV)
 rows = load_J_csv()
-J_8x8 = build_J_basin(rows, basin='disease',
-                       axes=('I','M','E','mito','P','C','N','F'))
+J_9x9 = build_J_basin(rows, basin='disease',
+                       axes=('I','M','E','mito','P','C','N','F','B'))
 
 # Get calibrated 4-axis anchors used by the simulation
+# (uses legacy 8x8 CSV to preserve calibration)
 J_30, J_80, c = get_J_anchors()  # c ≈ 0.30
 ```
 
-The full 8×8 CSV contains entries derived from systematic review of 58 references using evidence triangulation (statistical, molecular, causal). See White (2026), "The Mechanistic Coupling Matrix J_mech" for methodology.
+The full 9×9 CSV contains entries derived from systematic literature review using evidence triangulation (statistical, molecular, causal). See White (2026), "The Mechanistic Coupling Matrix J_mech" for methodology.
 
 ### Figures
 

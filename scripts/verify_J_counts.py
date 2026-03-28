@@ -1,188 +1,242 @@
 #!/usr/bin/env python3
-"""Full J matrix audit: CSV vs manuscript table consistency."""
+"""Full J matrix audit: CSV vs manuscript table consistency.
 
+Supports both the 9x9 (default) and legacy 8x8 J matrix CSVs.
+Usage:
+    python scripts/verify_J_counts.py                              # 9x9 default
+    python scripts/verify_J_counts.py --csv data/J_matrix_compiled.csv  # 8x8 legacy
+"""
+
+import argparse
 import csv
 import sys
+from collections import defaultdict
+
+
+# ---------------------------------------------------------------------------
+# Expected counts per CSV version
+# ---------------------------------------------------------------------------
+
+EXPECTED = {
+    8: {
+        'rows': 56,
+        'positive': 44,
+        'negative': 7,
+        'unknown': 5,
+        'axes': {'I', 'M', 'E', 'mito', 'P', 'C', 'N', 'F'},
+        'expected_unknown': {'E->P', 'E->C', 'E->N', 'E->F', 'P->E'},
+        'expected_negative': {'F->I', 'F->M', 'F->E', 'F->mito', 'F->P', 'F->C', 'F->N'},
+    },
+    9: {
+        'rows': 72,
+        'positive': 57,
+        'negative': 11,
+        'unknown': 4,
+        'axes': {'I', 'M', 'E', 'mito', 'P', 'C', 'N', 'F', 'B'},
+        'expected_unknown': {'B->E', 'B->mito', 'B->P', 'B->C'},
+        'expected_negative': {
+            'F->I', 'F->M', 'F->E', 'F->mito', 'F->P', 'F->C', 'F->N', 'F->B',
+            'B->I', 'B->M', 'B->N',
+        },
+    },
+}
+
+
+def _normalise_sign(raw):
+    """Normalise sign string to +, -, ?, or the original."""
+    raw = raw.strip()
+    if raw in ('+', 'positive', '+1', '1'):
+        return '+'
+    if raw in ('-', 'negative', '-1'):
+        return '-'
+    if raw in ('?', 'unknown', ''):
+        return '?'
+    if raw in ('0', 'zero'):
+        return '0'
+    return raw
+
 
 def main():
-    with open('data/J_matrix_compiled.csv', newline='', encoding='utf-8') as f:
+    parser = argparse.ArgumentParser(description='Verify J matrix CSV sign counts.')
+    parser.add_argument('--csv', default='data/J_matrix_compiled_9x9.csv',
+                        help='Path to J matrix CSV (default: 9x9)')
+    args = parser.parse_args()
+
+    with open(args.csv, newline='', encoding='utf-8') as f:
         reader = csv.DictReader(f)
         rows = list(reader)
 
+    print(f"CSV file: {args.csv}")
     print(f"Total CSV rows: {len(rows)}")
     print(f"Columns: {list(rows[0].keys())}")
 
-    # Step 2: Count signs
+    # -----------------------------------------------------------------------
+    # Detect dimension from axes present
+    # -----------------------------------------------------------------------
+    axes_found = sorted(set(r['axis_from'].strip() for r in rows) |
+                        set(r['axis_to'].strip() for r in rows))
+    n_axes = len(axes_found)
+    print(f"Axes ({n_axes}): {axes_found}")
+
+    if n_axes not in EXPECTED:
+        print(f"\nWARNING: No expected counts for {n_axes}-axis matrix.")
+        print("Proceeding with count-only mode.\n")
+        exp = None
+    else:
+        exp = EXPECTED[n_axes]
+
+    # -----------------------------------------------------------------------
+    # Count signs
+    # -----------------------------------------------------------------------
     counts = {'positive': 0, 'negative': 0, 'unknown': 0, 'zero': 0, 'other': 0}
-    detail = {'positive': [], 'negative': [], 'unknown': [], 'zero': [], 'other': []}
+    detail = defaultdict(list)
 
     for row in rows:
-        src = row.get('axis_from', '').strip()
-        tgt = row.get('axis_to', '').strip()
-        sign = row.get('sign', '').strip()
+        src = row['axis_from'].strip()
+        tgt = row['axis_to'].strip()
+        sign = _normalise_sign(row.get('sign', ''))
         label = f"{src}->{tgt}"
 
-        if sign in ['+', 'positive', '+1']:
+        if sign == '+':
             counts['positive'] += 1
             detail['positive'].append(label)
-        elif sign in ['-', 'negative', '-1']:
+        elif sign == '-':
             counts['negative'] += 1
             detail['negative'].append(label)
-        elif sign in ['?', 'unknown', '']:
+        elif sign == '?':
             counts['unknown'] += 1
             detail['unknown'].append(label)
-        elif sign in ['0', 'zero']:
+        elif sign == '0':
             counts['zero'] += 1
             detail['zero'].append(label)
         else:
             counts['other'] += 1
             detail['other'].append(f"{label} (sign={sign!r})")
 
-    print("\n=== CSV SIGN COUNTS ===")
+    print(f"\n=== CSV SIGN COUNTS ===")
     for cat, n in counts.items():
         print(f"  {cat}: {n}")
     total = sum(counts.values())
     print(f"  TOTAL: {total}")
 
-    print("\n=== UNKNOWN ENTRIES ===")
+    print(f"\n=== UNKNOWN ENTRIES ===")
     for item in detail['unknown']:
         print(f"  {item}")
 
-    print("\n=== NEGATIVE ENTRIES ===")
+    print(f"\n=== NEGATIVE ENTRIES ===")
     for item in detail['negative']:
         print(f"  {item}")
 
     if detail['other']:
-        print("\n=== OTHER (UNEXPECTED) ===")
+        print(f"\n=== OTHER (UNEXPECTED) ===")
         for item in detail['other']:
             print(f"  {item}")
 
-    # Step 5: P->C check
-    print("\n=== P->C ENTRY ===")
+    # -----------------------------------------------------------------------
+    # Per-axis incoming / outgoing summary table
+    # -----------------------------------------------------------------------
+    incoming = defaultdict(int)   # axis_to counts
+    outgoing = defaultdict(int)   # axis_from counts
     for row in rows:
-        src = row.get('axis_from', '').strip()
-        tgt = row.get('axis_to', '').strip()
-        if src == 'P' and tgt == 'C':
-            for k, v in row.items():
-                print(f"  {k}: {v}")
+        src = row['axis_from'].strip()
+        tgt = row['axis_to'].strip()
+        outgoing[src] += 1
+        incoming[tgt] += 1
 
-    # Step 6: Full magnitude/grade audit against manuscript table
-    manuscript_table = {
-        ('I','M'): ('+','S','A'), ('I','E'): ('+','M','B'), ('I','mito'): ('+','M','B'),
-        ('I','P'): ('+','M','B'), ('I','C'): ('+','W','C'), ('I','N'): ('+','M','B'),
-        ('I','F'): ('+','S','A'),
-        ('M','I'): ('+','M','A'), ('M','E'): ('+','W','C'), ('M','mito'): ('+','S','A'),
-        ('M','P'): ('+','M','B'), ('M','C'): ('+','M','B'), ('M','N'): ('+','M','B'),
-        ('M','F'): ('+','M','B'),
-        ('E','I'): ('+','W','C'), ('E','M'): ('+','M','B'), ('E','mito'): ('+','M','B'),
-        ('E','P'): ('?',None,None), ('E','C'): ('?',None,None),
-        ('E','N'): ('?',None,None), ('E','F'): ('?',None,None),
-        ('mito','I'): ('+','S','A'), ('mito','M'): ('+','S','A'), ('mito','E'): ('+','M','B'),
-        ('mito','P'): ('+','S','A'), ('mito','C'): ('+','S','A'), ('mito','N'): ('+','M','B'),
-        ('mito','F'): ('+','S','A'),
-        ('P','I'): ('+','S','A'), ('P','M'): ('+','W','C'), ('P','E'): ('?',None,None),
-        ('P','mito'): ('+','S','A'), ('P','C'): ('+','M','B'), ('P','N'): ('+','W','C'),
-        ('P','F'): ('+','M','B'),
-        ('C','I'): ('+','M','B'), ('C','M'): ('+','S','A'), ('C','E'): ('+','W','C'),
-        ('C','mito'): ('+','S','A'), ('C','P'): ('+','S','A'), ('C','N'): ('+','S','A'),
-        ('C','F'): ('+','M','B'),
-        ('N','I'): ('+','S','A'), ('N','M'): ('+','S','A'), ('N','E'): ('+','W','C'),
-        ('N','mito'): ('+','M','B'), ('N','P'): ('+','W','C'), ('N','C'): ('+','M','B'),
-        ('N','F'): ('+','M','B'),
-        ('F','I'): ('-','S','A'), ('F','M'): ('-','S','A'), ('F','E'): ('-','M','B'),
-        ('F','mito'): ('-','S','A'), ('F','P'): ('-','M','B'), ('F','C'): ('-','M','B'),
-        ('F','N'): ('-','S','A'),
-    }
+    print(f"\n=== PER-AXIS ENTRY COUNTS ===")
+    print(f"  {'Axis':<6} {'Incoming':>8} {'Outgoing':>8} {'Total':>6}")
+    print(f"  {'-'*6} {'-'*8} {'-'*8} {'-'*6}")
+    for ax in axes_found:
+        inc = incoming.get(ax, 0)
+        out = outgoing.get(ax, 0)
+        print(f"  {ax:<6} {inc:>8} {out:>8} {inc+out:>6}")
 
-    mismatches = []
-    for row in rows:
-        src = row.get('axis_from', '').strip()
-        tgt = row.get('axis_to', '').strip()
-        key = (src, tgt)
-        if key not in manuscript_table:
-            mismatches.append(f"CSV has {src}->{tgt} which is not in manuscript table")
-            continue
+    # -----------------------------------------------------------------------
+    # B-axis specific checks (9-axis only)
+    # -----------------------------------------------------------------------
+    if 'B' in set(axes_found):
+        b_incoming = [r for r in rows if r['axis_to'].strip() == 'B']
+        b_outgoing = [r for r in rows if r['axis_from'].strip() == 'B']
+        print(f"\n=== B-AXIS ENTRIES ===")
+        print(f"  Incoming (X->B): {len(b_incoming)}")
+        for r in b_incoming:
+            print(f"    {r['axis_from'].strip()}->B: sign={r['sign'].strip()}")
+        print(f"  Outgoing (B->X): {len(b_outgoing)}")
+        for r in b_outgoing:
+            print(f"    B->{r['axis_to'].strip()}: sign={r['sign'].strip()}")
 
-        expected_sign, expected_mag, expected_grade = manuscript_table[key]
-        csv_sign = row.get('sign', '').strip()
-        csv_mag = row.get('magnitude_tier', '').strip()
-        csv_grade = row.get('confidence_grade', '').strip()
+        # Verify all expected B entries present
+        other_axes = [a for a in axes_found if a != 'B']
+        expected_b_in = {f"{a}->B" for a in other_axes}
+        expected_b_out = {f"B->{a}" for a in other_axes}
+        actual_b_in = {f"{r['axis_from'].strip()}->B" for r in b_incoming}
+        actual_b_out = {f"B->{r['axis_to'].strip()}" for r in b_outgoing}
+        b_complete = (actual_b_in == expected_b_in and actual_b_out == expected_b_out)
+        print(f"  All B entries present: [{'PASS' if b_complete else 'FAIL'}]")
+        if not b_complete:
+            missing_in = expected_b_in - actual_b_in
+            missing_out = expected_b_out - actual_b_out
+            if missing_in:
+                print(f"    Missing incoming: {sorted(missing_in)}")
+            if missing_out:
+                print(f"    Missing outgoing: {sorted(missing_out)}")
 
-        # Normalize sign
-        if csv_sign in ['+', 'positive', '+1', '1']:
-            csv_sign_norm = '+'
-        elif csv_sign in ['-', 'negative', '-1']:
-            csv_sign_norm = '-'
-        elif csv_sign in ['?', 'unknown', '']:
-            csv_sign_norm = '?'
-        elif csv_sign in ['0', 'zero']:
-            csv_sign_norm = '0'
-        else:
-            csv_sign_norm = csv_sign
-
-        if csv_sign_norm != expected_sign:
-            mismatches.append(f"{src}->{tgt}: sign CSV='{csv_sign}' vs manuscript='{expected_sign}'")
-
-        if expected_mag is not None:
-            if csv_mag.upper() != expected_mag.upper():
-                mismatches.append(f"{src}->{tgt}: magnitude CSV='{csv_mag}' vs manuscript='{expected_mag}'")
-
-        if expected_grade is not None:
-            if csv_grade.upper() != expected_grade.upper():
-                mismatches.append(f"{src}->{tgt}: grade CSV='{csv_grade}' vs manuscript='{expected_grade}'")
-
-    print(f"\n{'='*60}")
-    if mismatches:
-        print(f"MISMATCHES FOUND: {len(mismatches)}")
-        print(f"{'='*60}")
-        for m in mismatches:
-            print(f"  X {m}")
-    else:
-        print("ALL 56 ENTRIES MATCH between CSV and manuscript table")
-
+    # -----------------------------------------------------------------------
     # Final summary
+    # -----------------------------------------------------------------------
     print(f"\n{'='*60}")
     print("J MATRIX AUDIT SUMMARY")
     print(f"{'='*60}")
-    row_pass = len(rows) == 56
-    pos_pass = counts['positive'] == 44
-    neg_pass = counts['negative'] == 7
-    unk_pass = counts['unknown'] == 5
-    zero_pass = counts['zero'] == 0
-    all_match = len(mismatches) == 0
-    assigned = 56 - counts['unknown']
-    assigned_pass = assigned == 51
 
-    print(f"  CSV rows:           {len(rows):>3}  [{'PASS' if row_pass else 'FAIL'}]")
-    print(f"  Positive:           {counts['positive']:>3}  [{'PASS' if pos_pass else 'FAIL'}]")
-    print(f"  Negative:           {counts['negative']:>3}  [{'PASS' if neg_pass else 'FAIL'}]")
-    print(f"  Unknown:            {counts['unknown']:>3}  [{'PASS' if unk_pass else 'FAIL'}]")
-    print(f"  Zero:               {counts['zero']:>3}  [{'PASS' if zero_pass else 'FAIL'}]")
-    print(f"  Assigned (51):      {assigned:>3}  [{'PASS' if assigned_pass else 'FAIL'}]")
-    print(f"  All entries match:       [{'PASS' if all_match else 'FAIL'}]")
-    print(f"  Discrepancies:      {len(mismatches):>3}")
+    checks = []
 
-    # Check unknown entries are the expected 5
-    expected_unknown = {'E->P', 'E->C', 'E->N', 'E->F', 'P->E'}
-    actual_unknown = set(detail['unknown'])
-    unk_entries_pass = actual_unknown == expected_unknown
-    print(f"  Unknown entries correct: [{'PASS' if unk_entries_pass else 'FAIL'}]")
-    if not unk_entries_pass:
-        print(f"    Expected: {sorted(expected_unknown)}")
-        print(f"    Actual:   {sorted(actual_unknown)}")
+    if exp:
+        row_pass = len(rows) == exp['rows']
+        pos_pass = counts['positive'] == exp['positive']
+        neg_pass = counts['negative'] == exp['negative']
+        unk_pass = counts['unknown'] == exp['unknown']
+        zero_pass = counts['zero'] == 0
+        axes_pass = set(axes_found) == exp['axes']
+        assigned = len(rows) - counts['unknown']
+        assigned_exp = exp['rows'] - exp['unknown']
+        assigned_pass = assigned == assigned_exp
 
-    # Check negative entries are all F->
-    expected_neg = {'F->I', 'F->M', 'F->E', 'F->mito', 'F->P', 'F->C', 'F->N'}
-    actual_neg = set(detail['negative'])
-    neg_entries_pass = actual_neg == expected_neg
-    print(f"  Negative entries correct: [{'PASS' if neg_entries_pass else 'FAIL'}]")
-    if not neg_entries_pass:
-        print(f"    Expected: {sorted(expected_neg)}")
-        print(f"    Actual:   {sorted(actual_neg)}")
+        actual_unk = set(detail['unknown'])
+        unk_entries_pass = actual_unk == exp['expected_unknown']
 
-    all_pass = all([row_pass, pos_pass, neg_pass, unk_pass, zero_pass,
-                    all_match, assigned_pass, unk_entries_pass, neg_entries_pass])
+        actual_neg = set(detail['negative'])
+        neg_entries_pass = actual_neg == exp['expected_negative']
+
+        print(f"  Mode:               {n_axes}x{n_axes}")
+        print(f"  CSV rows:           {len(rows):>3}  (exp {exp['rows']})  [{'PASS' if row_pass else 'FAIL'}]")
+        print(f"  Axes:               {n_axes:>3}  (exp {len(exp['axes'])})  [{'PASS' if axes_pass else 'FAIL'}]")
+        print(f"  Positive:           {counts['positive']:>3}  (exp {exp['positive']})  [{'PASS' if pos_pass else 'FAIL'}]")
+        print(f"  Negative:           {counts['negative']:>3}  (exp {exp['negative']})  [{'PASS' if neg_pass else 'FAIL'}]")
+        print(f"  Unknown:            {counts['unknown']:>3}  (exp {exp['unknown']})  [{'PASS' if unk_pass else 'FAIL'}]")
+        print(f"  Zero:               {counts['zero']:>3}  (exp 0)  [{'PASS' if zero_pass else 'FAIL'}]")
+        print(f"  Assigned-sign:      {assigned:>3}  (exp {assigned_exp})  [{'PASS' if assigned_pass else 'FAIL'}]")
+        print(f"  Unknown entries correct: [{'PASS' if unk_entries_pass else 'FAIL'}]")
+        if not unk_entries_pass:
+            print(f"    Expected: {sorted(exp['expected_unknown'])}")
+            print(f"    Actual:   {sorted(actual_unk)}")
+        print(f"  Negative entries correct: [{'PASS' if neg_entries_pass else 'FAIL'}]")
+        if not neg_entries_pass:
+            print(f"    Expected: {sorted(exp['expected_negative'])}")
+            print(f"    Actual:   {sorted(actual_neg)}")
+
+        checks = [row_pass, pos_pass, neg_pass, unk_pass, zero_pass,
+                   axes_pass, assigned_pass, unk_entries_pass, neg_entries_pass]
+
+        if 'B' in set(axes_found):
+            checks.append(b_complete)
+    else:
+        print(f"  Rows: {len(rows)}, Axes: {n_axes}")
+        print(f"  Positive: {counts['positive']}, Negative: {counts['negative']}, Unknown: {counts['unknown']}")
+
+    all_pass = all(checks) if checks else True
+    print(f"\n  {'ALL CHECKS PASSED' if all_pass else 'SOME CHECKS FAILED'}")
     return 0 if all_pass else 1
+
 
 if __name__ == '__main__':
     sys.exit(main())

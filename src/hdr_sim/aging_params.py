@@ -1,8 +1,10 @@
 """Age-parameterised τ_i(age) and J(age) functions.
 
-J coupling matrices are loaded from data/J_matrix_compiled.csv (the systematic
-literature-derived mechanistic coupling matrix) and scaled by a calibration
-scalar to map SD-per-SD literature values to simulation coupling rates.
+J coupling matrices are loaded from the legacy 8-axis CSV
+(data/J_matrix_compiled.csv) for the 4-axis simulation model, and scaled
+by a calibration scalar to map SD-per-SD literature values to simulation
+coupling rates.  The full 9-axis matrix is available in
+data/J_matrix_compiled_9x9.csv.
 
 The CSV provides basin-stratified values (healthy / pre-disease / disease).
 The healthy basin maps to the age 30 anchor, and the disease basin maps to
@@ -21,7 +23,7 @@ _TAU_30 = np.array([7.0, 0.1, 0.01, 8.0])     # CRP ~1wk, glucose ~2-3h, HRR ~1-
 _TAU_80 = np.array([25.0, 0.30, 0.04, 42.0])   # CRP ~3.5wk, glucose ~7h, HRR ~58min, muscle ~6wk
 
 # Anchor values for J at ages 30 and 80
-# Loaded from data/J_matrix_compiled.csv with calibration scalar applied.
+# Loaded from legacy data/J_matrix_compiled.csv with calibration scalar applied.
 # Convention: J[i,j] = effect of axis j on axis i.
 #   Columns (j) = source axis: I, M, N, F
 #   Rows (i) = target axis:    I, M, N, F
