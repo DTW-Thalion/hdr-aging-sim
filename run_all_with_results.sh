@@ -41,6 +41,18 @@ if [ -f "data/elsa/gh_elsa_h_hdr_subset.tab" ]; then
     echo ""
     echo "--- ELSA Cohort Validation ---"
     python3 scripts/run_elsa_validation.py
+
+    echo ""
+    echo "--- R6 Figure: Coupling Tightening ---"
+    python3 scripts/run_figure_coupling_tightening.py
+
+    echo ""
+    echo "--- R6 Figure: Mortality Prediction ---"
+    python3 scripts/run_figure_mortality_prediction.py
+
+    echo ""
+    echo "--- R6 Figure: Medication Compression ---"
+    python3 scripts/run_figure_medication_compression.py
 else
     echo ""
     echo "--- ELSA Cohort Validation: SKIPPED (data not present) ---"
