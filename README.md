@@ -262,6 +262,30 @@ Key corrections in R5:
 - **1d**: SWDS-Γ uses cross-sectional stratum covariance
 - **1e**: Survival time construction matches R4 exactly
 
+## R6 Analysis: D vs. J Primacy Decomposition
+
+Decomposes the age-dependent growth in Γ̂ into within-axis variance growth (D-degradation) vs. cross-axis correlation tightening (J-degradation), testing whether aging is primarily driven by loss of individual regulatory capacity (damage/stochastic theories) or by strengthening of pathological inter-axis coupling (hyperfunction theory).
+
+```bash
+python scripts/run_dj_primacy.py
+```
+
+This is a **Tier-1 analysis**: uses only the sample covariance Γ̂, no drift estimation, no diffusion Q specification, no structural assumptions on A beyond the OU model.
+
+Key findings:
+* **Both V_norm and C_norm decline** with age (p < 0.01 for both), reflecting medication-compressed covariance in older strata
+* **Primacy ratio P ≈ 1.0** across all strata in the medication-naive subgroup (slope = +0.0014/yr, p = 0.456)
+* **Proportional co-degradation**: D and J degrade in lock-step — neither damage/stochastic nor hyperfunction theories alone dominate
+* The I↔M coupling is the dominant pair (~0.30–0.40), while I↔F and M↔F are weak (~0.05–0.10)
+* F-axis (functional) variance declines steeply with age — survivorship bias (weakest die first)
+
+| Script | Output | Description |
+|--------|--------|-------------|
+| `run_dj_primacy.py` | `outputs/figure_dj_primacy.pdf` | 3-panel: V/C trends, primacy ratio (full), primacy ratio (med-naive) |
+| `run_dj_primacy.py` | `outputs/figure_dj_pairwise.pdf` | 4-panel: per-axis variances and pairwise correlations |
+| `run_dj_primacy.py` | `outputs/dj_primacy_results.txt` | Full numerical results and interpretation |
+| `run_dj_primacy.py` | `outputs/dj_primacy_results.json` | Machine-readable results |
+
 ### Reproducibility
 
 `outputs/elsa_results_ledger.json` contains SHA-256 hashes of all data files and every numerical result reported in Appendix H. Use this to verify that your ELSA data extract and pipeline output match ours.

@@ -161,5 +161,39 @@
       "size_bytes": 141831
     }
   },
-  "r6_notes": "R6 restructures ELSA validation figures into 3 separate 3-panel figures (coupling tightening, mortality prediction, medication compression) to support the revised Results narrative where medication compression is the central finding."
+  "r6_dj_primacy": {
+    "run_dj_primacy.py": {
+      "path": "scripts/run_dj_primacy.py",
+      "sha256": "793017bca2432c1b76cdc48ff51baa60a9108b4b54d15c56e107aa1e20f4548b",
+      "size_bytes": 36162
+    },
+    "figure_dj_primacy.pdf": {
+      "path": "outputs/figure_dj_primacy.pdf",
+      "sha256": "7e59b330d69dcaf43fd443abd68813c6510ba481892bbae6f90eec400a11604c",
+      "size_bytes": 33120
+    },
+    "figure_dj_pairwise.pdf": {
+      "path": "outputs/figure_dj_pairwise.pdf",
+      "sha256": "54032b57152da077e82fd4dc8b5213703939b45c8c1af47167d585b2b9e42edf",
+      "size_bytes": 30260
+    },
+    "full_sample": {
+      "n_wave2": 5440,
+      "n_strata": 8,
+      "P_slope_per_year": -0.008389,
+      "P_p_value": 0.051898,
+      "V_norm_slope": -0.008296,
+      "C_norm_slope": -0.014322
+    },
+    "medication_naive": {
+      "n_wave2": 3237,
+      "n_strata": 8,
+      "P_slope_per_year": 0.001395,
+      "P_p_value": 0.456205,
+      "V_norm_slope": -0.007227,
+      "C_norm_slope": -0.006042
+    },
+    "interpretation": "Proportional co-degradation: P ~ 1.0 across all strata in med-naive subgroup. Neither damage/stochastic nor hyperfunction theories alone dominate."
+  },
+  "r6_notes": "R6 restructures ELSA validation figures into 3 separate 3-panel figures (coupling tightening, mortality prediction, medication compression) to support the revised Results narrative where medication compression is the central finding. The D vs J primacy decomposition tests whether aging is driven by D-degradation (capacity loss) or J-degradation (coupling strengthening)."
 }
