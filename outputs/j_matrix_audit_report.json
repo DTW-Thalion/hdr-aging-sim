@@ -1,0 +1,42 @@
+{
+  "csv_counts": {
+    "positive": 57,
+    "negative": 11,
+    "unknown": 4,
+    "assigned": 68
+  },
+  "manuscript_claims": {
+    "positive": 57,
+    "negative": 11,
+    "unknown": 4,
+    "assigned": 68
+  },
+  "discrepancies": {},
+  "missing_pmid_count": 5,
+  "missing_pmid_entries": [
+    "B->E sign=? grade=C",
+    "B->mito sign=? grade=C",
+    "B->P sign=? grade=C",
+    "B->C sign=? grade=C",
+    "mito->N sign=+ grade=C"
+  ],
+  "unknown_entries": [
+    "B->E (grade=C)",
+    "B->mito (grade=C)",
+    "B->P (grade=C)",
+    "B->C (grade=C)"
+  ],
+  "negative_entries": [
+    "F->I (grade=A)",
+    "B->I (grade=C)",
+    "F->M (grade=A)",
+    "B->M (grade=B)",
+    "F->E (grade=B)",
+    "F->mito (grade=A)",
+    "F->P (grade=B)",
+    "F->C (grade=B)",
+    "F->N (grade=B)",
+    "B->N (grade=C)",
+    "F->B (grade=A)"
+  ]
+}

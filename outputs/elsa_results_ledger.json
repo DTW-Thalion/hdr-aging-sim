@@ -1,5 +1,5 @@
 {
-  "pipeline_version": "v1.4-R5",
+  "pipeline_version": "v1.5-R6-figures",
   "manuscript_section": "Appendix H \u2014 ELSA Cohort Validation",
   "generated_by": "scripts/run_medication_sensitivity.py",
   "data_files": {
@@ -68,19 +68,19 @@
       "events": 1122,
       "M1": 0.6019,
       "M2": 0.6145,
-      "M3": 0.6030,
+      "M3": 0.603,
       "M4": 0.6093,
-      "M5": 0.6180,
+      "M5": 0.618,
       "delta_C_M5_M4": 0.0087
     },
     "cox_3axis_mednative": {
       "description": "3-axis Cox on medication-naive subsample",
       "N": 3233,
       "events": 618,
-      "M1": 0.5860,
-      "M2": 0.6050,
+      "M1": 0.586,
+      "M2": 0.605,
       "M3": 0.5861,
-      "M4": 0.6000,
+      "M4": 0.6,
       "M5": 0.6131,
       "delta_C_M5_M4": 0.0131
     },
@@ -116,7 +116,7 @@
       "description": "4-axis with HbA1c-only metabolic axis (statin-robust)",
       "N": 4818,
       "events": 988,
-      "delta_C_M5_M4": 0.0060
+      "delta_C_M5_M4": 0.006
     },
     "fi_baseline": {
       "note": "Rockwood Frailty Index at wave 2 baseline (complete 3-axis sample)",
@@ -128,5 +128,38 @@
       "delta_c": 0.0067,
       "note": "R4 used unmatched samples (different N per model)"
     }
-  }
+  },
+  "r6_figures": {
+    "run_figure_coupling_tightening.py": {
+      "path": "scripts/run_figure_coupling_tightening.py",
+      "sha256": "8153510b208069d118b1b7994f17d243c44bc31236c48b33c926817c143ed94b",
+      "size_bytes": 9635
+    },
+    "run_figure_mortality_prediction.py": {
+      "path": "scripts/run_figure_mortality_prediction.py",
+      "sha256": "5bcd2953b7a8ee87b86bbf40a53c84788a734c3047187da201c2c2cda93ac4c5",
+      "size_bytes": 18272
+    },
+    "run_figure_medication_compression.py": {
+      "path": "scripts/run_figure_medication_compression.py",
+      "sha256": "34977bf464df866a33914ecfec88dd6d8f93360f29c880cfde69dbb45e249a14",
+      "size_bytes": 17704
+    },
+    "figure_coupling_tightening.pdf": {
+      "path": "outputs/figure_coupling_tightening.pdf",
+      "sha256": "8081a1f2bd54dad2f0a77f54a94f627d26e55b1c55dcec3cfb008beff245e53e",
+      "size_bytes": 43800
+    },
+    "figure_mortality_prediction.pdf": {
+      "path": "outputs/figure_mortality_prediction.pdf",
+      "sha256": "13858a61042a8f4fcc51dd1699ca3cb5e36fcd8f8aca9150f3282034c4561d15",
+      "size_bytes": 30953
+    },
+    "figure_medication_compression.pdf": {
+      "path": "outputs/figure_medication_compression.pdf",
+      "sha256": "b2c218c59e3af456884d9da5cdeab18c4f7e6a644ad19efd6ac577ed3b8320b6",
+      "size_bytes": 141831
+    }
+  },
+  "r6_notes": "R6 restructures ELSA validation figures into 3 separate 3-panel figures (coupling tightening, mortality prediction, medication compression) to support the revised Results narrative where medication compression is the central finding."
 }
