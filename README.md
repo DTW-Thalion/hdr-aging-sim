@@ -205,6 +205,12 @@ Note: NHANES XPT files are downloaded from CDC servers at runtime (~7 MB total).
 | `run_figure_gamma_equivalence.py` | `outputs/figure_gamma_equivalence.pdf` | Figure X (Γ-native equivalence) |
 | `run_figure_prior_stress.py` | `outputs/figure_prior_stress.pdf` | Figure Y (prior stress tests) |
 | `run_elsa_validation.py` | `outputs/figure_elsa_validation.pdf` | Figure Z (ELSA cohort validation) |
+| `run_medication_sensitivity.py` | `outputs/elsa_medication_sensitivity.json` | R5 corrected Cox models |
+| `run_figure_coupling_tightening.py` | `outputs/figure_coupling_tightening.pdf` | R6 coupling tightening |
+| `run_figure_mortality_prediction.py` | `outputs/figure_mortality_prediction.pdf` | R6 mortality prediction |
+| `run_figure_medication_compression.py` | `outputs/figure_medication_compression.pdf` | R6 medication compression |
+| `run_dj_primacy.py` | `outputs/figure_dj_primacy.pdf` | R6 D vs J primacy (3-panel) |
+| `run_dj_primacy.py` | `outputs/figure_dj_pairwise.pdf` | R6 pairwise variance/correlation |
 
 ## R4 Revision: Γ-Native Pivot
 
@@ -285,6 +291,14 @@ Key findings:
 | `run_dj_primacy.py` | `outputs/figure_dj_pairwise.pdf` | 4-panel: per-axis variances and pairwise correlations |
 | `run_dj_primacy.py` | `outputs/dj_primacy_results.txt` | Full numerical results and interpretation |
 | `run_dj_primacy.py` | `outputs/dj_primacy_results.json` | Machine-readable results |
+
+### R6 Utility Scripts
+
+| Script | Purpose |
+|--------|---------|
+| `verify_J_matrix_counts.py` | Audits 9×9 J matrix CSV sign counts (57+, 11−, 4?) and generates `outputs/j_matrix_audit_report.json` |
+| `populate_pmids.py` | Populates missing `pmid_primary` entries in `J_matrix_compiled_9x9.csv` (67/72 now cited; 5 gaps in B-axis unknowns and one theoretical mito→N entry) |
+| `update_ledger_r6.py` | Updates `outputs/elsa_results_ledger.json` with SHA-256 hashes for R6 figure files |
 
 ### Reproducibility
 

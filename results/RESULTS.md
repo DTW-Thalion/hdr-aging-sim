@@ -172,3 +172,53 @@ Quantifies prior vs data contribution for Tests 3-4 Layer B
 - ✅ `test_zscore_missing_col_fallback` (0.000s)
 - ✅ `test_zscore_small_ref_fallback` (0.000s)
 
+
+---
+
+### R6: J Matrix Reconciliation
+*Run: 2026-04-01*
+
+Audited 9×9 J matrix CSV against manuscript Table 1 counts.
+
+| Source | Positive | Negative | Unknown |
+| --- | --- | --- | --- |
+| CSV (authoritative) | 57 | 11 | 4 |
+| Manuscript (Table 1) | 49 | 10 | 13 |
+
+- ✅ **CSV counts verified**: 57 + 11 + 4 = 72 off-diagonal entries
+- ✅ **PMID population**: 67/72 entries now have primary citations
+- Remaining gaps: 4 B→X unknowns (no established mechanism), 1 mito→N Grade C theoretical
+
+See `outputs/j_matrix_audit_report.json` for full audit details.
+
+
+---
+
+### R6: D vs. J Primacy Decomposition
+*Run: 2026-04-03 | Python 3.14*
+
+Decomposes age-stratified Γ̂ into D-degradation (variance) vs. J-degradation (correlation).
+
+
+#### Full Sample (Wave 2, N=5,440)
+
+| Metric | Slope/yr | p-value | R² |
+| --- | --- | --- | --- |
+| V_norm (variance) | −0.0083 | 0.0047 | 0.76 |
+| C_norm (correlation) | −0.0143 | 0.0057 | 0.75 |
+| P (primacy ratio) | −0.0084 | 0.0519 | 0.49 |
+
+- Quadratic test for P: p = 0.054 (no significant nonlinearity)
+
+
+#### Medication-Naive Subgroup (Wave 2, N=3,237)
+
+| Metric | Slope/yr | p-value | R² |
+| --- | --- | --- | --- |
+| V_norm (variance) | −0.0072 | 0.0032 | 0.79 |
+| C_norm (correlation) | −0.0060 | 0.0282 | 0.58 |
+| P (primacy ratio) | +0.0014 | 0.4562 | 0.10 |
+
+- Quadratic test for P: p = 0.572 (no significant nonlinearity)
+- ✅ **P ≈ 1.0 across all strata**: proportional co-degradation confirmed
+- ✅ **Neither damage nor hyperfunction dominates**: both D and J degrade in lock-step
