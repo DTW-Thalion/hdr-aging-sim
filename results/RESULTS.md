@@ -222,3 +222,43 @@ Decomposes age-stratified Γ̂ into D-degradation (variance) vs. J-degradation (
 - Quadratic test for P: p = 0.572 (no significant nonlinearity)
 - ✅ **P ≈ 1.0 across all strata**: proportional co-degradation confirmed
 - ✅ **Neither damage nor hyperfunction dominates**: both D and J degrade in lock-step
+
+
+---
+
+### R6: Figure P-Value Corrections (E2/E3)
+*Run: 2026-04-04 | Python 3.14*
+
+Co-author review flagged two p-value discrepancies in R6 figures.
+
+
+#### E2: Coupling Tightening Trend (Figure 3a)
+
+Original annotation used Kendall τ on n=4 strata midpoints, which has minimum achievable p=0.333 for any monotone sequence. Replaced with permutation trend test (10,000 iterations).
+
+| Stratum | λ_max(Γ̂_change) | 95% CI |
+| --- | --- | --- |
+| 50–59 | 0.7227 | [0.6408, 0.8222] |
+| 60–69 | 0.7013 | [0.6547, 0.7538] |
+| 70–79 | 0.7751 | [0.7087, 0.8484] |
+| 80+ | 0.8704 | [0.7426, 1.0128] |
+
+- **Permutation trend**: τ = 0.667, p = 0.2139
+- Sequence is non-monotone (dip at 60–69 stratum)
+- Trend not significant at α = 0.05
+
+
+#### E3: KM Survival by SWDS-Γ Tertile (Figure 4c)
+
+Med-naive KM genuinely non-significant. Events near-equal across tertiles — no survival separation. Full-sample KM shows significant separation and is now used in the figure.
+
+| Subgroup | N | Events | T1 events | T2 events | T3 events | p (log-rank, T1 vs T3) |
+| --- | --- | --- | --- | --- | --- | --- |
+| Med-naive | 3,233 | 618 | 203 | 197 | 218 | 0.7873 |
+| Full sample | 5,431 | 1,122 | 344 | 362 | 416 | 0.0079 |
+
+- Figure 4c now shows **full sample** KM (p = 0.0079)
+- Med-naive definition (r2hibpe==0 AND r2diabe==0) is consistent with Cox model
+- Deceased coding confirmed correct (0=censored, 1=dead)
+- Survival time construction confirmed correct (mean ~19y, max 20y)
+- ⚠️ Med-naive subgroup has insufficient SWDS-Γ variance to separate KM curves despite ΔC = +0.013 in Cox model

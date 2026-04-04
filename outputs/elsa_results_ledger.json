@@ -55,12 +55,23 @@
       "70-79": 1.1829,
       "80+": 1.2069
     },
-    "visit_pair_lambda_max": {
+    "within_person_lambda_max": {
       "note": "Within-person residual covariance \u03bb_max by baseline age stratum (3-axis)",
-      "50-59": 0.2227,
-      "60-69": 0.2153,
-      "70-79": 0.2353,
-      "80+": 0.1373
+      "50-59": 0.2450,
+      "60-69": 0.2432,
+      "70-79": 0.2818,
+      "80+": 0.2121
+    },
+    "visit_pair_gamma_change_lambda_max": {
+      "note": "Visit-pair \u0394(\u0394x) covariance \u03bb_max by age stratum (3-axis, Figure 3a)",
+      "50-59": 0.7227,
+      "60-69": 0.7013,
+      "70-79": 0.7751,
+      "80+": 0.8704,
+      "trend_test": "permutation (10,000 iterations)",
+      "trend_tau": 0.667,
+      "trend_p": 0.2139,
+      "trend_note": "Non-monotone sequence (dip at 60-69); trend not significant at \u03b1=0.05"
     },
     "cox_3axis_full_matched": {
       "description": "3-axis Cox models on matched sample (same N for all 5 models)",
@@ -83,6 +94,31 @@
       "M4": 0.6,
       "M5": 0.6131,
       "delta_C_M5_M4": 0.0131
+    },
+    "km_survival_by_tertile": {
+      "note": "Kaplan-Meier survival by SWDS-\u0393 tertile (Figure 4c)",
+      "med_naive": {
+        "N": 3233,
+        "events": 618,
+        "T1_events": 203,
+        "T2_events": 197,
+        "T3_events": 218,
+        "logrank_p_T1_vs_T3": 0.7873,
+        "significant": false,
+        "note": "Near-equal events across tertiles; no survival separation in med-naive"
+      },
+      "full_sample": {
+        "N": 5431,
+        "events": 1122,
+        "T1_events": 344,
+        "T2_events": 362,
+        "T3_events": 416,
+        "logrank_p_T1_vs_T3": 0.0079,
+        "significant": true,
+        "note": "Clear event gradient across tertiles; figure shows full sample"
+      },
+      "figure_shows": "full_sample",
+      "figure_note": "Med-naive KM non-significant (p=0.787); figure uses full sample (p=0.008)"
     },
     "cox_4axis_full": {
       "description": "4-axis Cox models on matched sample",
@@ -132,13 +168,13 @@
   "r6_figures": {
     "run_figure_coupling_tightening.py": {
       "path": "scripts/run_figure_coupling_tightening.py",
-      "sha256": "8153510b208069d118b1b7994f17d243c44bc31236c48b33c926817c143ed94b",
-      "size_bytes": 9635
+      "sha256": "893d337068869bca1e5068f9ff0310beb3916fe215d141f8620208765da34678",
+      "size_bytes": 13373
     },
     "run_figure_mortality_prediction.py": {
       "path": "scripts/run_figure_mortality_prediction.py",
-      "sha256": "5bcd2953b7a8ee87b86bbf40a53c84788a734c3047187da201c2c2cda93ac4c5",
-      "size_bytes": 18272
+      "sha256": "3f94bfba0089751cc2681d1f0fc9a9cdcc092a999fb1ceb66b9655ab2defe343",
+      "size_bytes": 21123
     },
     "run_figure_medication_compression.py": {
       "path": "scripts/run_figure_medication_compression.py",
@@ -147,13 +183,13 @@
     },
     "figure_coupling_tightening.pdf": {
       "path": "outputs/figure_coupling_tightening.pdf",
-      "sha256": "8081a1f2bd54dad2f0a77f54a94f627d26e55b1c55dcec3cfb008beff245e53e",
-      "size_bytes": 43800
+      "sha256": "55a736ca976ed932f3cd6624e76baffd7282cab74d9916a39ef74f95b61797e2",
+      "size_bytes": 44091
     },
     "figure_mortality_prediction.pdf": {
       "path": "outputs/figure_mortality_prediction.pdf",
-      "sha256": "13858a61042a8f4fcc51dd1699ca3cb5e36fcd8f8aca9150f3282034c4561d15",
-      "size_bytes": 30953
+      "sha256": "0874ca9f4b6e3e475b6e31af60418b5c37d67b2143f1e23f1a3883b67c2b0bf2",
+      "size_bytes": 31029
     },
     "figure_medication_compression.pdf": {
       "path": "outputs/figure_medication_compression.pdf",

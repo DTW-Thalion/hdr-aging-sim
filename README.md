@@ -238,7 +238,7 @@ Key analyses:
 * Within-person λ_max(Γ̂_within) by age stratum (key result — tests stability erosion using within-person covariance, avoiding survivorship/medication confounds)
 * Individual SWDS-Γ scores and distribution
 * 5 nested Cox mortality models (age+sex, +biomarkers, +SWDS-Γ, +Rockwood FI, full)
-* Kaplan-Meier survival by SWDS-Γ tertile
+* Kaplan-Meier survival by SWDS-Γ tertile (full sample; medication-naive subgroup shows no significant separation)
 
 ### New Estimation Functions
 
