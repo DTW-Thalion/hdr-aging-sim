@@ -40,6 +40,14 @@ sys.path.insert(0, os.path.join(ROOT, 'src'))
 from hdr_sim.estimation import gamma_stability_proxy
 from hdr_sim.plotting import setup_style, add_panel_label, save_figure
 
+MODELS = {
+    '3-axis': {
+        'axes': ['dx_I', 'dx_M', 'dx_F'],
+        'complete_col': 'complete_3axis',
+        'label': 'I, M, F (3-axis)',
+    },
+}
+
 # Import reusable functions from run_elsa_validation.py
 _val_spec = importlib.util.spec_from_file_location(
     "run_elsa_validation",
@@ -89,6 +97,97 @@ def load_data():
     return merged
 
 
+def _build_visit_pair_diffs(merged, model_key='3-axis'):
+    """Reconstruct visit-pair difference vectors with stratum labels."""
+    model = MODELS[model_key]
+    axes = model['axes']
+    complete_col = model['complete_col']
+    in_long_col = 'in_longitudinal'
+
+    long_data = merged[merged[in_long_col] & merged[complete_col]].copy()
+    long_data = long_data.sort_values(['idauniq', 'wave'])
+
+    diffs = []
+    for uid, group in long_data.groupby('idauniq'):
+        if len(group) < 2:
+            continue
+        for i in range(len(group) - 1):
+            row_a = group.iloc[i]
+            row_b = group.iloc[i + 1]
+            diff = {ax: row_b[ax] - row_a[ax] for ax in axes}
+            diff['idauniq'] = uid
+            diff['age_mid'] = (row_a['age'] + row_b['age']) / 2
+            diffs.append(diff)
+
+    if not diffs:
+        return pd.DataFrame(), axes
+    diff_df = pd.DataFrame(diffs)
+
+    # Assign age stratum
+    diff_df['stratum'] = -1
+    for s_idx, (lo, hi) in enumerate(AGE_STRATA):
+        mask = (diff_df['age_mid'] >= lo) & (diff_df['age_mid'] < hi)
+        diff_df.loc[mask, 'stratum'] = s_idx
+    diff_df = diff_df[diff_df['stratum'] >= 0].copy()
+    return diff_df, axes
+
+
+def _compute_stratum_lambdas(diff_df, axes, n_strata=4):
+    """Compute lambda_max per stratum from visit-pair differences."""
+    lambdas = []
+    for s in range(n_strata):
+        sub = diff_df[diff_df['stratum'] == s]
+        if len(sub) < 10:
+            return None
+        X = sub[axes].values
+        G = np.cov(X.T)
+        proxy = gamma_stability_proxy(G)
+        lambdas.append(proxy['lambda_max'])
+    return np.array(lambdas)
+
+
+def permutation_trend_test(merged, model_key='3-axis', n_perm=10000, seed=2026):
+    """
+    Permutation test for monotone trend in λ_max across age strata.
+
+    H0: stratum assignment is exchangeable (no age-dependent trend).
+    Test statistic: Kendall τ between stratum rank and λ_max.
+    """
+    diff_df, axes = _build_visit_pair_diffs(merged, model_key)
+    if diff_df.empty:
+        return np.nan, np.nan
+
+    n_strata = len(AGE_STRATA)
+
+    # Observed statistic
+    obs_lambdas = _compute_stratum_lambdas(diff_df, axes, n_strata)
+    if obs_lambdas is None:
+        return np.nan, np.nan
+    obs_tau, _ = stats.kendalltau(np.arange(n_strata), obs_lambdas)
+
+    # Permutation distribution: shuffle stratum labels across visit-pairs
+    rng = np.random.RandomState(seed)
+    strata_arr = diff_df['stratum'].values.copy()
+    stratum_sizes = [np.sum(strata_arr == s) for s in range(n_strata)]
+
+    count_ge = 0
+    for _ in range(n_perm):
+        perm = rng.permutation(strata_arr)
+        diff_df['stratum'] = perm
+        perm_lambdas = _compute_stratum_lambdas(diff_df, axes, n_strata)
+        if perm_lambdas is None:
+            continue
+        perm_tau, _ = stats.kendalltau(np.arange(n_strata), perm_lambdas)
+        if perm_tau >= obs_tau:
+            count_ge += 1
+
+    # Restore original stratum labels
+    diff_df['stratum'] = strata_arr
+
+    p_perm = count_ge / n_perm
+    return obs_tau, p_perm
+
+
 def make_figure(merged):
     """Generate the 3-panel coupling tightening figure."""
     setup_style()
@@ -96,6 +195,12 @@ def make_figure(merged):
     # ---- Compute visit-pair analysis (3-axis) ----
     print("\n--- Computing visit-pair Gamma_change (3-axis) ---")
     vp_results = visit_pair_gamma(merged, model_key='3-axis', n_bootstrap=10000)
+
+    # ---- Permutation trend test for panel (a) p-value ----
+    print("\n--- Permutation trend test (10 000 permutations) ---")
+    perm_tau, perm_p = permutation_trend_test(merged, model_key='3-axis',
+                                               n_perm=10000, seed=SEED)
+    print(f"  Permutation trend: τ = {perm_tau:.3f}, p = {perm_p:.4f}")
 
     # ---- Compute cross-sectional Gamma (3-axis) ----
     print("\n--- Computing cross-sectional Gamma (3-axis) ---")
@@ -137,15 +242,19 @@ def make_figure(merged):
         ax.set_ylabel(r'$\lambda_{\max}(\hat{\Gamma}_{\mathrm{change}})$')
         ax.set_title(r'Visit-pair $\lambda_{\max}(\hat{\Gamma}_{\mathrm{change}})$')
 
-        # Jonckheere-Terpstra (approx via Kendall tau)
-        tau_val, p_val = stats.kendalltau(x, y)
-        ax.text(0.02, 0.98, f'$p_{{trend}}$ = {p_val:.4f}',
-                transform=ax.transAxes, fontsize=9, va='top', ha='left')
+        # Permutation-based trend p-value
+        if perm_p < 0.001:
+            p_str = '< 0.001'
+        else:
+            p_str = f'= {perm_p:.4f}'
+        ax.text(0.02, 0.98, f'$p_{{trend}}$ {p_str}\n(permutation, $n$ = 10 000)',
+                transform=ax.transAxes, fontsize=8, va='top', ha='left')
 
         # Print values for verification
-        print("\n  Panel (a) values:")
+        print("\n  Panel (a) lambda_max values:")
         for i, (label, val, lo, hi) in enumerate(zip(AGE_STRATA_LABELS, y, ci_lo, ci_hi)):
             print(f"    {label}: lambda_max = {val:.4f} [{lo:.4f}, {hi:.4f}]")
+        print(f"  Panel (a) lambda_max sequence: {', '.join(f'{v:.4f}' for v in y)}")
     else:
         ax.text(0.5, 0.5, 'No data', ha='center', va='center',
                 transform=ax.transAxes)

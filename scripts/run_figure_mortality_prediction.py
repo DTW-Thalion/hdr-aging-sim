@@ -401,7 +401,7 @@ def make_figure(results):
             print(f"    {l.replace(chr(10), ' ')}: DC = {v:+.4f}")
 
     # ================================================================
-    # Panel (c): KM by SWDS-Gamma tertile (med-naive)
+    # Panel (c): KM by SWDS-Gamma tertile
     # ================================================================
     ax = axes[2]
     add_panel_label(ax, '(c)')
@@ -411,17 +411,90 @@ def make_figure(results):
         from lifelines.statistics import logrank_test
 
         score_col = 'swds_gamma'
-        surv_data = baseline_naive[
+        baseline_full = results['baseline_full']
+
+        def _km_diagnostics(surv_data, label_str):
+            """Print KM diagnostic info for a dataset."""
+            print(f"\n  KM diagnostics ({label_str}):")
+            print(f"    Total N = {len(surv_data):,}, "
+                  f"events = {surv_data['deceased'].sum():,}")
+            print(f"    SWDS-Gamma: mean={surv_data[score_col].mean():.4f}, "
+                  f"std={surv_data[score_col].std():.4f}, "
+                  f"min={surv_data[score_col].min():.4f}, "
+                  f"max={surv_data[score_col].max():.4f}")
+            print(f"    Survival time: mean={surv_data['time'].mean():.1f}y, "
+                  f"max={surv_data['time'].max():.1f}y")
+            print(f"    Deceased coding: unique={sorted(surv_data['deceased'].unique())}")
+
+            tertiles = pd.qcut(surv_data[score_col], 3,
+                               labels=['T1 (low)', 'T2 (mid)', 'T3 (high)'])
+            surv_data = surv_data.copy()
+            surv_data['tertile'] = tertiles
+            for tl in ['T1 (low)', 'T2 (mid)', 'T3 (high)']:
+                sub = surv_data[surv_data['tertile'] == tl]
+                print(f"    {tl}: N={len(sub):,}, "
+                      f"events={sub['deceased'].sum():,}, "
+                      f"median SWDS-G={sub[score_col].median():.4f}")
+            return surv_data
+
+        def _km_logrank_p(surv_data):
+            """Compute log-rank p (T1 vs T3)."""
+            t1 = surv_data[surv_data['tertile'] == 'T1 (low)']
+            t3 = surv_data[surv_data['tertile'] == 'T3 (high)']
+            if len(t1) > 5 and len(t3) > 5:
+                lr = logrank_test(t1['time'], t3['time'],
+                                  t1['deceased'], t3['deceased'])
+                return lr.p_value
+            return np.nan
+
+        # --- Investigate med-naive KM first ---
+        surv_naive = baseline_naive[
             baseline_naive[score_col].notna() &
             baseline_naive['time'].notna() &
             (baseline_naive['time'] > 0)
         ].copy()
 
-        if len(surv_data) > 50 and surv_data['deceased'].sum() > 10:
-            tertiles = pd.qcut(surv_data[score_col], 3,
-                               labels=['T1 (low)', 'T2 (mid)', 'T3 (high)'])
-            surv_data['tertile'] = tertiles
+        surv_full = baseline_full[
+            baseline_full[score_col].notna() &
+            baseline_full['time'].notna() &
+            (baseline_full['time'] > 0)
+        ].copy()
 
+        naive_ok = (len(surv_naive) > 50 and
+                    surv_naive['deceased'].sum() > 10)
+        full_ok = (len(surv_full) > 50 and
+                   surv_full['deceased'].sum() > 10)
+
+        p_naive = np.nan
+        p_full = np.nan
+
+        if naive_ok:
+            surv_naive = _km_diagnostics(surv_naive, 'med-naive')
+            p_naive = _km_logrank_p(surv_naive)
+            print(f"    Log-rank p (T1 vs T3, med-naive) = {p_naive:.4f}")
+
+        if full_ok:
+            surv_full = _km_diagnostics(surv_full, 'full sample')
+            p_full = _km_logrank_p(surv_full)
+            print(f"    Log-rank p (T1 vs T3, full sample) = {p_full:.4f}")
+
+        # Decision: use med-naive if significant, else full sample
+        use_naive = naive_ok and p_naive < 0.05
+        if use_naive:
+            surv_data = surv_naive
+            km_label = '(medication-naive)'
+            p_used = p_naive
+            print(f"\n  => Using med-naive KM (p={p_naive:.4f})")
+        elif full_ok:
+            surv_data = surv_full
+            km_label = '(full sample)'
+            p_used = p_full
+            print(f"\n  => Med-naive KM non-significant (p={p_naive:.4f}); "
+                  f"using full sample (p={p_full:.4f})")
+        else:
+            surv_data = None
+
+        if surv_data is not None and len(surv_data) > 50:
             colors_km = ['forestgreen', 'orange', 'crimson']
             kmf = KaplanMeierFitter()
             for label, color in zip(['T1 (low)', 'T2 (mid)', 'T3 (high)'],
@@ -434,19 +507,17 @@ def make_figure(results):
                     kmf.plot_survival_function(ax=ax, color=color,
                                                linewidth=1.8)
 
-            # Log-rank test (T1 vs T3)
-            t1 = surv_data[surv_data['tertile'] == 'T1 (low)']
-            t3 = surv_data[surv_data['tertile'] == 'T3 (high)']
-            if len(t1) > 5 and len(t3) > 5:
-                lr = logrank_test(t1['time'], t3['time'],
-                                  t1['deceased'], t3['deceased'])
-                ax.text(0.02, 0.02, f'$p_{{log-rank}}$ = {lr.p_value:.4f}',
-                        transform=ax.transAxes, fontsize=8, va='bottom')
-                print(f"\n  Panel (c) log-rank p = {lr.p_value:.4f}")
+            # Annotate p-value
+            if p_used < 0.001:
+                p_str = '< 0.001'
+            else:
+                p_str = f'= {p_used:.4f}'
+            ax.text(0.02, 0.02, f'$p_{{log-rank}}$ {p_str}',
+                    transform=ax.transAxes, fontsize=8, va='bottom')
 
             ax.set_xlabel('Years from baseline')
             ax.set_ylabel('Survival probability')
-            ax.set_title('KM by SWDS-$\\Gamma$ tertile\n(medication-naive)')
+            ax.set_title(f'KM by SWDS-$\\Gamma$ tertile\n{km_label}')
             ax.legend(fontsize=8)
         else:
             ax.text(0.5, 0.5, 'Insufficient events', ha='center',
