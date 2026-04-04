@@ -195,5 +195,42 @@
     },
     "interpretation": "Proportional co-degradation: P ~ 1.0 across all strata in med-naive subgroup. Neither damage/stochastic nor hyperfunction theories alone dominate."
   },
-  "r6_notes": "R6 restructures ELSA validation figures into 3 separate 3-panel figures (coupling tightening, mortality prediction, medication compression) to support the revised Results narrative where medication compression is the central finding. The D vs J primacy decomposition tests whether aging is driven by D-degradation (capacity loss) or J-degradation (coupling strengthening)."
+  "r6_ici_deployment": {
+    "run_elsa_ici_deployment.py": {
+      "path": "scripts/run_elsa_ici_deployment.py",
+      "sha256": "0296e20491995d12cd7230815a8d6257024e347fde65b6eed0a4128906e7bc90",
+      "size_bytes": 27888
+    },
+    "elsa_ici_deployment.json": {
+      "path": "outputs/elsa_ici_deployment.json",
+      "sha256": "1863656d8426e9fc876a82be0a1f285bd78a62b7267209d27c9a47dbdfb2ef9b",
+      "size_bytes": 6821
+    },
+    "elsa_ici_deployment_table.txt": {
+      "path": "outputs/elsa_ici_deployment_table.txt",
+      "sha256": "6c8c9c5bae2f6ddba92d8ef52d7926acb2e20068565895380b4c4333cfe47a89",
+      "size_bytes": 1312
+    },
+    "headline": {
+      "N_panel": 6245,
+      "N_3plus_waves": 3404,
+      "N_4_waves": 1200,
+      "d_min": 0.0208,
+      "omega_min_mu005": 144.1973,
+      "frac_meets_ELSA": 0.0,
+      "T_deploy_daily_months": 18.2,
+      "T_deploy_weekly_months": 153.2
+    },
+    "basin_assignment_sensitivity": {
+      "age_based_d_min": 0.0205,
+      "score_based_d_min": 0.4176
+    },
+    "R_matrix_sensitivity": {
+      "R_scale_0.5_d_min": 0.0218,
+      "R_scale_1.0_d_min": 0.0208,
+      "R_scale_2.0_d_min": 0.0192
+    },
+    "interpretation": "With 4-yearly blood-draw cadence, 0% of ELSA participants meet the ICI deployment threshold at any mu_bar tested (0.01-0.20). Daily wearable sensing would meet the threshold after ~18 months, providing a concrete pilot study design target."
+  },
+  "r6_notes": "R6 restructures ELSA validation figures into 3 separate 3-panel figures (coupling tightening, mortality prediction, medication compression) to support the revised Results narrative where medication compression is the central finding. The D vs J primacy decomposition tests whether aging is driven by D-degradation (capacity loss) or J-degradation (coupling strengthening). The ICI deployment assessment evaluates whether existing cohort data density is sufficient for safe closed-loop deployment."
 }

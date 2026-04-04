@@ -53,6 +53,10 @@ if [ -f "data/elsa/gh_elsa_h_hdr_subset.tab" ]; then
     echo ""
     echo "--- R6 Figure: Medication Compression ---"
     python3 scripts/run_figure_medication_compression.py
+
+    echo ""
+    echo "--- ELSA ICI Deployment Assessment ---"
+    python3 scripts/run_elsa_ici_deployment.py
 else
     echo ""
     echo "--- ELSA Cohort Validation: SKIPPED (data not present) ---"

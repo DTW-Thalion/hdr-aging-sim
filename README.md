@@ -211,6 +211,8 @@ Note: NHANES XPT files are downloaded from CDC servers at runtime (~7 MB total).
 | `run_figure_medication_compression.py` | `outputs/figure_medication_compression.pdf` | R6 medication compression |
 | `run_dj_primacy.py` | `outputs/figure_dj_primacy.pdf` | R6 D vs J primacy (3-panel) |
 | `run_dj_primacy.py` | `outputs/figure_dj_pairwise.pdf` | R6 pairwise variance/correlation |
+| `run_elsa_ici_deployment.py` | `outputs/elsa_ici_deployment.json` | ELSA ICI deployment assessment |
+| `run_elsa_ici_deployment.py` | `outputs/elsa_ici_deployment_table.txt` | ICI deployment manuscript table |
 
 ## R4 Revision: Γ-Native Pivot
 
@@ -291,6 +293,27 @@ Key findings:
 | `run_dj_primacy.py` | `outputs/figure_dj_pairwise.pdf` | 4-panel: per-axis variances and pairwise correlations |
 | `run_dj_primacy.py` | `outputs/dj_primacy_results.txt` | Full numerical results and interpretation |
 | `run_dj_primacy.py` | `outputs/dj_primacy_results.json` | Machine-readable results |
+
+### ELSA ICI Deployment Assessment
+
+Retrospective evaluation of the ICI deployment threshold (ω_min) against real ELSA longitudinal biomarker data, determining whether existing cohort data density is sufficient for safe closed-loop deployment.
+
+```bash
+python scripts/run_elsa_ici_deployment.py
+```
+
+Key findings:
+* **N = 6,245** participants with ≥2 complete 3-axis waves (I, M, F) across waves 2/4/6/8 (2004–2016)
+* **d_min = 0.021** — low basin separability between healthy (age 50–64) and disease (65+) covariance structures
+* **ω_min = 144** at μ̄ = 0.05 — far exceeds the max T_k^eff = 1.4 available from ELSA's 4-yearly cadence
+* **0% of participants** meet the deployment threshold under ELSA actual sensing
+* **Daily wearable sensing** would meet the threshold after ~18 months — a concrete pilot study design target
+* Basin assignment sensitivity: age-based and score-based methods produce qualitatively consistent conclusions (both confirm insufficient ELSA density), though score-based yields higher d_min (0.42 vs 0.02)
+
+| Script | Output | Description |
+|--------|--------|-------------|
+| `run_elsa_ici_deployment.py` | `outputs/elsa_ici_deployment.json` | Full machine-readable results |
+| `run_elsa_ici_deployment.py` | `outputs/elsa_ici_deployment_table.txt` | Manuscript summary table |
 
 ### R6 Utility Scripts
 
