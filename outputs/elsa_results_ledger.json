@@ -268,5 +268,38 @@
     },
     "interpretation": "With 4-yearly blood-draw cadence, 0% of ELSA participants meet the ICI deployment threshold at any mu_bar tested (0.01-0.20). Daily wearable sensing would meet the threshold after ~18 months, providing a concrete pilot study design target."
   },
-  "r6_notes": "R6 restructures ELSA validation figures into 3 separate 3-panel figures (coupling tightening, mortality prediction, medication compression) to support the revised Results narrative where medication compression is the central finding. The D vs J primacy decomposition tests whether aging is driven by D-degradation (capacity loss) or J-degradation (coupling strengthening). The ICI deployment assessment evaluates whether existing cohort data density is sufficient for safe closed-loop deployment."
+  "r6_basin_recovery": {
+    "run_elsa_basin_recovery.py": {
+      "path": "scripts/run_elsa_basin_recovery.py",
+      "sha256": "9ebbbec97cfb4fb6db5c8a94c9bed5c80a5ecd3f7cf9db2d29e390b749a42f67",
+      "size_bytes": 27725
+    },
+    "elsa_basin_recovery.json": {
+      "path": "outputs/elsa_basin_recovery.json",
+      "sha256": "2e277188536c4b76f09bb385bafb3d8e93753cb64d26e7e02972a057c4e80e97",
+      "size_bytes": 12316
+    },
+    "elsa_basin_recovery_table.txt": {
+      "path": "outputs/elsa_basin_recovery_table.txt",
+      "sha256": "dfeed7e3d8633eed8afda5249cd6755e84935602e5b9779ca84d89b57b13da2c",
+      "size_bytes": 1429
+    },
+    "headline": {
+      "N_obs": 20934,
+      "N_participants": 10085,
+      "K_opt_bic": 4,
+      "d_min_gmm_full_kl": 1.3213,
+      "d_min_gmm_cov_only": 0.0498,
+      "omega_min_mu005": 3.1,
+      "T_deploy_daily_months": 2.1,
+      "disagree_vs_age65_K2": 0.504
+    },
+    "gmm_model_selection": {
+      "K2_bic": 169710.0,
+      "K3_bic": 168313.3,
+      "K4_bic": 167772.8
+    },
+    "interpretation": "Data-driven GMM basin recovery produces d_min 63x larger than age-based assignment. Clusters reflect physiological state (inflammation, insulin resistance, grip strength), not age per se. Daily wearable deployment threshold met in ~2 months vs 18 months for age-based."
+  },
+  "r6_notes": "R6 restructures ELSA validation figures into 3 separate 3-panel figures (coupling tightening, mortality prediction, medication compression) to support the revised Results narrative where medication compression is the central finding. The D vs J primacy decomposition tests whether aging is driven by D-degradation (capacity loss) or J-degradation (coupling strengthening). The ICI deployment assessment evaluates whether existing cohort data density is sufficient for safe closed-loop deployment. The basin recovery analysis demonstrates that latent basins are recoverable from the data via GMM, addressing the TCST adversarial review."
 }

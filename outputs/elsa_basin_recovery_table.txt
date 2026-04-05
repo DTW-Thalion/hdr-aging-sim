@@ -1,0 +1,42 @@
+ELSA Data-Driven Basin Recovery: Comparison Table
+================================================================================
+
+GMM Model Selection (BIC / AIC):
+  K=2: BIC=169710.0, AIC=169559.0
+  K=3: BIC=168313.3, AIC=168082.7
+  K=4: BIC=167772.8, AIC=167462.8 *
+  (* = BIC-optimal)
+
+Method                            d_min  omega_min     T_deploy   Disagree
+______________________________ ________   (mu=.05)   (daily,mo)   (vs age)
+Age-based (<65 vs >=65)          0.0210      144.2         18.2       0.0%
+Score-based (median SWDS)        0.4180        7.2          0.9        N/A
+GMM (K=4)                        1.3213        3.1          2.1      50.4%
+
+Clinical Characterisation (K=2):
+--------------------------------------------------
+
+  Cluster A (healthier):
+    N = 17,325 (82.8%)
+    Mean age = 66.2 +/- 9.0
+    CRP = 2.23 +/- 2.30 mg/L
+    HbA1c = 38.0 +/- 4.0 mmol/mol
+    Grip = 31.6 +/- 11.4 kg
+    Male = 46.7%
+    Mortality rate = 17.2%
+
+  Cluster B (sicker):
+    N = 3,609 (17.2%)
+    Mean age = 67.5 +/- 8.9
+    CRP = 9.65 +/- 16.28 mg/L
+    HbA1c = 49.1 +/- 14.5 mmol/mol
+    Grip = 28.4 +/- 11.1 kg
+    Male = 40.3%
+    Mortality rate = 17.6%
+
+Sensing Scenarios (GMM, K=4, mu_bar=0.05):
+--------------------------------------------------
+  ELSA actual: 2472.0 months
+  Monthly panels: 100.1 months
+  Weekly wearable: 17.5 months
+  Daily wearable: 2.1 months

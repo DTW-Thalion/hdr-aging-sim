@@ -262,3 +262,51 @@ Med-naive KM genuinely non-significant. Events near-equal across tertiles — no
 - Deceased coding confirmed correct (0=censored, 1=dead)
 - Survival time construction confirmed correct (mean ~19y, max 20y)
 - ⚠️ Med-naive subgroup has insufficient SWDS-Γ variance to separate KM curves despite ΔC = +0.013 in Cox model
+
+
+---
+
+### R6: Data-Driven Basin Recovery (GMM)
+*Run: 2026-04-04 | Python 3.14*
+
+Addresses TCST adversarial review: demonstrates that latent basins are recoverable from the data itself (not just the exogenous age-65 threshold). GMM fitted on the pooled ELSA 3-axis panel (N = 20,934 observations across 10,085 participants).
+
+
+#### GMM Model Selection
+
+| K | BIC | AIC |
+| --- | --- | --- |
+| 2 | 169,710 | 169,559 |
+| 3 | 168,313 | 168,083 |
+| **4** | **167,773** | **167,463** |
+
+- BIC-optimal K = 4
+
+
+#### Basin Separability Comparison
+
+| Method | d_min | ω_min (μ̄=0.05) | T_deploy (daily) | Disagree vs age-65 |
+| --- | --- | --- | --- | --- |
+| Age-based (<65 vs ≥65) | 0.021 | 144.2 | 18.2 mo | 0% (by definition) |
+| Score-based (median SWDS) | 0.418 | 7.2 | 0.9 mo | N/A |
+| GMM (K=4) | 1.321 | 3.1 | 2.1 mo | 50.4% (K=2) |
+
+- GMM d_min 63× larger than age-based → clusters far more separable in biomarker space
+- Data-driven deployment threshold met in ~2 months (vs 18 months age-based)
+
+
+#### Clinical Characterisation (K=2 Solution)
+
+| | Cluster A (healthier) | Cluster B (sicker) |
+| --- | --- | --- |
+| N (%) | 17,325 (82.8%) | 3,609 (17.2%) |
+| Mean age | 66.2 ± 9.0 | 67.5 ± 8.9 |
+| CRP (mg/L) | 2.23 ± 2.30 | 9.65 ± 16.28 |
+| HbA1c (mmol/mol) | 38.0 ± 4.0 | 49.1 ± 14.5 |
+| Grip (kg) | 31.6 ± 11.4 | 28.4 ± 11.1 |
+| Male | 46.7% | 40.3% |
+| Mortality | 17.2% | 17.6% |
+
+- Cluster B = high-inflammatory, insulin-resistant, weak grip — consistent with multi-system dysregulation
+- Mean ages nearly identical (66 vs 68) — basins reflect physiological state, not age per se
+- ⚠️ HMM analysis skipped (hmmlearn unavailable on Python 3.14)

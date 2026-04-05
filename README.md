@@ -213,6 +213,8 @@ Note: NHANES XPT files are downloaded from CDC servers at runtime (~7 MB total).
 | `run_dj_primacy.py` | `outputs/figure_dj_pairwise.pdf` | R6 pairwise variance/correlation |
 | `run_elsa_ici_deployment.py` | `outputs/elsa_ici_deployment.json` | ELSA ICI deployment assessment |
 | `run_elsa_ici_deployment.py` | `outputs/elsa_ici_deployment_table.txt` | ICI deployment manuscript table |
+| `run_elsa_basin_recovery.py` | `outputs/elsa_basin_recovery.json` | Data-driven basin recovery (GMM/HMM) |
+| `run_elsa_basin_recovery.py` | `outputs/elsa_basin_recovery_table.txt` | Basin recovery comparison table |
 
 ## R4 Revision: Γ-Native Pivot
 
