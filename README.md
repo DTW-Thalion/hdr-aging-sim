@@ -211,6 +211,8 @@ Note: NHANES XPT files are downloaded from CDC servers at runtime (~7 MB total).
 | `run_figure_medication_compression.py` | `outputs/figure_medication_compression.pdf` | R6 medication compression |
 | `run_dj_primacy.py` | `outputs/figure_dj_primacy.pdf` | R6 D vs J primacy (3-panel) |
 | `run_dj_primacy.py` | `outputs/figure_dj_pairwise.pdf` | R6 pairwise variance/correlation |
+| `run_dj_validation.py` | `outputs/figure_dj_validation.pdf` | R6 D vs J validation (2×2 panel) |
+| `run_dj_validation.py` | `outputs/figure_dj_power.pdf` | R6 D vs J power analysis (3-panel) |
 | `run_elsa_ici_deployment.py` | `outputs/elsa_ici_deployment.json` | ELSA ICI deployment assessment |
 | `run_elsa_ici_deployment.py` | `outputs/elsa_ici_deployment_table.txt` | ICI deployment manuscript table |
 | `run_elsa_basin_recovery.py` | `outputs/elsa_basin_recovery.json` | Data-driven basin recovery (GMM/HMM) |
@@ -296,6 +298,36 @@ Key findings:
 | `run_dj_primacy.py` | `outputs/figure_dj_pairwise.pdf` | 4-panel: per-axis variances and pairwise correlations |
 | `run_dj_primacy.py` | `outputs/dj_primacy_results.txt` | Full numerical results and interpretation |
 | `run_dj_primacy.py` | `outputs/dj_primacy_results.json` | Machine-readable results |
+
+### D vs. J Primacy Simulation Validation
+
+Simulation-based validation that the primacy ratio P = C_norm / V_norm can discriminate D-only from J-only from proportional degradation under realistic strong-coupling conditions (ε ~ 0.9–3.6) with confounds. Responds to the reviewer objection that weak-coupling intuition may not hold at the HDR parameterization.
+
+```bash
+python scripts/run_dj_validation.py
+```
+
+Design:
+* **Phase 1** — Ground truth discrimination: 5 degradation regimes (Pure D, 75D/25J, 50D/50J, 25D/75J, Pure J) with total spectral-abscissa drift α(A) held constant via binary-search calibration. 7 age strata, N=5,000 samples/stratum, 200 MC runs.
+* **Phase 2** — Confounds: survivorship bias (top 5%/decade removed by ||Δx||²) and medication compression (I/M variance × 0.6 for age-increasing fraction of individuals).
+* **Phase 3** — Discrimination power and minimum detectable effect (MDE) analysis.
+
+Key findings:
+* **P discriminates D-only from J-only** even under strong coupling: Pure D yields negative P-slopes (~−0.010/yr), Pure J yields positive slopes (~+0.022/yr), with massive effect sizes (Cohen's d > 3, all p < 10⁻⁸⁰)
+* **Adjacent-regime discrimination power ≥ 0.85** for all pairs under clean conditions; all pairs achieve p < 0.05
+* **Monotone ordering survives realistic confounds** (survivorship + medication): P-slopes remain ordered across D/J regimes under the "Both" condition
+* **MDE at 80% power**: 0.0004/yr (3-axis), 0.0007/yr (4-axis) — the ELSA observed P-slope of +0.0014/yr exceeds the MDE, confirming adequate study power
+* **ELSA result is consistent with proportional co-degradation** (50D/50J mean slope = +0.005/yr; observed +0.0014/yr falls within the simulated distribution)
+
+Both 3-axis (I, M, F) and 4-axis (I, M, N, F) models produce qualitatively identical conclusions.
+
+| Script | Output | Description |
+|--------|--------|-------------|
+| `run_dj_validation.py` | `outputs/figure_dj_validation.pdf` | 2×2 panel: P(s) curves and P-slope vs D-fraction |
+| `run_dj_validation.py` | `outputs/figure_dj_power.pdf` | 3-panel: discrimination power and P-slope distribution |
+| `run_dj_validation.py` | `outputs/dj_validation_results.txt` | Full numerical results, power stats, and interpretation |
+| `run_dj_validation.py` | `outputs/dj_validation_results.json` | Machine-readable results |
+| `run_dj_validation.py` | `outputs/dj_validation_summary.md` | SI-ready markdown for supplementary materials |
 
 ### ELSA ICI Deployment Assessment
 

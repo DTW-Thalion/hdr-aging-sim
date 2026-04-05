@@ -36,6 +36,10 @@ echo ""
 echo "--- NHANES Feasibility ---"
 python3 scripts/run_nhanes_feasibility.py
 
+echo ""
+echo "--- R6 D vs. J Primacy Validation ---"
+python3 scripts/run_dj_validation.py
+
 # ELSA validation (only if data is present)
 if [ -f "data/elsa/gh_elsa_h_hdr_subset.tab" ]; then
     echo ""
