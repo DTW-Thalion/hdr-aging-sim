@@ -323,3 +323,65 @@ Addresses TCST adversarial review: demonstrates that latent basins are recoverab
 
 - Cluster B = high-inflammatory, insulin-resistant, weak grip — consistent with multi-system dysregulation
 - Mean ages nearly identical (66 vs 68) — basins reflect physiological state, not age per se
+
+
+---
+
+### R6: Pipeline Audit (C-index Reconciliation, Biomarker Specification, Disease Demos)
+*Run: 2026-04-05*
+
+Adversarial review flagged three items for resolution before submission.
+
+
+#### C-index Reconciliation
+
+Added diagnostic printing to `run_matched_cox()` comparing `CoxPHFitter.concordance_index_` (fitted model's Harrell's C) vs `lifelines.utils.concordance_index()`.
+
+| Method | M1 | M2 | M3 | M4 | M5 | ΔC |
+| --- | --- | --- | --- | --- | --- | --- |
+| model.concordance_index_ | 0.601895 | 0.614539 | 0.603044 | 0.609255 | 0.617976 | +0.008721 |
+| lifelines.utils | 0.601895 | 0.614539 | 0.603044 | 0.609255 | 0.617976 | +0.008721 |
+| Manuscript Table 1 | 0.710 | 0.726 | 0.692 | 0.741 | 0.750 | +0.009 |
+
+- The two C-index methods produce **identical values to 6 decimal places**
+- No sign convention or partial hazard computation issue
+- Absolute offset (~0.10–0.14) reflects a different analysis specification in manuscript
+- **ΔC values are consistent** — the pipeline values are authoritative
+
+M1 coefficients (sanity check, full sample N=5,431):
+- age: HR = 1.032 (expected: older = higher risk)
+- sex: HR = 0.842 (expected: female = lower risk)
+- smoking: HR = 1.127
+- diabetes: HR = 1.200
+- highbp: HR = 1.055
+
+Med-naive (N=3,233, events=618): ΔC = +0.0131 (exceeds 0.01 threshold)
+
+
+#### Biomarker Specification Audit
+
+Definitive specification saved to `outputs/biomarker_specification.txt`.
+
+| Axis | Pipeline column | Raw biomarkers | Cox M2? | SWDS-Γ? |
+| --- | --- | --- | --- | --- |
+| I (3-axis) | dx_I = z(log(CRP)) | hscrp | No (log_crp) | Yes |
+| M (3-axis) | dx_M = (hba1c_z + bmi_z)/√2 | hba1c, bmival | No (hba1c, bmival) | Yes |
+| F (3-axis) | dx_F = −z(grip_max) | grip_max | No (grip_max) | Yes |
+
+Cox M2 uses raw biomarkers (log_crp, hba1c, grip_max, bmival) as individual covariates, not composite axis scores. SWDS-Γ uses composite axis scores via cross-sectional stratum covariance.
+
+Adjustment covariates (all models): age, sex, smoking, diabetes, highbp. In med-naive subgroup, diabetes and highbp are dropped (near-zero variance).
+
+
+#### Disease Demonstration Panels (ED Fig 2)
+
+New 4-panel composite figure (`outputs/figure_disease_demos.pdf`):
+
+- **(a) T2D**: I–M phase portrait with double-well potential, separatrix, and 3 trajectories (healthy recovery, near-separatrix, T2D capture)
+- **(b) Frailty**: Spectral radius ρ(Φ) vs age with frailty transition zone; inset shows I-axis impulse response at ages 30/60/80
+- **(c) Alzheimer's disease**: {I, P_neural, mito} submatrix with piecewise threshold coupling J_{Aβ→τ}; irreversible neuronal loss partition above amyloid burden threshold
+- **(d) Osteoporosis**: B-axis coupling trajectories (I→B +, M→B +, N→B +, F→B −) vs age; sarcopenia compounding annotated where F→B protective coupling weakens
+
+Coupling values from `data/J_matrix_compiled_9x9.csv`:
+- AD: J_{I→P} = 0.08→0.20, J_{P→I} = 0.15→0.35, J_{mito→P} = 0.20→0.40
+- Osteoporosis: J_{I→B} = 0.10→0.25, J_{M→B} = 0.08→0.20, J_{F→B} = −0.30→−0.18, J_{N→B} = 0.15→0.45

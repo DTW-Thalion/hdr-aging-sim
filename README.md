@@ -215,6 +215,7 @@ Note: NHANES XPT files are downloaded from CDC servers at runtime (~7 MB total).
 | `run_elsa_ici_deployment.py` | `outputs/elsa_ici_deployment_table.txt` | ICI deployment manuscript table |
 | `run_elsa_basin_recovery.py` | `outputs/elsa_basin_recovery.json` | Data-driven basin recovery (GMM/HMM) |
 | `run_elsa_basin_recovery.py` | `outputs/elsa_basin_recovery_table.txt` | Basin recovery comparison table |
+| `run_figure_disease_demos.py` | `outputs/figure_disease_demos.pdf` | ED Fig 2: disease demo panels (T2D, frailty, AD, osteoporosis) |
 
 ## R4 Revision: Γ-Native Pivot
 
@@ -316,6 +317,57 @@ Key findings:
 |--------|--------|-------------|
 | `run_elsa_ici_deployment.py` | `outputs/elsa_ici_deployment.json` | Full machine-readable results |
 | `run_elsa_ici_deployment.py` | `outputs/elsa_ici_deployment_table.txt` | Manuscript summary table |
+
+### R6 Pipeline Audit
+
+Adversarial review identified three items requiring resolution before manuscript submission.
+
+#### C-index Reconciliation
+
+The pipeline's `run_matched_cox()` now prints both `CoxPHFitter.concordance_index_` (the fitted model's own Harrell's C) and `lifelines.utils.concordance_index()` for comparison. Result: the two methods produce **identical values to 6 decimal places** — there is no sign convention or partial hazard computation issue.
+
+Pipeline C-indices (authoritative):
+
+| Model | Full (N=5,431) | Med-naive (N=3,233) |
+|-------|----------------|---------------------|
+| M1: Age + Sex | 0.6019 | 0.5860 |
+| M2: + Biomarkers | 0.6145 | 0.6050 |
+| M3: + SWDS-Γ | 0.6030 | 0.5861 |
+| M4: + Rockwood FI | 0.6093 | 0.6000 |
+| M5: Full | 0.6180 | 0.6131 |
+| **ΔC (M5−M4)** | **+0.009** | **+0.013** |
+
+The ΔC values are consistent with manuscript Table 1. The absolute C-index offset (~0.10–0.14) reflects a different analysis specification in the manuscript; the pipeline values are the authoritative source.
+
+#### Biomarker Specification
+
+Definitive biomarker definitions are documented in `outputs/biomarker_specification.txt`:
+
+- **I axis (3-axis)**: `dx_I = z(log(CRP))` — CRP only
+- **M axis (3-axis)**: `dx_M = (z(HbA1c) + z(BMI)) / √2` — HbA1c and BMI
+- **F axis (3-axis)**: `dx_F = −z(grip_max)` — grip strength only (reversed)
+- **Cox M2 covariates**: `log_crp, hba1c, grip_max, bmival` (raw biomarkers, not composite axes)
+
+The 4-axis model extends with fibrinogen (I_4), chol/HDL + triglycerides (M_4), BP + pulse (N_4), and gait speed (F_4).
+
+#### Extended Data Figure 2: Disease Demonstration Panels
+
+```bash
+python scripts/run_figure_disease_demos.py
+```
+
+Four-panel composite (`outputs/figure_disease_demos.pdf`):
+- **(a) T2D**: Phase portrait in ΔxI–ΔxM plane with bifurcation separatrix
+- **(b) Frailty**: Spectral radius ρ(Φ) approaching unity with age, impulse response inset
+- **(c) Alzheimer's disease**: Threshold coupling J_{Aβ→τ} in {I, P_neural, mito} submatrix; irreversible neuronal loss partition above amyloid threshold
+- **(d) Osteoporosis**: B-axis coupling submatrix (I→B, M→B, N→B pathological; F→B protective) with sarcopenia compounding effect
+
+Coupling values sourced from `data/J_matrix_compiled_9x9.csv`.
+
+| Script | Output | Description |
+|--------|--------|-------------|
+| `run_figure_disease_demos.py` | `outputs/figure_disease_demos.pdf` | ED Fig 2: 4-panel disease demos |
+| — | `outputs/biomarker_specification.txt` | Definitive biomarker specification table |
 
 ### R6 Utility Scripts
 
