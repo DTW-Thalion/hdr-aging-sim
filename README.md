@@ -213,6 +213,7 @@ Note: NHANES XPT files are downloaded from CDC servers at runtime (~7 MB total).
 | `run_dj_primacy.py` | `outputs/figure_dj_pairwise.pdf` | R6 pairwise variance/correlation |
 | `run_dj_validation.py` | `outputs/figure_dj_validation.pdf` | R6 D vs J validation (2×2 panel) |
 | `run_dj_validation.py` | `outputs/figure_dj_power.pdf` | R6 D vs J power analysis (3-panel) |
+| `run_dj_bayes_robust.py` | `outputs/figure_dj_bayes_robust.pdf` | R6 Bayesian + misspecification robustness (5-panel) |
 | `run_elsa_ici_deployment.py` | `outputs/elsa_ici_deployment.json` | ELSA ICI deployment assessment |
 | `run_elsa_ici_deployment.py` | `outputs/elsa_ici_deployment_table.txt` | ICI deployment manuscript table |
 | `run_elsa_basin_recovery.py` | `outputs/elsa_basin_recovery.json` | Data-driven basin recovery (GMM/HMM) |
@@ -328,6 +329,31 @@ Both 3-axis (I, M, F) and 4-axis (I, M, N, F) models produce qualitatively ident
 | `run_dj_validation.py` | `outputs/dj_validation_results.txt` | Full numerical results, power stats, and interpretation |
 | `run_dj_validation.py` | `outputs/dj_validation_results.json` | Machine-readable results |
 | `run_dj_validation.py` | `outputs/dj_validation_summary.md` | SI-ready markdown for supplementary materials |
+
+### Bayesian Model Comparison & Misspecification Robustness
+
+Extends the simulation validation with (A) Bayesian model comparison and TOST equivalence test for the observed ELSA P-slope, and (B) misspecification robustness under three violations of OU model assumptions.
+
+```bash
+python scripts/run_dj_bayes_robust.py
+```
+
+**Analysis A — Bayesian model comparison:**
+* Bayes factors computed using simulation-calibrated P-slope distributions as empirical priors and the ELSA medication-naive P-slope (+0.0014/yr) as the datum
+* **50D/50J receives the highest posterior probability (0.456)** under uniform prior across 5 regimes
+* BF vs Pure D = 4.7 (substantial), vs Pure J = 386 (decisive), vs 25D/75J = 3.6 (substantial), vs 75D/25J = 1.4 (anecdotal)
+* TOST equivalence test does not reject (p = 0.61) — the observed slope falls slightly below the proportional regime's equivalence region, though the Bayesian analysis provides complementary support
+
+**Analysis B — Misspecification robustness:**
+* **M1 (Correlated noise, Q off-diag ρ=0.3)**: monotone ordering broken between adjacent D-dominated regimes; endpoint discrimination (Pure D vs Pure J) preserved with power ≥ 0.84
+* **M2 (Mild nonlinearity, 10% quadratic)**: monotone ordering preserved; wider CIs from Euler-Maruyama simulation reduce power for adjacent pairs
+* **M3 (Latent omitted axis, 4→3-axis projection)**: monotone ordering preserved; discrimination results nearly identical to baseline
+
+| Script | Output | Description |
+|--------|--------|-------------|
+| `run_dj_bayes_robust.py` | `outputs/figure_dj_bayes_robust.pdf` | 5-panel: posteriors, TOST, M1/M2/M3 robustness |
+| `run_dj_bayes_robust.py` | `outputs/dj_bayes_robust_results.json` | Machine-readable Bayes factors, TOST, power |
+| `run_dj_bayes_robust.py` | `outputs/dj_bayes_robust_summary.md` | SI-ready markdown (Section S9) |
 
 ### ELSA ICI Deployment Assessment
 

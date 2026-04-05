@@ -40,6 +40,10 @@ echo ""
 echo "--- R6 D vs. J Primacy Validation ---"
 python3 scripts/run_dj_validation.py
 
+echo ""
+echo "--- R6 D vs. J Bayesian + Misspecification Robustness ---"
+python3 scripts/run_dj_bayes_robust.py
+
 # ELSA validation (only if data is present)
 if [ -f "data/elsa/gh_elsa_h_hdr_subset.tab" ]; then
     echo ""
