@@ -39,9 +39,11 @@ pip install pandas pyreadstat
 ## Usage
 
 ```bash
-python scripts/run_figure2b.py        # Main figure: 4-panel aging demo
-python scripts/run_figure_frailty.py   # Frailty perturbation-response
-python scripts/run_figure_t2d.py       # T2D phase portrait
+python scripts/run_figure_network_schematic.py  # Main Fig 1: 9-axis network diagram
+python scripts/run_figure_J_heatmap.py          # Main Fig 2: 9x9 coupling heatmap
+python scripts/run_figure2b.py                  # Spectral-abscissa drift demo
+python scripts/run_figure_frailty.py            # Frailty perturbation-response
+python scripts/run_figure_t2d.py                # T2D phase portrait
 ```
 
 Figures are saved to `outputs/`.
@@ -209,11 +211,13 @@ Note: NHANES XPT files are downloaded from CDC servers at runtime (~7 MB total).
 | `run_figure_coupling_tightening.py` | `outputs/figure_coupling_tightening.pdf` | R6 coupling tightening |
 | `run_figure_mortality_prediction.py` | `outputs/figure_mortality_prediction.pdf` | R6 mortality prediction |
 | `run_figure_medication_compression.py` | `outputs/figure_medication_compression.pdf` | R6 medication compression |
+| `run_figure_network_schematic.py` | `outputs/figure_network_schematic.pdf` | Main Fig 1: 9-axis network diagram |
+| `run_figure_J_heatmap.py` | `outputs/figure_J_heatmap.pdf` | Main Fig 2: 9×9 annotated J coupling heatmap |
 | `run_dj_primacy.py` | `outputs/figure_dj_primacy.pdf` | R6 D vs J primacy (3-panel) |
-| `run_dj_primacy.py` | `outputs/figure_dj_pairwise.pdf` | R6 pairwise variance/correlation |
-| `run_dj_validation.py` | `outputs/figure_dj_validation.pdf` | R6 D vs J validation (2×2 panel) |
-| `run_dj_validation.py` | `outputs/figure_dj_power.pdf` | R6 D vs J power analysis (3-panel) |
-| `run_dj_bayes_robust.py` | `outputs/figure_dj_bayes_robust.pdf` | R6 Bayesian + misspecification robustness (5-panel) |
+| `run_figure_dj_pairwise.py` | `outputs/figure_dj_pairwise.pdf` | Supp Fig 4: pairwise variance/correlation vs age |
+| `run_dj_validation.py` | `outputs/figure_dj_validation.pdf` | Supp Fig 5: D vs J validation (2×2 panel) |
+| `run_dj_power.py` | `outputs/figure_dj_power.pdf` | Supp Fig 6: D vs J power analysis (3-panel) |
+| `run_dj_bayes_robust.py` | `outputs/figure_dj_bayes_robust.pdf` | Supp Fig 7: Bayesian + misspecification robustness |
 | `run_elsa_ici_deployment.py` | `outputs/elsa_ici_deployment.json` | ELSA ICI deployment assessment |
 | `run_elsa_ici_deployment.py` | `outputs/elsa_ici_deployment_table.txt` | ICI deployment manuscript table |
 | `run_elsa_basin_recovery.py` | `outputs/elsa_basin_recovery.json` | Data-driven basin recovery (GMM/HMM) |
@@ -276,6 +280,28 @@ Key corrections in R5:
 - **1d**: SWDS-Γ uses cross-sectional stratum covariance
 - **1e**: Survival time construction matches R4 exactly
 
+## R6 Main Figures: Network Schematic and Coupling Heatmap
+
+### 9-Axis Network Schematic (Main Figure 1)
+
+Publication-quality network diagram of the full 9-axis HDR coupling matrix, loaded from `data/J_matrix_compiled_9x9.csv`.
+
+```bash
+python scripts/run_figure_network_schematic.py
+```
+
+9 nodes in circular layout with edges coloured by sign: red = pathological (+), blue = protective (−), grey dashed = unknown/qualitative only. Edge width proportional to |J_ij|.
+
+### 9×9 J Coupling Heatmap (Main Figure 2)
+
+Annotated heatmap of the compiled mechanistic coupling matrix J (disease basin).
+
+```bash
+python scripts/run_figure_J_heatmap.py
+```
+
+Diverging RdBu_r colour map. Cells annotated with numeric values and confidence grades (A/B/C). Diagonal cells greyed out (self-restoration). Unknown entries marked with '?' and hatching.
+
 ## R6 Analysis: D vs. J Primacy Decomposition
 
 Decomposes the age-dependent growth in Γ̂ into within-axis variance growth (D-degradation) vs. cross-axis correlation tightening (J-degradation), testing whether aging is primarily driven by loss of individual regulatory capacity (damage/stochastic theories) or by strengthening of pathological inter-axis coupling (hyperfunction theory).
@@ -296,9 +322,19 @@ Key findings:
 | Script | Output | Description |
 |--------|--------|-------------|
 | `run_dj_primacy.py` | `outputs/figure_dj_primacy.pdf` | 3-panel: V/C trends, primacy ratio (full), primacy ratio (med-naive) |
-| `run_dj_primacy.py` | `outputs/figure_dj_pairwise.pdf` | 4-panel: per-axis variances and pairwise correlations |
+| `run_figure_dj_pairwise.py` | `outputs/figure_dj_pairwise.pdf` | 4-panel: per-axis variances and pairwise correlations (ELSA with synthetic fallback) |
 | `run_dj_primacy.py` | `outputs/dj_primacy_results.txt` | Full numerical results and interpretation |
 | `run_dj_primacy.py` | `outputs/dj_primacy_results.json` | Machine-readable results |
+
+### Pairwise Variance and Correlation Growth (Supplementary Figure 4)
+
+Standalone figure showing individual axis variances (Γ_II, Γ_MM, Γ_FF) and pairwise absolute correlations |r(I,M)|, |r(I,F)|, |r(M,F)| across age strata, comparing full sample vs medication-naive subgroup.
+
+```bash
+python scripts/run_figure_dj_pairwise.py
+```
+
+If ELSA data is available in `data/elsa/`, uses real data. Otherwise generates synthetic illustration data from the HDR model (clearly labelled). Bootstrap 95% CIs with 1000 resamples.
 
 ### D vs. J Primacy Simulation Validation
 
@@ -325,10 +361,20 @@ Both 3-axis (I, M, F) and 4-axis (I, M, N, F) models produce qualitatively ident
 | Script | Output | Description |
 |--------|--------|-------------|
 | `run_dj_validation.py` | `outputs/figure_dj_validation.pdf` | 2×2 panel: P(s) curves and P-slope vs D-fraction |
-| `run_dj_validation.py` | `outputs/figure_dj_power.pdf` | 3-panel: discrimination power and P-slope distribution |
+| `run_dj_power.py` | `outputs/figure_dj_power.pdf` | 3-panel: discrimination power, MDE vs sample size |
 | `run_dj_validation.py` | `outputs/dj_validation_results.txt` | Full numerical results, power stats, and interpretation |
 | `run_dj_validation.py` | `outputs/dj_validation_results.json` | Machine-readable results |
 | `run_dj_validation.py` | `outputs/dj_validation_summary.md` | SI-ready markdown for supplementary materials |
+
+### Standalone Power Analysis (Supplementary Figure 6)
+
+Standalone script for the discrimination power figure, including a MDE-vs-sample-size curve not present in the `run_dj_validation.py` output.
+
+```bash
+python scripts/run_dj_power.py
+```
+
+Three panels: (a) discrimination power between adjacent regime pairs (3-axis), (b) same for 4-axis, (c) MDE curve vs sample size per stratum (N = 500–10,000) with observed ELSA slope (+0.0014/yr) and 3-axis MDE (0.0004/yr) marked.
 
 ### Bayesian Model Comparison & Misspecification Robustness
 
