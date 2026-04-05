@@ -114,6 +114,16 @@ def compute_scores_and_cox(merged, harm):
     """Compute SWDS-Gamma, benchmarks, and run Cox models for full and med-naive."""
     axes_3 = ['dx_I', 'dx_M', 'dx_F']
 
+    # --- Biomarker audit: print exact columns used ---
+    print("\n--- Biomarker Audit (mortality prediction, 3-axis) ---")
+    print(f"  Axes: {axes_3}")
+    print(f"  Cox M2 bio_covs: ['log_crp', 'hba1c', 'grip_max', 'bmival']")
+    print(f"  SWDS-Gamma uses: {axes_3} (cross-sectional stratum covariance)")
+    for col in axes_3 + ['log_crp', 'hba1c', 'grip_max', 'bmival', 'swds_gamma']:
+        if col in merged.columns:
+            n_valid = merged[col].notna().sum()
+            print(f"    {col}: {n_valid:,} non-null values")
+
     # --- SWDS-Gamma (cross-sectional, matching R5 pipeline) ---
     print("\n--- Computing SWDS-Gamma (cross-sectional) ---")
     complete_3 = compute_swds_cross_sectional(merged, axes_3, 'complete_3axis')

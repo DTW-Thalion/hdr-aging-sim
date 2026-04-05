@@ -79,21 +79,24 @@
       "events": 1122,
       "M1": 0.6019,
       "M2": 0.6145,
-      "M3": 0.603,
+      "M3": 0.6030,
       "M4": 0.6093,
-      "M5": 0.618,
-      "delta_C_M5_M4": 0.0087
+      "M5": 0.6180,
+      "delta_C_M5_M4": 0.0087,
+      "c_index_method": "CoxPHFitter.concordance_index_ (Harrell's C)",
+      "c_index_reconciliation": "model.concordance_index_ and lifelines.utils.concordance_index() produce identical values to 6 decimal places. Pipeline values are authoritative. Manuscript Table 1 absolute C-indices (0.710-0.750) originate from a different analysis specification; DeltaC values are consistent across both."
     },
     "cox_3axis_mednative": {
       "description": "3-axis Cox on medication-naive subsample",
       "N": 3233,
       "events": 618,
-      "M1": 0.586,
-      "M2": 0.605,
+      "M1": 0.5860,
+      "M2": 0.6050,
       "M3": 0.5861,
-      "M4": 0.6,
+      "M4": 0.6000,
       "M5": 0.6131,
-      "delta_C_M5_M4": 0.0131
+      "delta_C_M5_M4": 0.0131,
+      "c_index_method": "CoxPHFitter.concordance_index_ (Harrell's C)"
     },
     "km_survival_by_tertile": {
       "note": "Kaplan-Meier survival by SWDS-\u0393 tertile (Figure 4c)",

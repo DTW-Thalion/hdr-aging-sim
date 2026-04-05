@@ -192,6 +192,15 @@ def make_figure(merged):
     """Generate the 3-panel coupling tightening figure."""
     setup_style()
 
+    # ---- Biomarker audit: print exact columns used per axis ----
+    print("\n--- Biomarker Audit (coupling tightening, 3-axis) ---")
+    for key, model in MODELS.items():
+        print(f"  Model '{key}': axes = {model['axes']}")
+        for ax_name in model['axes']:
+            if ax_name in merged.columns:
+                n_valid = merged[ax_name].notna().sum()
+                print(f"    {ax_name}: {n_valid:,} non-null values")
+
     # ---- Compute visit-pair analysis (3-axis) ----
     print("\n--- Computing visit-pair Gamma_change (3-axis) ---")
     vp_results = visit_pair_gamma(merged, model_key='3-axis', n_bootstrap=10000)

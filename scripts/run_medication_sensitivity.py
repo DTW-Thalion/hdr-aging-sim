@@ -584,6 +584,11 @@ def run_matched_cox(baseline, axes, swds_col='swds_gamma', model_label='3-axis')
     n_events = int(matched['deceased'].sum())
 
     print(f"\n  [{model_label}] Matched sample: N={n_matched:,}, events={n_events:,}")
+    print(f"  [{model_label}] Biomarker audit:")
+    print(f"    base_covs = {base_covs}")
+    print(f"    bio_covs  = {bio_covs}")
+    print(f"    adj_covs  = {[c for c in adj_covs if c not in dropped_covs]}")
+    print(f"    swds_col  = {swds_col}")
 
     if n_matched < 50 or n_events < 10:
         print(f"  SKIP: insufficient matched sample")
@@ -601,31 +606,57 @@ def run_matched_cox(baseline, axes, swds_col='swds_gamma', model_label='3-axis')
 
             cph = CoxPHFitter()
             cph.fit(surv_data, duration_col='time', event_col='deceased')
-            c_idx = concordance_index(
+
+            # Use fitted model's own concordance_index_ (standard Harrell's C
+            # computed on the full partial hazard, which is the authoritative value)
+            c_idx = cph.concordance_index_
+
+            # Also compute via lifelines.utils for comparison
+            c_idx_util = concordance_index(
                 surv_data['time'],
                 -cph.predict_partial_hazard(surv_data),
                 surv_data['deceased']
             )
+
             results[name] = {
                 'c_index': c_idx,
+                'c_index_util': c_idx_util,
                 'n': len(surv_data),
                 'events': int(surv_data['deceased'].sum()),
                 'covariates': available_covs,
             }
-            print(f"    {name}: C={c_idx:.6f} (N={len(surv_data):,}, "
-                  f"events={int(surv_data['deceased'].sum()):,})")
+
+            # Diagnostic printing
+            print(f"    {name}:")
+            print(f"      Covariates: {available_covs}")
+            print(f"      N={len(surv_data):,}, events={int(surv_data['deceased'].sum()):,}")
+            print(f"      C-index (model.concordance_index_): {c_idx:.6f}")
+            print(f"      C-index (lifelines.utils):          {c_idx_util:.6f}")
+            if abs(c_idx - c_idx_util) > 1e-6:
+                print(f"      ** DISCREPANCY: {c_idx - c_idx_util:+.6f}")
+
+            # Print M1 coefficients for sanity check
+            if 'M1' in name:
+                print(f"      M1 coefficients (HR):")
+                for cov_name in available_covs:
+                    coef = cph.params_[cov_name]
+                    hr = np.exp(coef)
+                    print(f"        {cov_name}: coef={coef:.4f}, HR={hr:.4f}")
+
         except Exception as e:
             # Retry with penalizer for convergence issues
             try:
                 cph = CoxPHFitter(penalizer=0.01)
                 cph.fit(surv_data, duration_col='time', event_col='deceased')
-                c_idx = concordance_index(
+                c_idx = cph.concordance_index_
+                c_idx_util = concordance_index(
                     surv_data['time'],
                     -cph.predict_partial_hazard(surv_data),
                     surv_data['deceased']
                 )
                 results[name] = {
                     'c_index': c_idx,
+                    'c_index_util': c_idx_util,
                     'n': len(surv_data),
                     'events': int(surv_data['deceased'].sum()),
                     'covariates': available_covs,
@@ -633,6 +664,7 @@ def run_matched_cox(baseline, axes, swds_col='swds_gamma', model_label='3-axis')
                 }
                 print(f"    {name}: C={c_idx:.6f} (N={len(surv_data):,}, "
                       f"events={int(surv_data['deceased'].sum()):,}) [penalized]")
+                print(f"      C-index (model): {c_idx:.6f}, C-index (util): {c_idx_util:.6f}")
             except Exception as e2:
                 print(f"    {name}: FAILED — {e2}")
                 results[name] = {'c_index': np.nan, 'n': 0, 'events': 0}
