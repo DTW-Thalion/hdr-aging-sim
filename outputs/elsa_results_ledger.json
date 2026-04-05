@@ -276,13 +276,13 @@
     },
     "elsa_basin_recovery.json": {
       "path": "outputs/elsa_basin_recovery.json",
-      "sha256": "2e277188536c4b76f09bb385bafb3d8e93753cb64d26e7e02972a057c4e80e97",
-      "size_bytes": 12316
+      "sha256": "27f77b3b19e67283cba1bf4c0fd49f2b00c1b363aa23e1e93cf4b166070040c1",
+      "size_bytes": 14019
     },
     "elsa_basin_recovery_table.txt": {
       "path": "outputs/elsa_basin_recovery_table.txt",
-      "sha256": "dfeed7e3d8633eed8afda5249cd6755e84935602e5b9779ca84d89b57b13da2c",
-      "size_bytes": 1429
+      "sha256": "20a27782b692d53c335e6b7930fba5c988421c2cca98bb4828c8cb9134482155",
+      "size_bytes": 1505
     },
     "headline": {
       "N_obs": 20934,
@@ -290,16 +290,27 @@
       "K_opt_bic": 4,
       "d_min_gmm_full_kl": 1.3213,
       "d_min_gmm_cov_only": 0.0498,
-      "omega_min_mu005": 3.1,
-      "T_deploy_daily_months": 2.1,
+      "omega_min_gmm_mu005": 3.1,
+      "T_deploy_gmm_daily_months": 2.1,
       "disagree_vs_age65_K2": 0.504
+    },
+    "hmm": {
+      "N_sequences": 3404,
+      "N_observations": 11412,
+      "d_min": 2.1859,
+      "omega_min_mu005": 1.37,
+      "T_deploy_daily_months": 0.2,
+      "transition_asymmetry": 492107,
+      "transition_H_to_D": 0.0294,
+      "transition_D_to_H": 0.0,
+      "disagree_vs_age65": 0.481
     },
     "gmm_model_selection": {
       "K2_bic": 169710.0,
       "K3_bic": 168313.3,
       "K4_bic": 167772.8
     },
-    "interpretation": "Data-driven GMM basin recovery produces d_min 63x larger than age-based assignment. Clusters reflect physiological state (inflammation, insulin resistance, grip strength), not age per se. Daily wearable deployment threshold met in ~2 months vs 18 months for age-based."
+    "interpretation": "Data-driven basin recovery produces d_min 63-104x larger than age-based assignment. GMM (d_min=1.32) and HMM (d_min=2.19) both confirm clusters reflect physiological state, not age per se. HMM reveals an absorbing disease state (H→D=0.029, D→H≈0), consistent with irreversible multi-system dysregulation. Daily wearable deployment threshold met in ~2 months (GMM) or ~1 week (HMM)."
   },
-  "r6_notes": "R6 restructures ELSA validation figures into 3 separate 3-panel figures (coupling tightening, mortality prediction, medication compression) to support the revised Results narrative where medication compression is the central finding. The D vs J primacy decomposition tests whether aging is driven by D-degradation (capacity loss) or J-degradation (coupling strengthening). The ICI deployment assessment evaluates whether existing cohort data density is sufficient for safe closed-loop deployment. The basin recovery analysis demonstrates that latent basins are recoverable from the data via GMM, addressing the TCST adversarial review."
+  "r6_notes": "R6 restructures ELSA validation figures into 3 separate 3-panel figures (coupling tightening, mortality prediction, medication compression) to support the revised Results narrative where medication compression is the central finding. The D vs J primacy decomposition tests whether aging is driven by D-degradation (capacity loss) or J-degradation (coupling strengthening). The ICI deployment assessment evaluates whether existing cohort data density is sufficient for safe closed-loop deployment. The basin recovery analysis demonstrates that latent basins are recoverable from the data via GMM and HMM, addressing the TCST adversarial review. HMM additionally reveals an absorbing disease state with near-zero back-transition probability."
 }

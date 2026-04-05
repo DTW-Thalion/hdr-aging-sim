@@ -266,10 +266,10 @@ Med-naive KM genuinely non-significant. Events near-equal across tertiles — no
 
 ---
 
-### R6: Data-Driven Basin Recovery (GMM)
+### R6: Data-Driven Basin Recovery (GMM + HMM)
 *Run: 2026-04-04 | Python 3.14*
 
-Addresses TCST adversarial review: demonstrates that latent basins are recoverable from the data itself (not just the exogenous age-65 threshold). GMM fitted on the pooled ELSA 3-axis panel (N = 20,934 observations across 10,085 participants).
+Addresses TCST adversarial review: demonstrates that latent basins are recoverable from the data itself (not just the exogenous age-65 threshold). GMM fitted on the pooled ELSA 3-axis panel (N = 20,934 observations across 10,085 participants). HMM fitted on longitudinal sequences with ≥3 complete waves (N = 3,404 participants, 11,412 observations).
 
 
 #### GMM Model Selection
@@ -290,12 +290,26 @@ Addresses TCST adversarial review: demonstrates that latent basins are recoverab
 | Age-based (<65 vs ≥65) | 0.021 | 144.2 | 18.2 mo | 0% (by definition) |
 | Score-based (median SWDS) | 0.418 | 7.2 | 0.9 mo | N/A |
 | GMM (K=4) | 1.321 | 3.1 | 2.1 mo | 50.4% (K=2) |
+| HMM (K=2) | 2.186 | 1.4 | 0.2 mo | 48.1% |
 
-- GMM d_min 63× larger than age-based → clusters far more separable in biomarker space
-- Data-driven deployment threshold met in ~2 months (vs 18 months age-based)
+- GMM d_min 63× larger than age-based; HMM d_min 104× larger
+- Data-driven deployment threshold met in ~2 months (GMM) or ~1 week (HMM)
 
 
-#### Clinical Characterisation (K=2 Solution)
+#### HMM Transition Matrix
+
+| | → Healthy | → Disease |
+| --- | --- | --- |
+| **Healthy** | 0.971 | 0.029 |
+| **Disease** | ≈0 | 1.000 |
+
+- Transition asymmetry: 492,107× (H→D / D→H)
+- Disease state is effectively absorbing — consistent with irreversible multi-system dysregulation
+- HMM State 0 (healthy): mean age 66.0, mean dx = [−0.30, −0.09, 0.18]
+- HMM State 1 (disease): mean age 68.3, mean dx = [0.49, 1.15, 0.92]
+
+
+#### Clinical Characterisation (GMM K=2 Solution)
 
 | | Cluster A (healthier) | Cluster B (sicker) |
 | --- | --- | --- |
@@ -309,4 +323,3 @@ Addresses TCST adversarial review: demonstrates that latent basins are recoverab
 
 - Cluster B = high-inflammatory, insulin-resistant, weak grip — consistent with multi-system dysregulation
 - Mean ages nearly identical (66 vs 68) — basins reflect physiological state, not age per se
-- ⚠️ HMM analysis skipped (hmmlearn unavailable on Python 3.14)
