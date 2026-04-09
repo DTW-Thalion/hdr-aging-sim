@@ -24,6 +24,21 @@ These are the dynamical signatures of aging predicted by the HDR formalism and
 independently observed by Scheffer et al. (2018, PNAS) and Pyrkov et al. (2021,
 Nat Commun).
 
+## Two-timescale architecture (mechanistic model)
+
+The 9-axis mechanistic model (`HDRMechanisticModel`) uses a two-timescale
+decomposition based on singular perturbation theory:
+
+- **Fast subsystem** (7 axes: I, M, mito, P, C, N, F): perturbation-recovery
+  dynamics with τ ranging from 0.1d (M) to 42d (F at age 80). These determine
+  the spectral abscissa α, recovery time, and damping ratio.
+- **Quasi-static axes** (E, B): τ_E ≈ 1000d (epigenetic drift), τ_B ≈ 90-120d
+  (bone remodelling). These drift secularly with age and enter the fast subsystem
+  as constant forcing, shifting its equilibrium without changing eigenvalues.
+
+All stability metrics (α, ζ, recovery time) refer to the fast subsystem.
+The full 9×9 system is available via `model.A_full` for validation.
+
 ## Setup
 
 ```bash
@@ -554,6 +569,58 @@ Reports are written to `results/`.
 | `run_synthetic_validation.py` | `results/synthetic_validation_report.md` | ELSA-like synthetic cohort under 4 confound conditions |
 | `run_intervention_analysis.py` | `results/intervention_report.md` | Intervention ranking, R6 factorial, pairwise interactions |
 | `run_dj_primacy_mechanistic.py` | `results/dj_primacy_mechanistic.json` | D/J primacy with 5 degradation regimes x 4 confound conditions |
+
+### J-matrix provenance and comparison workflow
+
+The J-matrix CSV is the primary input to all simulation and validation pipelines.
+Every script accepts `--j-matrix <path>` to override the default CSV, and every
+JSON output includes a `j_matrix` key with the SHA-256 hash, sign counts, and
+axis set of the CSV used. A frozen provenance snapshot is stored in
+`data/provenance/J_R6_ontology_v1.6.csv`.
+
+**Syncing a new J-matrix from the companion repo:**
+
+```bash
+# 1. Sync the new CSV
+python scripts/sync_j_from_companion.py --source ../hdr-jmatrix-mechanistic/data/J_matrix_mechanistic_9x9.csv
+
+# 2. Run the full test suite with the new J
+bash run_all_with_results.sh
+
+# 3. Compare against provenance baseline
+python scripts/compare_j_runs.py \
+    --baseline outputs/R6_provenance/elsa_results_ledger.json \
+    --candidate outputs/latest/elsa_results_ledger.json
+
+# 4. Review the diff — if any test outcomes changed, investigate
+cat outputs/j_comparison_report.md
+```
+
+**Testing a hypothetical J (e.g., what if the E-I coupling is strong?):**
+
+```bash
+# Edit a copy of the CSV
+cp data/J_matrix_compiled_9x9.csv /tmp/J_hypothetical.csv
+# ... edit /tmp/J_hypothetical.csv ...
+
+# Run the pipeline against it
+python scripts/run_elsa_validation.py --j-matrix /tmp/J_hypothetical.csv
+
+# Compare
+python scripts/compare_j_runs.py \
+    --baseline outputs/R6_provenance/elsa_results_ledger.json \
+    --candidate outputs/latest/elsa_results_ledger.json
+```
+
+**Running the parameterisation sanity check:**
+
+```bash
+# Runs pipeline twice (provenance vs default) and verifies zero diffs
+python scripts/run_j_comparison_integration.py
+
+# Or as part of the full suite
+bash run_all_with_results.sh --compare-j
+```
 
 ### Relationship to HDR-mechanistic
 
