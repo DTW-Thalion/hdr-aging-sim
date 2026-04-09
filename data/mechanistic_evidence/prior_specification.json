@@ -1,0 +1,482 @@
+{
+  "J_I_M": {
+    "distribution": "truncated_normal",
+    "mean": 0.15,
+    "std": 0.075,
+    "lower_bound": 0,
+    "upper_bound": null,
+    "sign_constrained": true,
+    "informative": true,
+    "source": "mechanistic_pipeline_v3.5"
+  },
+  "J_I_mito": {
+    "distribution": "truncated_normal",
+    "mean": 0.08,
+    "std": 0.08,
+    "lower_bound": 0,
+    "upper_bound": null,
+    "sign_constrained": true,
+    "informative": true,
+    "source": "mechanistic_pipeline_v3.5"
+  },
+  "J_I_B": {
+    "distribution": "truncated_normal",
+    "mean": 0.08,
+    "std": 0.08,
+    "lower_bound": 0,
+    "upper_bound": null,
+    "sign_constrained": true,
+    "informative": true,
+    "source": "mechanistic_pipeline_v3.5"
+  },
+  "J_M_I": {
+    "distribution": "truncated_normal",
+    "mean": 0.15,
+    "std": 0.075,
+    "lower_bound": 0,
+    "upper_bound": null,
+    "sign_constrained": true,
+    "informative": true,
+    "source": "mechanistic_pipeline_v3.5"
+  },
+  "J_M_B": {
+    "distribution": "truncated_normal",
+    "mean": 0.08,
+    "std": 0.12,
+    "lower_bound": 0,
+    "upper_bound": null,
+    "sign_constrained": true,
+    "informative": true,
+    "source": "mechanistic_pipeline_v3.5"
+  },
+  "J_E_mito": {
+    "distribution": "truncated_normal",
+    "mean": 0.03,
+    "std": 0.03,
+    "lower_bound": 0,
+    "upper_bound": null,
+    "sign_constrained": true,
+    "informative": true,
+    "source": "mechanistic_pipeline_v3.5"
+  },
+  "J_mito_I": {
+    "distribution": "truncated_normal",
+    "mean": 0.08,
+    "std": 0.1,
+    "lower_bound": 0,
+    "upper_bound": null,
+    "sign_constrained": true,
+    "informative": true,
+    "source": "mechanistic_pipeline_v3.5"
+  },
+  "J_mito_E": {
+    "distribution": "truncated_normal",
+    "mean": 0.03,
+    "std": 0.0375,
+    "lower_bound": 0,
+    "upper_bound": null,
+    "sign_constrained": true,
+    "informative": true,
+    "source": "mechanistic_pipeline_v3.5"
+  },
+  "J_P_mito": {
+    "distribution": "truncated_normal",
+    "mean": 0.08,
+    "std": 0.08,
+    "lower_bound": 0,
+    "upper_bound": null,
+    "sign_constrained": true,
+    "informative": true,
+    "source": "mechanistic_pipeline_v3.5"
+  },
+  "J_C_I": {
+    "distribution": "truncated_normal",
+    "mean": 0.08,
+    "std": 0.15,
+    "lower_bound": 0,
+    "upper_bound": null,
+    "sign_constrained": true,
+    "informative": true,
+    "source": "mechanistic_pipeline_v3.5"
+  },
+  "J_C_M": {
+    "distribution": "truncated_normal",
+    "mean": 0.08,
+    "std": 0.06,
+    "lower_bound": 0,
+    "upper_bound": null,
+    "sign_constrained": true,
+    "informative": true,
+    "source": "mechanistic_pipeline_v3.5"
+  },
+  "J_N_I": {
+    "distribution": "truncated_normal",
+    "mean": 0.08,
+    "std": 0.1,
+    "lower_bound": 0,
+    "upper_bound": null,
+    "sign_constrained": true,
+    "informative": true,
+    "source": "mechanistic_pipeline_v3.5"
+  },
+  "J_N_B": {
+    "distribution": "truncated_normal",
+    "mean": 0.15,
+    "std": 0.1125,
+    "lower_bound": 0,
+    "upper_bound": null,
+    "sign_constrained": true,
+    "informative": true,
+    "source": "mechanistic_pipeline_v3.5"
+  },
+  "J_F_I": {
+    "distribution": "truncated_normal",
+    "mean": 0.08,
+    "std": 0.1,
+    "lower_bound": 0,
+    "upper_bound": null,
+    "sign_constrained": true,
+    "informative": true,
+    "source": "mechanistic_pipeline_v3.5"
+  },
+  "J_F_M": {
+    "distribution": "truncated_normal",
+    "mean": 0.15,
+    "std": 0.075,
+    "lower_bound": 0,
+    "upper_bound": null,
+    "sign_constrained": true,
+    "informative": true,
+    "source": "mechanistic_pipeline_v3.5"
+  },
+  "J_F_E": {
+    "distribution": "truncated_normal",
+    "mean": -0.08,
+    "std": 0.08,
+    "lower_bound": null,
+    "upper_bound": 0,
+    "sign_constrained": true,
+    "informative": true,
+    "source": "mechanistic_pipeline_v3.5"
+  },
+  "J_F_mito": {
+    "distribution": "truncated_normal",
+    "mean": -0.15,
+    "std": 0.15,
+    "lower_bound": null,
+    "upper_bound": 0,
+    "sign_constrained": true,
+    "informative": true,
+    "source": "mechanistic_pipeline_v3.5"
+  },
+  "J_F_P": {
+    "distribution": "truncated_normal",
+    "mean": -0.08,
+    "std": 0.08,
+    "lower_bound": null,
+    "upper_bound": 0,
+    "sign_constrained": true,
+    "informative": true,
+    "source": "mechanistic_pipeline_v3.5"
+  },
+  "J_F_C": {
+    "distribution": "truncated_normal",
+    "mean": -0.08,
+    "std": 0.08,
+    "lower_bound": null,
+    "upper_bound": 0,
+    "sign_constrained": true,
+    "informative": true,
+    "source": "mechanistic_pipeline_v3.5"
+  },
+  "J_F_N": {
+    "distribution": "truncated_normal",
+    "mean": -0.08,
+    "std": 0.08,
+    "lower_bound": null,
+    "upper_bound": 0,
+    "sign_constrained": true,
+    "informative": true,
+    "source": "mechanistic_pipeline_v3.5"
+  },
+  "J_F_B": {
+    "distribution": "truncated_normal",
+    "mean": -0.15,
+    "std": 0.15,
+    "lower_bound": null,
+    "upper_bound": 0,
+    "sign_constrained": true,
+    "informative": true,
+    "source": "mechanistic_pipeline_v3.5"
+  },
+  "J_B_I": {
+    "distribution": "truncated_normal",
+    "mean": 0.03,
+    "std": 0.03,
+    "lower_bound": 0,
+    "upper_bound": null,
+    "sign_constrained": true,
+    "informative": true,
+    "source": "mechanistic_pipeline_v3.5"
+  },
+  "J_B_F": {
+    "distribution": "truncated_normal",
+    "mean": 0.03,
+    "std": 0.045,
+    "lower_bound": 0,
+    "upper_bound": null,
+    "sign_constrained": true,
+    "informative": true,
+    "source": "mechanistic_pipeline_v3.5"
+  },
+  "J_I_E": {
+    "distribution": "truncated_normal",
+    "mean": 0.08,
+    "std": 0.12,
+    "lower_bound": 0,
+    "upper_bound": null,
+    "sign_constrained": true,
+    "informative": false,
+    "source": "R6_compilation_only"
+  },
+  "J_I_P": {
+    "distribution": "truncated_normal",
+    "mean": 0.08,
+    "std": 0.12,
+    "lower_bound": 0,
+    "upper_bound": null,
+    "sign_constrained": true,
+    "informative": false,
+    "source": "R6_compilation_only"
+  },
+  "J_I_C": {
+    "distribution": "truncated_normal",
+    "mean": 0.08,
+    "std": 0.12,
+    "lower_bound": 0,
+    "upper_bound": null,
+    "sign_constrained": true,
+    "informative": false,
+    "source": "R6_compilation_only"
+  },
+  "J_I_N": {
+    "distribution": "truncated_normal",
+    "mean": 0.08,
+    "std": 0.12,
+    "lower_bound": 0,
+    "upper_bound": null,
+    "sign_constrained": true,
+    "informative": false,
+    "source": "R6_compilation_only"
+  },
+  "J_I_F": {
+    "distribution": "truncated_normal",
+    "mean": 0.08,
+    "std": 0.12,
+    "lower_bound": 0,
+    "upper_bound": null,
+    "sign_constrained": true,
+    "informative": false,
+    "source": "R6_compilation_only"
+  },
+  "J_M_mito": {
+    "distribution": "truncated_normal",
+    "mean": 0.08,
+    "std": 0.12,
+    "lower_bound": 0,
+    "upper_bound": null,
+    "sign_constrained": true,
+    "informative": false,
+    "source": "R6_compilation_only"
+  },
+  "J_E_I": {
+    "distribution": "truncated_normal",
+    "mean": 0.03,
+    "std": 0.045,
+    "lower_bound": 0,
+    "upper_bound": null,
+    "sign_constrained": true,
+    "informative": false,
+    "source": "R6_compilation_only"
+  },
+  "J_mito_M": {
+    "distribution": "truncated_normal",
+    "mean": 0.08,
+    "std": 0.12,
+    "lower_bound": 0,
+    "upper_bound": null,
+    "sign_constrained": true,
+    "informative": false,
+    "source": "R6_compilation_only"
+  },
+  "J_mito_P": {
+    "distribution": "truncated_normal",
+    "mean": 0.08,
+    "std": 0.12,
+    "lower_bound": 0,
+    "upper_bound": null,
+    "sign_constrained": true,
+    "informative": false,
+    "source": "R6_compilation_only"
+  },
+  "J_P_I": {
+    "distribution": "truncated_normal",
+    "mean": 0.08,
+    "std": 0.12,
+    "lower_bound": 0,
+    "upper_bound": null,
+    "sign_constrained": true,
+    "informative": false,
+    "source": "R6_compilation_only"
+  },
+  "J_P_E": {
+    "distribution": "truncated_normal",
+    "mean": -0.03,
+    "std": 0.045,
+    "lower_bound": null,
+    "upper_bound": 0,
+    "sign_constrained": true,
+    "informative": false,
+    "source": "R6_compilation_only"
+  },
+  "J_C_E": {
+    "distribution": "truncated_normal",
+    "mean": -0.03,
+    "std": 0.045,
+    "lower_bound": null,
+    "upper_bound": 0,
+    "sign_constrained": true,
+    "informative": false,
+    "source": "R6_compilation_only"
+  },
+  "J_C_N": {
+    "distribution": "truncated_normal",
+    "mean": 0.03,
+    "std": 0.045,
+    "lower_bound": 0,
+    "upper_bound": null,
+    "sign_constrained": true,
+    "informative": false,
+    "source": "R6_compilation_only"
+  },
+  "J_N_M": {
+    "distribution": "truncated_normal",
+    "mean": 0.08,
+    "std": 0.12,
+    "lower_bound": 0,
+    "upper_bound": null,
+    "sign_constrained": true,
+    "informative": false,
+    "source": "R6_compilation_only"
+  },
+  "J_N_C": {
+    "distribution": "truncated_normal",
+    "mean": -0.03,
+    "std": 0.045,
+    "lower_bound": null,
+    "upper_bound": 0,
+    "sign_constrained": true,
+    "informative": false,
+    "source": "R6_compilation_only"
+  },
+  "J_N_F": {
+    "distribution": "truncated_normal",
+    "mean": 0.08,
+    "std": 0.12,
+    "lower_bound": 0,
+    "upper_bound": null,
+    "sign_constrained": true,
+    "informative": false,
+    "source": "R6_compilation_only"
+  },
+  "J_mito_B": {
+    "distribution": "point_mass",
+    "value": 0,
+    "informative": false,
+    "source": "mechanistic_pipeline_v3.5_excluded"
+  },
+  "J_B_M": {
+    "distribution": "point_mass",
+    "value": 0,
+    "informative": false,
+    "source": "mechanistic_pipeline_v3.5_excluded"
+  },
+  "J_B_N": {
+    "distribution": "point_mass",
+    "value": 0,
+    "informative": false,
+    "source": "mechanistic_pipeline_v3.5_excluded"
+  },
+  "tau_I": {
+    "distribution": "uniform",
+    "lower": 7,
+    "upper": 25,
+    "age_dependent": true,
+    "age_formula": "tau_min + (tau_max - tau_min) * (age - 30) / 50",
+    "source": "tau_reconciliation_v1"
+  },
+  "tau_M": {
+    "distribution": "uniform",
+    "lower": 0.1,
+    "upper": 0.3,
+    "age_dependent": true,
+    "age_formula": "tau_min + (tau_max - tau_min) * (age - 30) / 50",
+    "source": "tau_reconciliation_v1"
+  },
+  "tau_E": {
+    "distribution": "uniform",
+    "lower": 500,
+    "upper": 2000,
+    "age_dependent": true,
+    "age_formula": "tau_min + (tau_max - tau_min) * (age - 30) / 50",
+    "source": "tau_reconciliation_v1"
+  },
+  "tau_mito": {
+    "distribution": "uniform",
+    "lower": 1,
+    "upper": 3,
+    "age_dependent": true,
+    "age_formula": "tau_min + (tau_max - tau_min) * (age - 30) / 50",
+    "source": "tau_reconciliation_v1"
+  },
+  "tau_P": {
+    "distribution": "uniform",
+    "lower": 0.5,
+    "upper": 2,
+    "age_dependent": true,
+    "age_formula": "tau_min + (tau_max - tau_min) * (age - 30) / 50",
+    "source": "tau_reconciliation_v1"
+  },
+  "tau_C": {
+    "distribution": "uniform",
+    "lower": 1,
+    "upper": 3,
+    "age_dependent": true,
+    "age_formula": "tau_min + (tau_max - tau_min) * (age - 30) / 50",
+    "source": "tau_reconciliation_v1"
+  },
+  "tau_N": {
+    "distribution": "uniform",
+    "lower": 0.5,
+    "upper": 2,
+    "age_dependent": true,
+    "age_formula": "tau_min + (tau_max - tau_min) * (age - 30) / 50",
+    "source": "tau_reconciliation_v1"
+  },
+  "tau_F": {
+    "distribution": "uniform",
+    "lower": 8,
+    "upper": 42,
+    "age_dependent": true,
+    "age_formula": "tau_min + (tau_max - tau_min) * (age - 30) / 50",
+    "source": "tau_reconciliation_v1"
+  },
+  "tau_B": {
+    "distribution": "uniform",
+    "lower": 90,
+    "upper": 120,
+    "age_dependent": true,
+    "age_formula": "tau_min + (tau_max - tau_min) * (age - 30) / 50",
+    "source": "tau_reconciliation_v1"
+  }
+}
