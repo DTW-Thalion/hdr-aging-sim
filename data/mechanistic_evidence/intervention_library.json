@@ -1,0 +1,496 @@
+{
+  "anti_tnf": {
+    "name": "Anti-TNF biologics (infliximab, adalimumab)",
+    "chembl_ids": [
+      "CHEMBL1201581",
+      "CHEMBL1201580",
+      "CHEMBL1201831",
+      "CHEMBL1201834"
+    ],
+    "evidence_level": "approved_therapy",
+    "affected_couplings": {
+      "J_I_M": {
+        "delta_J_fraction": -0.2,
+        "mechanism": "TNF (Step 1 input)"
+      },
+      "J_I_mito": {
+        "delta_J_fraction": -0.2,
+        "mechanism": "TNF/inflammatory input (Step 1)"
+      },
+      "J_I_B": {
+        "delta_J_fraction": -0.12,
+        "mechanism": "TNF-alpha (source input)"
+      }
+    },
+    "affected_tau": {},
+    "source_decompositions": [
+      "J_I_B",
+      "J_I_M",
+      "J_I_mito"
+    ]
+  },
+  "exercise_resistance": {
+    "name": "Structured exercise (aerobic + resistance)",
+    "chembl_ids": [
+      "CHEMBL1431"
+    ],
+    "evidence_level": "approved_therapy",
+    "affected_couplings": {
+      "J_I_M": {
+        "delta_J_fraction": -0.064,
+        "mechanism": "Upstream inflammatory source (TNF-alpha, IL-6 production)"
+      },
+      "J_I_mito": {
+        "delta_J_fraction": -0.064,
+        "mechanism": "PGC-1alpha induction via AMPK/CaMK (bypass NF-kappaB suppression)"
+      },
+      "J_I_B": {
+        "delta_J_fraction": -0.08,
+        "mechanism": "Inflammation reduction (upstream)"
+      },
+      "J_M_I": {
+        "delta_J_fraction": -0.08,
+        "mechanism": "Adipocyte hypertrophy and macrophage recruitment (secondary chain alt_1)"
+      },
+      "J_M_B": {
+        "delta_J_fraction": -0.08,
+        "mechanism": "Exercise (multi-target)"
+      },
+      "J_mito_E": {
+        "delta_J_fraction": -0.08,
+        "mechanism": "Exercise (improve mitochondrial metabolite flux)"
+      },
+      "J_P_mito": {
+        "delta_J_fraction": -0.08,
+        "mechanism": "Exercise (mitophagy stimulus)"
+      },
+      "J_C_M": {
+        "delta_J_fraction": -0.12,
+        "mechanism": "AMPK activation (secondary chain alt_1, bypass clock)"
+      },
+      "J_N_I": {
+        "delta_J_fraction": -0.08,
+        "mechanism": "HPA axis regulation (source axis normalisation)"
+      },
+      "J_F_I": {
+        "delta_J_fraction": -0.08,
+        "mechanism": "Physical activity (source axis, direct)"
+      },
+      "J_F_M": {
+        "delta_J_fraction": -0.08,
+        "mechanism": "Muscle contraction / physical activity (source axis)"
+      },
+      "J_F_E": {
+        "delta_J_fraction": -0.15,
+        "mechanism": "From scaffold: Exercise-induced AMPK/PGC-1alpha signalling upregulates DNMT3a and TET2 in skele"
+      },
+      "J_F_mito": {
+        "delta_J_fraction": -0.15,
+        "mechanism": "From scaffold: Exercise-induced AMPK/p38 MAPK activation drives PGC-1alpha nuclear translocatio"
+      },
+      "J_F_P": {
+        "delta_J_fraction": -0.15,
+        "mechanism": "From scaffold: Exercise-induced AMPK activation dephosphorylates TFEB, enabling its nuclear tra"
+      },
+      "J_F_N": {
+        "delta_J_fraction": -0.15,
+        "mechanism": "From scaffold: Exercise training increases cardiac vagal tone via baroreflex sensitisation and "
+      },
+      "J_F_C": {
+        "delta_J_fraction": -0.15,
+        "mechanism": "From scaffold: Timed exercise acts as a zeitgeber for peripheral clocks, resynchronising Per2/B"
+      },
+      "J_F_B": {
+        "delta_J_fraction": -0.15,
+        "mechanism": "From scaffold: Mechanical loading on bone activates osteocyte mechanosensors (Piezo1, connexin-"
+      }
+    },
+    "affected_tau": {
+      "F": {
+        "delta_tau_fraction": -0.15,
+        "mechanism": "Increased muscle protein synthesis rate"
+      }
+    },
+    "source_decompositions": [
+      "J_C_M",
+      "J_F_B",
+      "J_F_C",
+      "J_F_E",
+      "J_F_I",
+      "J_F_M",
+      "J_F_N",
+      "J_F_P",
+      "J_F_mito",
+      "J_I_B",
+      "J_I_M",
+      "J_I_mito",
+      "J_M_B",
+      "J_M_I",
+      "J_N_I",
+      "J_P_mito",
+      "J_mito_E"
+    ]
+  },
+  "metformin": {
+    "name": "Metformin (mitochondrial complex I inhibitor)",
+    "chembl_ids": [
+      "CHEMBL1431"
+    ],
+    "evidence_level": "approved_therapy",
+    "affected_couplings": {
+      "J_I_mito": {
+        "delta_J_fraction": -0.096,
+        "mechanism": "Mitochondrial complex I (ETC)"
+      },
+      "J_M_I": {
+        "delta_J_fraction": -0.12,
+        "mechanism": "Hepatic glucose output and AMPK activation"
+      },
+      "J_M_B": {
+        "delta_J_fraction": -0.12,
+        "mechanism": "Insulin sensitivity (source axis)"
+      },
+      "J_C_M": {
+        "delta_J_fraction": -0.12,
+        "mechanism": "AMPK activation (secondary chain alt_1, bypass clock)"
+      },
+      "J_F_M": {
+        "delta_J_fraction": -0.25,
+        "mechanism": "AMPK activation (primary chain step 1-2)"
+      }
+    },
+    "affected_tau": {
+      "M": {
+        "delta_tau_fraction": -0.1,
+        "mechanism": "Hepatic glucose output suppression via complex I inhibition"
+      }
+    },
+    "source_decompositions": [
+      "J_C_M",
+      "J_F_M",
+      "J_I_mito",
+      "J_M_B",
+      "J_M_I"
+    ]
+  },
+  "colchicine": {
+    "name": "Colchicine (tubulin inhibitor; indirect NLRP3 suppression)",
+    "chembl_ids": [
+      "CHEMBL107"
+    ],
+    "evidence_level": "clinical_trial",
+    "affected_couplings": {
+      "J_mito_I": {
+        "delta_J_fraction": -0.15,
+        "mechanism": "NLRP3 inflammasome (Step 3)"
+      },
+      "J_C_I": {
+        "delta_J_fraction": -0.15,
+        "mechanism": "NLRP3 inflammasome (Step 3 target)"
+      }
+    },
+    "affected_tau": {},
+    "source_decompositions": [
+      "J_C_I",
+      "J_mito_I"
+    ]
+  },
+  "circadian_hygiene": {
+    "name": "Circadian hygiene (TRE, morning light, fixed sleep schedule)",
+    "chembl_ids": null,
+    "evidence_level": "clinical_trial",
+    "affected_couplings": {
+      "J_C_I": {
+        "delta_J_fraction": -0.08,
+        "mechanism": "Circadian rhythm restoration (source axis)"
+      },
+      "J_C_M": {
+        "delta_J_fraction": -0.08,
+        "mechanism": "Circadian rhythm restoration (source axis)"
+      }
+    },
+    "affected_tau": {
+      "C": {
+        "delta_tau_fraction": -0.1,
+        "mechanism": "Faster circadian re-entrainment"
+      }
+    },
+    "source_decompositions": [
+      "J_C_I",
+      "J_C_M"
+    ]
+  },
+  "senolytic_dq": {
+    "name": "Senolytics (dasatinib + quercetin)",
+    "chembl_ids": null,
+    "evidence_level": "preclinical",
+    "affected_couplings": {
+      "J_B_I": {
+        "delta_J_fraction": -0.05,
+        "mechanism": "Senescent osteocytes (secondary chain)"
+      }
+    },
+    "affected_tau": {},
+    "source_decompositions": [
+      "J_B_I"
+    ]
+  },
+  "canakinumab": {
+    "name": "Canakinumab (anti-IL-1beta; CANTOS repurposing candidate)",
+    "chembl_ids": [
+      "CHEMBL1201833"
+    ],
+    "evidence_level": "approved_therapy",
+    "affected_couplings": {
+      "J_mito_I": {
+        "delta_J_fraction": -0.25,
+        "mechanism": "IL-1beta (Step 4 product)"
+      }
+    },
+    "affected_tau": {},
+    "source_decompositions": [
+      "J_mito_I"
+    ]
+  },
+  "teriparatide": {
+    "name": "Teriparatide (pulsatile PTH, anabolic bone agent)",
+    "chembl_ids": [
+      "CHEMBL525610",
+      "CHEMBL5095475"
+    ],
+    "evidence_level": "approved_therapy",
+    "affected_couplings": {
+      "J_N_B": {
+        "delta_J_fraction": -0.096,
+        "mechanism": "PTH1R (pulsatile activation, anabolic regime)"
+      }
+    },
+    "affected_tau": {
+      "B": {
+        "delta_tau_fraction": -0.2,
+        "mechanism": "Accelerated bone formation via pulsatile PTH"
+      }
+    },
+    "source_decompositions": [
+      "J_N_B"
+    ]
+  },
+  "denosumab": {
+    "name": "Denosumab (anti-RANKL)",
+    "chembl_ids": [
+      "CHEMBL1237023"
+    ],
+    "evidence_level": "approved_therapy",
+    "affected_couplings": {
+      "J_I_B": {
+        "delta_J_fraction": -0.25,
+        "mechanism": "RANKL (Step 2-3)"
+      },
+      "J_B_I": {
+        "delta_J_fraction": -0.25,
+        "mechanism": "RANKL (Step 1-2 signalling)"
+      },
+      "J_N_B": {
+        "delta_J_fraction": -0.2,
+        "mechanism": "RANKL (catabolic regime, step 4-5)"
+      }
+    },
+    "affected_tau": {},
+    "source_decompositions": [
+      "J_B_I",
+      "J_I_B",
+      "J_N_B"
+    ]
+  },
+  "mifepristone": {
+    "name": "Mifepristone (GR antagonist; repurposing candidate)",
+    "chembl_ids": [
+      "CHEMBL1434"
+    ],
+    "evidence_level": "approved_therapy",
+    "affected_couplings": {
+      "J_N_I": {
+        "delta_J_fraction": -0.05,
+        "mechanism": "Glucocorticoid receptor sensitisation"
+      }
+    },
+    "affected_tau": {},
+    "source_decompositions": [
+      "J_N_I"
+    ]
+  },
+  "nad_precursors": {
+    "name": "NAD+ precursors (NMN, NR, niacin)",
+    "chembl_ids": [
+      "CHEMBL1201544"
+    ],
+    "evidence_level": "approved_therapy",
+    "affected_couplings": {
+      "J_I_mito": {
+        "delta_J_fraction": -0.064,
+        "mechanism": "NAD+ pool (Secondary chain alt_2)"
+      },
+      "J_mito_E": {
+        "delta_J_fraction": -0.15,
+        "mechanism": "NAD+ restoration (Step 1)"
+      },
+      "J_mito_I": {
+        "delta_J_fraction": -0.08,
+        "mechanism": "NAD+ restoration (upstream mitochondrial health)"
+      }
+    },
+    "affected_tau": {},
+    "source_decompositions": [
+      "J_I_mito",
+      "J_mito_E",
+      "J_mito_I"
+    ]
+  },
+  "tocilizumab": {
+    "name": "Tocilizumab (anti-IL-6R)",
+    "chembl_ids": [
+      "CHEMBL1237022"
+    ],
+    "evidence_level": "approved_therapy",
+    "affected_couplings": {
+      "J_I_M": {
+        "delta_J_fraction": -0.096,
+        "mechanism": "IL-6/IL6R (Secondary chain alt_1 input)"
+      }
+    },
+    "affected_tau": {},
+    "source_decompositions": [
+      "J_I_M"
+    ]
+  },
+  "semaglutide": {
+    "name": "Semaglutide (GLP-1 receptor agonist)",
+    "chembl_ids": [
+      "CHEMBL2108724"
+    ],
+    "evidence_level": "approved_therapy",
+    "affected_couplings": {
+      "J_M_I": {
+        "delta_J_fraction": -0.12,
+        "mechanism": "GLP-1 receptor / incretin axis"
+      },
+      "J_F_M": {
+        "delta_J_fraction": -0.12,
+        "mechanism": "GLP-1 receptor (synergistic with exercise)"
+      }
+    },
+    "affected_tau": {},
+    "source_decompositions": [
+      "J_F_M",
+      "J_M_I"
+    ]
+  },
+  "empagliflozin": {
+    "name": "Empagliflozin (SGLT2 inhibitor)",
+    "chembl_ids": [
+      "CHEMBL2107830"
+    ],
+    "evidence_level": "approved_therapy",
+    "affected_couplings": {
+      "J_M_I": {
+        "delta_J_fraction": -0.12,
+        "mechanism": "SGLT2 (renal glucose reabsorption)"
+      },
+      "J_M_B": {
+        "delta_J_fraction": -0.25,
+        "mechanism": "Hyperglycaemia (Step 4 AGE formation)"
+      }
+    },
+    "affected_tau": {},
+    "source_decompositions": [
+      "J_M_B",
+      "J_M_I"
+    ]
+  },
+  "rapamycin": {
+    "name": "Rapamycin (mTOR inhibitor; autophagy inducer)",
+    "chembl_ids": null,
+    "evidence_level": "clinical_trial",
+    "affected_couplings": {
+      "J_P_mito": {
+        "delta_J_fraction": -0.15,
+        "mechanism": "Autophagy/mitophagy induction (Step 4 relief)"
+      }
+    },
+    "affected_tau": {},
+    "source_decompositions": [
+      "J_P_mito"
+    ]
+  },
+  "pioglitazone": {
+    "name": "Pioglitazone (PPAR-gamma agonist)",
+    "chembl_ids": [
+      "CHEMBL595"
+    ],
+    "evidence_level": "approved_therapy",
+    "affected_couplings": {
+      "J_M_I": {
+        "delta_J_fraction": -0.25,
+        "mechanism": "Insulin resistance (source axis, Step 1 input)"
+      }
+    },
+    "affected_tau": {},
+    "source_decompositions": [
+      "J_M_I"
+    ]
+  },
+  "mitoq": {
+    "name": "Mitochondria-targeted antioxidants (MitoQ, SS-31, CoQ10)",
+    "chembl_ids": null,
+    "evidence_level": "clinical_trial",
+    "affected_couplings": {
+      "J_I_mito": {
+        "delta_J_fraction": -0.064,
+        "mechanism": "Mitochondrial ROS (Secondary chain alt_1)"
+      },
+      "J_mito_I": {
+        "delta_J_fraction": -0.15,
+        "mechanism": "Mitochondrial ROS and membrane integrity (Step 1)"
+      }
+    },
+    "affected_tau": {},
+    "source_decompositions": [
+      "J_I_mito",
+      "J_mito_I"
+    ]
+  },
+  "romosozumab": {
+    "name": "Romosozumab (anti-sclerostin)",
+    "chembl_ids": [
+      "CHEMBL3301596"
+    ],
+    "evidence_level": "approved_therapy",
+    "affected_couplings": {
+      "J_N_B": {
+        "delta_J_fraction": -0.096,
+        "mechanism": "SOST/sclerostin (Wnt pathway antagonist)"
+      }
+    },
+    "affected_tau": {},
+    "source_decompositions": [
+      "J_N_B"
+    ]
+  },
+  "anakinra": {
+    "name": "Anakinra (IL-1 receptor antagonist)",
+    "chembl_ids": [
+      "CHEMBL1201544"
+    ],
+    "evidence_level": "approved_therapy",
+    "affected_couplings": {
+      "J_mito_I": {
+        "delta_J_fraction": -0.25,
+        "mechanism": "IL-1R (downstream of Step 4)"
+      }
+    },
+    "affected_tau": {},
+    "source_decompositions": [
+      "J_mito_I"
+    ]
+  }
+}
