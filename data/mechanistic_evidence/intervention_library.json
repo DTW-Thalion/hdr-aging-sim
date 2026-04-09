@@ -56,6 +56,10 @@
         "delta_J_fraction": -0.08,
         "mechanism": "Exercise (multi-target)"
       },
+      "J_E_mito": {
+        "delta_J_fraction": -0.064,
+        "mechanism": "Exercise-induced PGC-1alpha activation (bypass epigenetic suppression)"
+      },
       "J_mito_E": {
         "delta_J_fraction": -0.08,
         "mechanism": "Exercise (improve mitochondrial metabolite flux)"
@@ -103,6 +107,10 @@
       "J_F_B": {
         "delta_J_fraction": -0.15,
         "mechanism": "From scaffold: Mechanical loading on bone activates osteocyte mechanosensors (Piezo1, connexin-"
+      },
+      "J_B_F": {
+        "delta_J_fraction": -0.15,
+        "mechanism": "Mechanical loading (upstream input to primary chain)"
       }
     },
     "affected_tau": {
@@ -112,7 +120,9 @@
       }
     },
     "source_decompositions": [
+      "J_B_F",
       "J_C_M",
+      "J_E_mito",
       "J_F_B",
       "J_F_C",
       "J_F_E",
@@ -142,6 +152,10 @@
         "delta_J_fraction": -0.096,
         "mechanism": "Mitochondrial complex I (ETC)"
       },
+      "J_E_mito": {
+        "delta_J_fraction": -0.096,
+        "mechanism": "Mitochondrial complex I / AMPK activation (bypass epigenetic suppression of PGC-1alpha)"
+      },
       "J_M_I": {
         "delta_J_fraction": -0.12,
         "mechanism": "Hepatic glucose output and AMPK activation"
@@ -167,6 +181,7 @@
     },
     "source_decompositions": [
       "J_C_M",
+      "J_E_mito",
       "J_F_M",
       "J_I_mito",
       "J_M_B",
@@ -293,10 +308,15 @@
       "J_N_B": {
         "delta_J_fraction": -0.2,
         "mechanism": "RANKL (catabolic regime, step 4-5)"
+      },
+      "J_B_F": {
+        "delta_J_fraction": -0.08,
+        "mechanism": "RANKL (secondary chain alt_1)"
       }
     },
     "affected_tau": {},
     "source_decompositions": [
+      "J_B_F",
       "J_B_I",
       "J_I_B",
       "J_N_B"
@@ -330,6 +350,10 @@
         "delta_J_fraction": -0.064,
         "mechanism": "NAD+ pool (Secondary chain alt_2)"
       },
+      "J_E_mito": {
+        "delta_J_fraction": -0.12,
+        "mechanism": "NAD+ restoration to support TET2/sirtuin function (Step 1)"
+      },
       "J_mito_E": {
         "delta_J_fraction": -0.15,
         "mechanism": "NAD+ restoration (Step 1)"
@@ -341,6 +365,7 @@
     },
     "affected_tau": {},
     "source_decompositions": [
+      "J_E_mito",
       "J_I_mito",
       "J_mito_E",
       "J_mito_I"
@@ -469,10 +494,15 @@
       "J_N_B": {
         "delta_J_fraction": -0.096,
         "mechanism": "SOST/sclerostin (Wnt pathway antagonist)"
+      },
+      "J_B_F": {
+        "delta_J_fraction": -0.25,
+        "mechanism": "Sclerostin (SOST, primary chain steps 2-3)"
       }
     },
     "affected_tau": {},
     "source_decompositions": [
+      "J_B_F",
       "J_N_B"
     ]
   },

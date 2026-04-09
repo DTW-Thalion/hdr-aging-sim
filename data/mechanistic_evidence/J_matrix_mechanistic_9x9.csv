@@ -17,7 +17,7 @@ M,F,J_M_F,0,none,,,0,0,0,,unpopulated,False,
 M,B,J_M_B,1,moderate,A,C2,0.04,0.08,3.0,slow,mechanistic_validated,True,INSR
 E,I,J_E_I,1,weak,B,C1,0.01,0.03,0,,r6_only,False,
 E,M,J_E_M,0,none,,,0,0,0,,unpopulated,False,
-E,mito,J_E_mito,1,weak,B,C2,0.01,0.03,2.0,slow,mechanistic_validated,False,
+E,mito,J_E_mito,1,weak,B,C3,0.01,0.03,2.0,slow,mechanistic_validated,True,DNMT3A
 E,P,J_E_P,0,none,,,0,0,0,,unpopulated,False,
 E,C,J_E_C,0,none,,,0,0,0,,unpopulated,False,
 E,N,J_E_N,0,none,,,0,0,0,,unpopulated,False,
@@ -70,4 +70,4 @@ B,mito,J_B_mito,0,none,,,0,0,0,,unpopulated,False,
 B,P,J_B_P,0,none,,,0,0,0,,unpopulated,False,
 B,C,J_B_C,0,none,,,0,0,0,,unpopulated,False,
 B,N,J_B_N,0,excluded,,,0,0,0,,excluded,False,
-B,F,J_B_F,1,weak,A,C1,0.01,0.03,3.0,very_slow,mechanistic_validated,False,
+B,F,J_B_F,1,weak,A,C4,0.01,0.03,3.0,very_slow,mechanistic_validated,True,PIEZO1
