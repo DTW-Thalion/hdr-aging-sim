@@ -15,6 +15,9 @@ Configuration: N=2000/stratum, 4 strata, seed=42.
 
 import os
 import sys
+if sys.stdout.encoding and sys.stdout.encoding.lower().startswith("cp"):
+    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+    sys.stderr.reconfigure(encoding="utf-8", errors="replace")
 import numpy as np
 from scipy.stats import spearmanr
 from scipy.linalg import inv
@@ -33,8 +36,12 @@ from src.hdr_sim.estimation import (
     covariance_sign_concordance,
 )
 
+_SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+_REPO_ROOT = os.path.dirname(_SCRIPT_DIR)
+_OUTPUT_DIR = os.path.join(_REPO_ROOT, 'outputs')
+os.makedirs(_OUTPUT_DIR, exist_ok=True)
+
 np.random.seed(42)
-os.makedirs('outputs', exist_ok=True)
 
 # Configuration
 N_per_stratum = 2000
@@ -309,8 +316,8 @@ ax.set_title('(d) Bootstrap T* calibration (Layer A)', fontsize=11)
 ax.legend(fontsize=9)
 
 plt.tight_layout(rect=[0, 0, 1, 0.96])
-plt.savefig('outputs/figure_gamma_equivalence.pdf', dpi=150, bbox_inches='tight')
-plt.savefig('outputs/figure_gamma_equivalence.png', dpi=150, bbox_inches='tight')
+plt.savefig(os.path.join(_OUTPUT_DIR, 'figure_gamma_equivalence.pdf'), dpi=150, bbox_inches='tight')
+plt.savefig(os.path.join(_OUTPUT_DIR, 'figure_gamma_equivalence.png'), dpi=150, bbox_inches='tight')
 print("\nSaved figure_gamma_equivalence.pdf/png")
 
 # ============================================================================

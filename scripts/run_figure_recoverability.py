@@ -20,6 +20,10 @@ What requires high-frequency data (Tier 2):
   (h) Individual τ_i from perturbation-recovery episodes
 """
 
+import sys
+if sys.stdout.encoding and sys.stdout.encoding.lower().startswith("cp"):
+    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+    sys.stderr.reconfigure(encoding="utf-8", errors="replace")
 import os
 import numpy as np
 from scipy.linalg import expm, solve_continuous_lyapunov, inv
@@ -31,7 +35,10 @@ import warnings
 warnings.filterwarnings('ignore')
 
 np.random.seed(2026)
-os.makedirs('outputs', exist_ok=True)
+_SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+_REPO_ROOT = os.path.dirname(_SCRIPT_DIR)
+_OUTPUT_DIR = os.path.join(_REPO_ROOT, 'outputs')
+os.makedirs(_OUTPUT_DIR, exist_ok=True)
 n_axes = 4
 AXES = ['I (inflammaging)', 'M (metabolic)', 'N (neuroendocrine)', 'F (functional)']
 AXES_SHORT = ['I', 'M', 'N', 'F']
@@ -442,8 +449,8 @@ ax.set_xticks(Ns)
 ax.set_xticklabels([str(n) for n in Ns])
 
 plt.tight_layout(rect=[0, 0, 1, 0.96])
-plt.savefig('outputs/figure_recoverability.pdf', dpi=150, bbox_inches='tight')
-plt.savefig('outputs/figure_recoverability.png', dpi=150, bbox_inches='tight')
+plt.savefig(os.path.join(_OUTPUT_DIR, 'figure_recoverability.pdf'), dpi=150, bbox_inches='tight')
+plt.savefig(os.path.join(_OUTPUT_DIR, 'figure_recoverability.png'), dpi=150, bbox_inches='tight')
 print("  Saved figure_recoverability.pdf/png")
 
 # ============================================================================

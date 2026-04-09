@@ -29,11 +29,12 @@ import matplotlib.patches as mpatches
 from matplotlib.collections import LineCollection
 
 from hdr_sim.dynamics import build_A, spectral_radius_discrete, simulate
-from hdr_sim.aging_params import tau_of_age, J_of_age, AXIS_COLORS
+from hdr_sim.aging_params import configure, tau_of_age, J_of_age, AXIS_COLORS
 from hdr_sim.plotting import setup_style, add_panel_label, save_figure
 
 os.makedirs('outputs', exist_ok=True)
 setup_style()
+configure()
 
 # ============================================================================
 # Coupling values from J_matrix_compiled_9x9.csv

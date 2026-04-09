@@ -53,7 +53,8 @@ def build_A(tau, J):
 def main():
     args = parse_args()
     np.random.seed(2026)
-    os.makedirs('outputs', exist_ok=True)
+    _OUTPUT_DIR = os.path.join(ROOT, 'outputs')
+    os.makedirs(_OUTPUT_DIR, exist_ok=True)
 
     csv_path = args.j_matrix or _default_csv_path()
     j_spec = JMatrixSpec.from_csv(csv_path)
@@ -345,8 +346,8 @@ def main():
     plt.colorbar(im, ax=ax, shrink=0.8)
 
     plt.tight_layout(rect=[0, 0, 1, 0.96])
-    plt.savefig('outputs/figure_uncertainty.pdf', dpi=150, bbox_inches='tight')
-    plt.savefig('outputs/figure_uncertainty.png', dpi=150, bbox_inches='tight')
+    plt.savefig(os.path.join(_OUTPUT_DIR, 'figure_uncertainty.pdf'), dpi=150, bbox_inches='tight')
+    plt.savefig(os.path.join(_OUTPUT_DIR, 'figure_uncertainty.png'), dpi=150, bbox_inches='tight')
     print("\n  Saved figure_uncertainty.pdf/png")
 
     print("\nDone.")
@@ -358,7 +359,7 @@ def main():
         'script': 'run_figure_uncertainty.py',
         'timestamp': datetime.now(timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ'),
     }
-    with open('outputs/figure_uncertainty_meta.json', 'w') as f:
+    with open(os.path.join(_OUTPUT_DIR, 'figure_uncertainty_meta.json'), 'w') as f:
         json_module.dump(meta, f, indent=2)
 
 

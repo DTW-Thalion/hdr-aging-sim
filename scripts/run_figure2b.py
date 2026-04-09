@@ -2,6 +2,9 @@
 """Generate Figure 2b: 5-panel aging dynamics demo (3 top + 2 bottom)."""
 
 import sys
+if sys.stdout.encoding and sys.stdout.encoding.lower().startswith("cp"):
+    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+    sys.stderr.reconfigure(encoding="utf-8", errors="replace")
 import os
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'src'))
 
@@ -30,7 +33,10 @@ def parse_args():
 
 _args = parse_args()
 
-os.makedirs('outputs', exist_ok=True)
+_SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+_REPO_ROOT = os.path.dirname(_SCRIPT_DIR)
+_OUTPUT_DIR = os.path.join(_REPO_ROOT, 'outputs')
+os.makedirs(_OUTPUT_DIR, exist_ok=True)
 setup_style()
 
 ages = np.arange(25, 91, 1)
@@ -144,7 +150,7 @@ if abs(m_trace[peak_idx]) > 0.05:
                   fontsize=7, color=AXIS_COLORS[1],
                   arrowprops=dict(arrowstyle='->', color=AXIS_COLORS[1], lw=0.8))
 
-save_figure(fig, 'figure_2b')
+save_figure(fig, 'figure_2b', output_dir=_OUTPUT_DIR)
 plt.close()
 
 # Print calibration info
@@ -165,5 +171,5 @@ _meta = {
     'script': 'run_figure2b.py',
     'timestamp': datetime.now(timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ'),
 }
-with open(os.path.join('outputs', 'figure_2b_meta.json'), 'w') as f:
+with open(os.path.join(_OUTPUT_DIR, 'figure_2b_meta.json'), 'w') as f:
     json.dump(_meta, f, indent=2)

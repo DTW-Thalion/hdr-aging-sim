@@ -14,6 +14,9 @@ Produces: outputs/figure_prior_stress.pdf (4-panel figure)
 
 import os
 import sys
+if sys.stdout.encoding and sys.stdout.encoding.lower().startswith("cp"):
+    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+    sys.stderr.reconfigure(encoding="utf-8", errors="replace")
 import numpy as np
 from scipy.linalg import solve_continuous_lyapunov
 
@@ -30,8 +33,12 @@ from src.hdr_sim.estimation import (
     sign_concordance, lyapunov_residual_norm, covariance_sign_concordance,
 )
 
+_SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+_REPO_ROOT = os.path.dirname(_SCRIPT_DIR)
+_OUTPUT_DIR = os.path.join(_REPO_ROOT, 'outputs')
+os.makedirs(_OUTPUT_DIR, exist_ok=True)
+
 np.random.seed(42)
-os.makedirs('outputs', exist_ok=True)
 
 # Configuration
 N_per_stratum = 2000
@@ -189,8 +196,8 @@ ax.text(0.05, 0.95, summary, transform=ax.transAxes,
         bbox=dict(boxstyle='round', facecolor='wheat', alpha=0.3))
 
 plt.tight_layout(rect=[0, 0, 1, 0.96])
-plt.savefig('outputs/figure_prior_stress.pdf', dpi=150, bbox_inches='tight')
-plt.savefig('outputs/figure_prior_stress.png', dpi=150, bbox_inches='tight')
+plt.savefig(os.path.join(_OUTPUT_DIR, 'figure_prior_stress.pdf'), dpi=150, bbox_inches='tight')
+plt.savefig(os.path.join(_OUTPUT_DIR, 'figure_prior_stress.png'), dpi=150, bbox_inches='tight')
 print("\nSaved figure_prior_stress.pdf/png")
 
 # ============================================================================

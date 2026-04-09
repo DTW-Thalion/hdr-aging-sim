@@ -344,6 +344,12 @@ def main():
     args = parse_args()
     out_dir = args.output_dir or OUTPUT_DIR
 
+    # Validate input files exist
+    for label, path in [("baseline", args.baseline), ("candidate", args.candidate)]:
+        if not os.path.isfile(path):
+            print(f"Error: {label} file not found: {path}", file=sys.stderr)
+            sys.exit(1)
+
     # Load inputs
     with open(args.baseline, 'r', encoding='utf-8') as f:
         baseline_data = json.load(f)

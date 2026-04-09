@@ -22,6 +22,10 @@ The proxy is individual-level and can be legitimately compared to
 Rockwood/Fried in Cox models.
 """
 
+import sys
+if sys.stdout.encoding and sys.stdout.encoding.lower().startswith("cp"):
+    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+    sys.stderr.reconfigure(encoding="utf-8", errors="replace")
 import os
 import numpy as np
 from scipy.linalg import solve_continuous_lyapunov, inv
@@ -32,8 +36,12 @@ import matplotlib.pyplot as plt
 import warnings
 warnings.filterwarnings('ignore')
 
+_SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+_REPO_ROOT = os.path.dirname(_SCRIPT_DIR)
+_OUTPUT_DIR = os.path.join(_REPO_ROOT, 'outputs')
+os.makedirs(_OUTPUT_DIR, exist_ok=True)
+
 np.random.seed(2026)
-os.makedirs('outputs', exist_ok=True)
 n_axes = 4
 AXES = ['I', 'M', 'N', 'F']
 
@@ -355,7 +363,7 @@ ax.legend(fontsize=9)
 ax.set_ylim(0, 1.1)
 
 plt.tight_layout(rect=[0, 0, 1, 0.96])
-plt.savefig('outputs/figure_individual_proxy.pdf', dpi=150, bbox_inches='tight')
-plt.savefig('outputs/figure_individual_proxy.png', dpi=150, bbox_inches='tight')
+plt.savefig(os.path.join(_OUTPUT_DIR, 'figure_individual_proxy.pdf'), dpi=150, bbox_inches='tight')
+plt.savefig(os.path.join(_OUTPUT_DIR, 'figure_individual_proxy.png'), dpi=150, bbox_inches='tight')
 print("\nSaved figure_individual_proxy.pdf/png")
 print("\nDone.")

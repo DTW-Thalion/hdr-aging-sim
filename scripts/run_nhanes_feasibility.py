@@ -10,6 +10,10 @@ pipeline without the inflammatory axis. A 3-axis model requires CRP data
 from NHANES 2015-2016 (where grip strength is unavailable).
 """
 
+import sys
+if sys.stdout.encoding and sys.stdout.encoding.lower().startswith("cp"):
+    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+    sys.stderr.reconfigure(encoding="utf-8", errors="replace")
 import os
 import numpy as np
 import pandas as pd
@@ -21,9 +25,14 @@ import matplotlib.pyplot as plt
 import warnings
 warnings.filterwarnings('ignore')
 
+_SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+_REPO_ROOT = os.path.dirname(_SCRIPT_DIR)
+_OUTPUT_DIR = os.path.join(_REPO_ROOT, 'outputs')
+_DATA_DIR = os.path.join(_REPO_ROOT, 'data', 'nhanes')
+os.makedirs(_OUTPUT_DIR, exist_ok=True)
+os.makedirs(_DATA_DIR, exist_ok=True)
+
 np.random.seed(2026)
-os.makedirs('outputs', exist_ok=True)
-os.makedirs('data/nhanes', exist_ok=True)
 
 
 def download_nhanes_2011_2012():
@@ -37,7 +46,7 @@ def download_nhanes_2011_2012():
         'bmx': 'BMX_G.XPT',
     }
     for name, fn in files.items():
-        path = f'data/nhanes/{name}.XPT'
+        path = os.path.join(_DATA_DIR, f'{name}.XPT')
         if not os.path.exists(path):
             url = f'{base}/{fn}'
             print(f'  Downloading {fn}...', end=' ')
@@ -70,10 +79,10 @@ print("LOADING NHANES 2011-2012 DATA")
 print("=" * 70)
 
 # Load XPT files
-demo, meta_d = pyreadstat.read_xport('data/nhanes/demo.XPT')
-ghb, meta_g = pyreadstat.read_xport('data/nhanes/ghb.XPT')
-mgx, meta_m = pyreadstat.read_xport('data/nhanes/mgx.XPT')
-bmx, meta_b = pyreadstat.read_xport('data/nhanes/bmx.XPT')
+demo, meta_d = pyreadstat.read_xport(os.path.join(_DATA_DIR, 'demo.XPT'))
+ghb, meta_g = pyreadstat.read_xport(os.path.join(_DATA_DIR, 'ghb.XPT'))
+mgx, meta_m = pyreadstat.read_xport(os.path.join(_DATA_DIR, 'mgx.XPT'))
+bmx, meta_b = pyreadstat.read_xport(os.path.join(_DATA_DIR, 'bmx.XPT'))
 
 print(f"  Demographics: {len(demo)} rows, cols: {list(demo.columns[:10])}")
 print(f"  HbA1c:        {len(ghb)} rows, cols: {list(ghb.columns)}")
@@ -336,8 +345,8 @@ ax.set_title('(d) Individual SWDS-Γ vs age', fontsize=11)
 ax.legend(fontsize=9)
 
 plt.tight_layout(rect=[0, 0, 1, 0.96])
-plt.savefig('outputs/figure_nhanes.pdf', dpi=150, bbox_inches='tight')
-plt.savefig('outputs/figure_nhanes.png', dpi=150, bbox_inches='tight')
+plt.savefig(os.path.join(_OUTPUT_DIR, 'figure_nhanes.pdf'), dpi=150, bbox_inches='tight')
+plt.savefig(os.path.join(_OUTPUT_DIR, 'figure_nhanes.png'), dpi=150, bbox_inches='tight')
 print("Saved figure_nhanes.pdf/png")
 
 # ============================================================================

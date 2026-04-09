@@ -13,7 +13,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 from hdr_sim.dynamics import build_A, spectral_radius_discrete, simulate
-from hdr_sim.aging_params import tau_of_age, J_of_age, AXIS_COLORS
+from hdr_sim.aging_params import configure, tau_of_age, J_of_age, AXIS_COLORS
 from hdr_sim.plotting import setup_style, add_panel_label, save_figure
 from hdr_sim.j_matrix_spec import JMatrixSpec, load_default_spec
 
@@ -30,6 +30,7 @@ _args = parse_args()
 
 os.makedirs('outputs', exist_ok=True)
 setup_style()
+configure()
 
 ages = np.arange(25, 91, 1)
 

@@ -65,7 +65,7 @@ from run_dj_validation import (
     MED_COMPRESSION,
 )
 
-from hdr_sim.aging_params import _TAU_30, _TAU_80, _J_30, _J_80
+from hdr_sim.aging_params import configure, get_config
 from hdr_sim.dynamics import build_A, spectral_abscissa
 from hdr_sim.plotting import setup_style, add_panel_label, save_figure
 
@@ -385,8 +385,8 @@ def run_misspecification_scenario(scenario_name, ref_alphas):
 
 def build_tau_at_regime(age_mid, d_fraction, n_axes):
     """Get tau values at a specific regime parameterization."""
-    tau_30 = _TAU_30.copy()
-    tau_80 = _TAU_80.copy()
+    tau_30 = get_config()['tau_30'].copy()
+    tau_80 = get_config()['tau_80'].copy()
     if n_axes == 3:
         tau_30 = tau_30[IDX_3_IN_4]
         tau_80 = tau_80[IDX_3_IN_4]
@@ -794,6 +794,7 @@ def write_results(bayes_results, tost_results, misspec_results,
 
 def main():
     t0 = time.time()
+    configure()
 
     print("=" * 72)
     print("D vs. J: BAYESIAN MODEL COMPARISON & MISSPECIFICATION ROBUSTNESS")

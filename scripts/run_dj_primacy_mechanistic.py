@@ -87,11 +87,13 @@ def generate_regime_cohort(
 
     if medication:
         for axis_name, frac in SyntheticCohort.DEFAULT_MED_PREVALENCE.items():
-            idx = SyntheticCohort.AXIS_NAMES.index(axis_name)
+            if axis_name not in model._axis_idx:
+                continue
+            idx = model._axis_idx[axis_name]
             medicated[:, idx] = rng.random(N) < frac
 
     # Pre-compute matrices for the reference ages
-    tau_ref = model._tau_ref.copy()
+    tau_ref = model._tau_of_age_full(30).copy()
     c = model.calibration_scalar
 
     def build_regime_A(age):
@@ -99,7 +101,7 @@ def generate_regime_cohort(
         f = model._interp_fraction(age)
 
         # tau: interpolate between tau_ref and full age-dependent tau
-        tau_full = model._tau_of_age(age)
+        tau_full = model._tau_of_age_full(age)
         tau_regime = tau_ref + D_weight * (tau_full - tau_ref)
         D = np.diag(1.0 / tau_regime)
 
@@ -209,7 +211,7 @@ def main():
     t_total = time.time()
 
     model = HDRMechanisticModel(age=65)
-    obs = ObservationModel("ELSA_3axis")
+    obs = ObservationModel("ELSA_3axis", axes=model.AXES)
 
     CONDITIONS = [
         ("clean",        False, False),

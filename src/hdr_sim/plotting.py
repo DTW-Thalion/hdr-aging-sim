@@ -1,5 +1,6 @@
 """Publication-quality figure generation utilities."""
 
+import os
 import matplotlib.pyplot as plt
 import matplotlib as mpl
 
@@ -34,6 +35,10 @@ def add_panel_label(ax, label, x=-0.12, y=1.08):
 
 def save_figure(fig, name, output_dir='outputs'):
     """Save figure as both PDF and PNG."""
-    fig.savefig(f'{output_dir}/{name}.pdf', format='pdf')
-    fig.savefig(f'{output_dir}/{name}.png', format='png', dpi=300)
-    print(f'Saved {output_dir}/{name}.pdf and {output_dir}/{name}.png')
+    output_dir = os.path.abspath(output_dir)
+    os.makedirs(output_dir, exist_ok=True)
+    pdf_path = os.path.join(output_dir, f'{name}.pdf')
+    png_path = os.path.join(output_dir, f'{name}.png')
+    fig.savefig(pdf_path, format='pdf')
+    fig.savefig(png_path, format='png', dpi=300)
+    print(f'Saved {pdf_path} and {png_path}')

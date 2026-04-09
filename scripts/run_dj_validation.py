@@ -55,7 +55,7 @@ sys.path.insert(0, os.path.join(ROOT, 'src'))
 OUTPUT_DIR = os.path.join(ROOT, 'outputs')
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 
-from hdr_sim.aging_params import tau_of_age, J_of_age, _TAU_30, _TAU_80, _J_30, _J_80
+from hdr_sim.aging_params import tau_of_age, J_of_age, configure, get_config
 from hdr_sim.dynamics import build_A, spectral_abscissa
 from hdr_sim.estimation import stationary_covariance
 from hdr_sim.plotting import setup_style, add_panel_label, save_figure
@@ -173,16 +173,16 @@ def build_A_dj_ratio(age_mid, d_fraction, alpha_target, n_axes=4):
         Actual α achieved.
     """
     # Baseline (age 30)
-    tau_30 = _TAU_30.copy()
-    J_30 = _J_30.copy()
+    tau_30 = get_config()['tau_30'].copy()
+    J_30 = get_config()['J_30'].copy()
 
     if n_axes == 3:
         tau_30 = tau_30[IDX_3_IN_4]
         J_30 = J_30[np.ix_(IDX_3_IN_4, IDX_3_IN_4)]
 
     # Full degradation endpoints (age 80)
-    tau_80 = _TAU_80.copy()
-    J_80 = _J_80.copy()
+    tau_80 = get_config()['tau_80'].copy()
+    J_80 = get_config()['J_80'].copy()
     if n_axes == 3:
         tau_80 = tau_80[IDX_3_IN_4]
         J_80 = J_80[np.ix_(IDX_3_IN_4, IDX_3_IN_4)]
@@ -1094,6 +1094,8 @@ def main():
     _root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     _csv_path = args.j_matrix or os.path.join(_root, 'data', 'J_matrix_compiled_9x9.csv')
     j_spec = JMatrixSpec.from_csv(_csv_path)
+
+    configure()  # initialize aging_params anchors before first use
 
     t0 = time.time()
 
