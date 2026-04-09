@@ -47,6 +47,8 @@ def parse_args():
                         help='Path to J matrix CSV. Default: data/J_matrix_compiled_9x9.csv')
     parser.add_argument('--axes', type=str, nargs='+', default=None,
                         help='Axis subset (e.g., I M F). Default: script-specific.')
+    parser.add_argument('--output-dir', type=str, default=None,
+                        help='Output directory. Default: results/')
     return parser.parse_args()
 
 
@@ -55,7 +57,7 @@ def main():
     _csv_path = args.j_matrix or os.path.join(_REPO_ROOT, 'data', 'J_matrix_compiled_9x9.csv')
     j_spec = JMatrixSpec.from_csv(_csv_path)
 
-    results_dir = os.path.join(_REPO_ROOT, "results")
+    results_dir = args.output_dir or os.path.join(_REPO_ROOT, "results")
     os.makedirs(results_dir, exist_ok=True)
     md_path = os.path.join(results_dir, "full_pipeline_report.md")
     json_path = os.path.join(results_dir, "full_pipeline.json")

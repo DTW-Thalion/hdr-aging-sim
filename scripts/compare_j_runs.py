@@ -76,7 +76,16 @@ def extract_numerical_metrics(data):
     - Full pipeline output (full_pipeline.json)
     - Intervention analysis (intervention_analysis.json)
     - D/J validation results (dj_validation_results.json)
+
+    Excludes timing/timestamp fields that naturally vary between runs.
     """
+    # Keys to exclude: timing, timestamps, and other non-deterministic fields
+    _EXCLUDE_PATTERNS = ('elapsed', 'timestamp', 'runtime', 'duration', 'time_s')
+
+    def _is_timing_key(k):
+        kl = k.lower()
+        return any(p in kl for p in _EXCLUDE_PATTERNS)
+
     metrics = {}
 
     # ELSA-style: critical_result with delta_C
@@ -111,7 +120,7 @@ def extract_numerical_metrics(data):
     for step_key, step_data in steps.items():
         if isinstance(step_data, dict):
             for k, v in step_data.items():
-                if isinstance(v, (int, float)):
+                if isinstance(v, (int, float)) and not _is_timing_key(k):
                     metrics[f'{step_key}.{k}'] = v
 
     # Intervention analysis: single_ranking top entry
@@ -127,7 +136,7 @@ def extract_numerical_metrics(data):
         phase = data.get(phase_key, {})
         if isinstance(phase, dict):
             for k, v in phase.items():
-                if isinstance(v, (int, float)):
+                if isinstance(v, (int, float)) and not _is_timing_key(k):
                     metrics[f'{phase_key}.{k}'] = v
 
     # Sign concordance

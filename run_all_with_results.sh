@@ -1,6 +1,17 @@
 #!/bin/bash
 # Run full HDR test suite and generate results/RESULTS.md
+#
+# Usage:
+#   ./run_all_with_results.sh              # full test suite
+#   ./run_all_with_results.sh --compare-j  # full suite + J-matrix integration test
 set -e
+
+COMPARE_J=false
+for arg in "$@"; do
+    case "$arg" in
+        --compare-j) COMPARE_J=true ;;
+    esac
+done
 
 echo "=========================================="
 echo "HDR Aging Simulation — Full Test Suite"
@@ -74,6 +85,13 @@ from src.hdr_sim.results_writer import ResultsWriter
 with ResultsWriter('ELSA Cohort Validation', 'SKIPPED — ELSA data files not found in data/elsa/') as rw:
     rw.add_text('Place ELSA data files in data/elsa/ and re-run to execute Phase 3.')
 "
+fi
+
+# J-matrix comparison integration test (optional)
+if [ "$COMPARE_J" = true ]; then
+    echo ""
+    echo "--- J-Matrix Comparison Integration Test ---"
+    python3 scripts/run_j_comparison_integration.py
 fi
 
 echo ""
