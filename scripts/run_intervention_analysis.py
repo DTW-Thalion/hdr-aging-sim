@@ -12,6 +12,7 @@ Produces:
     results/intervention_report.md
 """
 
+import argparse
 import json
 import os
 import sys
@@ -31,9 +32,23 @@ from hdr_sim.intervention import InterventionModel
 from hdr_sim.mechanistic_model import HDRMechanisticModel, _spectral_abscissa
 from hdr_sim.observation_model import ObservationModel
 from hdr_sim.trial_simulator import TrialSimulator
+from hdr_sim.j_matrix_spec import JMatrixSpec, load_default_spec
+
+
+def parse_args():
+    parser = argparse.ArgumentParser(description='Intervention analysis and trial design')
+    parser.add_argument('--j-matrix', type=str, default=None,
+                        help='Path to J matrix CSV. Default: data/J_matrix_compiled_9x9.csv')
+    parser.add_argument('--axes', type=str, nargs='+', default=None,
+                        help='Axis subset (e.g., I M F). Default: script-specific.')
+    return parser.parse_args()
 
 
 def main():
+    args = parse_args()
+    _csv_path = args.j_matrix or os.path.join(_REPO_ROOT, 'data', 'J_matrix_compiled_9x9.csv')
+    j_spec = JMatrixSpec.from_csv(_csv_path)
+
     results_dir = os.path.join(_REPO_ROOT, "results")
     os.makedirs(results_dir, exist_ok=True)
     json_path = os.path.join(results_dir, "intervention_analysis.json")
@@ -45,7 +60,7 @@ def main():
     model = HDRMechanisticModel(age=70)
     intv = InterventionModel(model)
     obs = ObservationModel("ELSA_3axis")
-    output = {"timestamp": timestamp}
+    output = {"timestamp": timestamp, "j_matrix": j_spec.to_dict()}
 
     # ==================================================================
     # 1. Single-intervention ranking
@@ -64,11 +79,11 @@ def main():
     output["single_ranking"] = ranking
 
     # Acceptance: check that interventions either improve alpha
-    # or have negligibly small effects.  In the 9-axis model, the
-    # dominant eigenvalue is E-axis-dominated; interventions targeting
-    # I/M/B coupling reduce pathological entries but may not shift
-    # the dominant mode.  We verify:
-    #   (a) all interventions that target E-related entries improve alpha
+    # or have negligibly small effects.  In the two-timescale model,
+    # the fast-subsystem alpha (7 axes: I, M, mito, P, C, N, F)
+    # determines stability.  Quasi-static axes (E, B) enter as forcing
+    # and do not affect alpha directly.  We verify:
+    #   (a) interventions targeting fast-axis couplings improve alpha
     #   (b) all remaining effects are within 2% of |alpha|
     baseline_alpha = abs(ranking[0]["baseline"])
     n_improve = sum(1 for r in ranking if r["delta"] < -1e-12)

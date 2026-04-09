@@ -28,6 +28,7 @@ Usage:
 Reference: HDR Ontology Manuscript R6, SI Section — P Statistic Validation
 """
 
+import argparse
 import json
 import os
 import sys
@@ -58,6 +59,7 @@ from hdr_sim.aging_params import tau_of_age, J_of_age, _TAU_30, _TAU_80, _J_30, 
 from hdr_sim.dynamics import build_A, spectral_abscissa
 from hdr_sim.estimation import stationary_covariance
 from hdr_sim.plotting import setup_style, add_panel_label, save_figure
+from hdr_sim.j_matrix_spec import JMatrixSpec, load_default_spec
 
 # ---------------------------------------------------------------------------
 # Configuration
@@ -762,7 +764,8 @@ def plot_power_figure(power_3, power_4, results_3):
 # Results output
 # ---------------------------------------------------------------------------
 
-def write_results(results_3, results_4, power_3, power_4, ref_alphas, elapsed):
+def write_results(results_3, results_4, power_3, power_4, ref_alphas, elapsed,
+                  j_spec=None):
     """Write text summary, JSON, and SI markdown."""
 
     # --- Machine-readable JSON ---
@@ -815,6 +818,9 @@ def write_results(results_3, results_4, power_3, power_4, ref_alphas, elapsed):
                              for k, v in mde_3.items()}
     json_out['mde_4axis'] = {k: float(v) if isinstance(v, (float, np.floating)) else v
                              for k, v in mde_4.items()}
+
+    if j_spec is not None:
+        json_out['j_matrix'] = j_spec.to_dict()
 
     json_path = os.path.join(OUTPUT_DIR, 'dj_validation_results.json')
     with open(json_path, 'w') as f:
@@ -1074,7 +1080,21 @@ def write_si_markdown(results_3, results_4, power_3, power_4, mde_3, mde_4, ref_
 # Main
 # ---------------------------------------------------------------------------
 
+def parse_args():
+    parser = argparse.ArgumentParser(description='D vs. J Primacy Validation Study')
+    parser.add_argument('--j-matrix', type=str, default=None,
+                        help='Path to J matrix CSV. Default: data/J_matrix_compiled_9x9.csv')
+    parser.add_argument('--axes', type=str, nargs='+', default=None,
+                        help='Axis subset (e.g., I M F). Default: script-specific.')
+    return parser.parse_args()
+
+
 def main():
+    args = parse_args()
+    _root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    _csv_path = args.j_matrix or os.path.join(_root, 'data', 'J_matrix_compiled_9x9.csv')
+    j_spec = JMatrixSpec.from_csv(_csv_path)
+
     t0 = time.time()
 
     print("=" * 72)
@@ -1118,7 +1138,8 @@ def main():
 
     # Step 6: Results files
     print("\nStep 6: Writing results ...")
-    write_results(results_3, results_4, power_3, power_4, ref_alphas, elapsed)
+    write_results(results_3, results_4, power_3, power_4, ref_alphas, elapsed,
+                  j_spec=j_spec)
     write_si_markdown(results_3, results_4, power_3, power_4, mde_3, mde_4, ref_alphas)
 
     print("\n" + "=" * 72)

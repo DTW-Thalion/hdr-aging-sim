@@ -9,6 +9,7 @@ Monte Carlo over plausible J matrices:
 """
 
 import os
+import sys
 import numpy as np
 from scipy.linalg import solve_continuous_lyapunov
 import matplotlib
@@ -16,9 +17,26 @@ matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import warnings
 warnings.filterwarnings('ignore')
+import argparse
+import json as json_module
+from datetime import datetime, timezone
 
 np.random.seed(2026)
 os.makedirs('outputs', exist_ok=True)
+
+def parse_args():
+    parser = argparse.ArgumentParser(description='J Matrix Uncertainty Propagation')
+    parser.add_argument('--j-matrix', type=str, default=None,
+                        help='Path to J matrix CSV for provenance. Default: data/J_matrix_compiled_9x9.csv')
+    parser.add_argument('--axes', type=str, nargs='+', default=None,
+                        help='Axis subset (e.g., I M F). Default: script-specific.')
+    return parser.parse_args()
+
+_args = parse_args()
+
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'src'))
+from hdr_sim.j_matrix_spec import JMatrixSpec, load_default_spec
+
 n_axes = 4
 AXES = ['I', 'M', 'N', 'F']
 
@@ -349,3 +367,15 @@ plt.savefig('outputs/figure_uncertainty.png', dpi=150, bbox_inches='tight')
 print("\n  Saved figure_uncertainty.pdf/png")
 
 print("\nDone.")
+
+# Save provenance sidecar
+_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+_csv_path = _args.j_matrix or os.path.join(_root, 'data', 'J_matrix_compiled_9x9.csv')
+_j_spec = JMatrixSpec.from_csv(_csv_path)
+_meta = {
+    'j_matrix': _j_spec.to_dict(),
+    'script': 'run_figure_uncertainty.py',
+    'timestamp': datetime.now(timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ'),
+}
+with open('outputs/figure_uncertainty_meta.json', 'w') as f:
+    json_module.dump(_meta, f, indent=2)

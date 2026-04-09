@@ -18,6 +18,9 @@ Usage:
 import csv
 import os
 import sys
+import argparse
+import json
+from datetime import datetime, timezone
 
 import numpy as np
 import matplotlib
@@ -34,6 +37,16 @@ OUTPUT_DIR = os.path.join(ROOT, 'outputs')
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 
 from hdr_sim.plotting import setup_style, save_figure
+from hdr_sim.j_matrix_spec import JMatrixSpec, load_default_spec
+
+
+def parse_args():
+    parser = argparse.ArgumentParser(description='Figure 2: 9x9 J Coupling Matrix Heatmap')
+    parser.add_argument('--j-matrix', type=str, default=None,
+                        help='Path to J matrix CSV. Default: data/J_matrix_compiled_9x9.csv')
+    parser.add_argument('--axes', type=str, nargs='+', default=None,
+                        help='Axis subset (e.g., I M F). Default: all 9 axes.')
+    return parser.parse_args()
 
 # ---------------------------------------------------------------------------
 # Configuration
@@ -87,9 +100,11 @@ def load_full_matrix(csv_path):
 
 
 def main():
+    args = parse_args()
     print("Generating Figure 2: 9x9 J heatmap ...")
 
-    csv_path = os.path.join(ROOT, 'data', 'J_matrix_compiled_9x9.csv')
+    csv_path = args.j_matrix or os.path.join(ROOT, 'data', 'J_matrix_compiled_9x9.csv')
+    j_spec = JMatrixSpec.from_csv(csv_path)
     J, grades, unknown_mask = load_full_matrix(csv_path)
     n = len(AXES_9)
 
@@ -174,6 +189,13 @@ def main():
 
     fig.tight_layout()
     save_figure(fig, 'figure_J_heatmap', OUTPUT_DIR)
+    meta = {
+        'j_matrix': j_spec.to_dict(),
+        'script': 'run_figure_J_heatmap.py',
+        'timestamp': datetime.now(timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ'),
+    }
+    with open(os.path.join(OUTPUT_DIR, 'figure_J_heatmap_meta.json'), 'w') as f:
+        json.dump(meta, f, indent=2)
     plt.close(fig)
     print("Done.")
 

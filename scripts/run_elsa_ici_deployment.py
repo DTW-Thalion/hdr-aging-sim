@@ -19,6 +19,7 @@ Outputs:
     outputs/elsa_ici_deployment_table.txt — manuscript table
 """
 
+import argparse
 import json
 import os
 import sys
@@ -58,9 +59,22 @@ from hdr_sim.csv_loader import (
     get_calibration_scalar,
     _default_csv_path,
 )
+from hdr_sim.j_matrix_spec import JMatrixSpec, load_default_spec
 
 OUTPUT_DIR = os.path.join(ROOT, 'outputs')
 os.makedirs(OUTPUT_DIR, exist_ok=True)
+
+
+def parse_args():
+    parser = argparse.ArgumentParser(description='ELSA ICI Deployment Assessment')
+    parser.add_argument('--j-matrix', type=str, default=None,
+                        help='Path to J matrix CSV. Default: data/J_matrix_compiled_9x9.csv')
+    parser.add_argument('--axes', type=str, nargs='+', default=None,
+                        help='Axis subset (e.g., I M F). Default: script-specific.')
+    return parser.parse_args()
+
+
+_args = parse_args()
 
 # Nurse waves with blood biomarkers
 BLOOD_WAVES = [2, 4, 6, 8]
@@ -229,7 +243,7 @@ def get_A_matrices():
     print("\n  Loading J-matrix and constructing A matrices...")
 
     # Load J-matrix for 3-axis subset
-    rows = load_J_csv(_default_csv_path())
+    rows = load_J_csv(_args.j_matrix or _default_csv_path())
     J_healthy = build_J_basin(rows, basin='healthy', axes=('I', 'M', 'F'))
     J_disease = build_J_basin(rows, basin='disease', axes=('I', 'M', 'F'))
 
@@ -679,6 +693,11 @@ def main():
             name: Sigma_y[name].tolist() for name in ['healthy', 'disease']
         },
     }
+
+    # Add J-matrix provenance
+    _csv_path = _args.j_matrix or _default_csv_path()
+    j_spec = JMatrixSpec.from_csv(_csv_path)
+    full_results['j_matrix'] = j_spec.to_dict()
 
     # --- Save JSON ---
     json_path = os.path.join(OUTPUT_DIR, 'elsa_ici_deployment.json')

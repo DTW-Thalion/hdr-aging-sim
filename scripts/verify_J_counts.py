@@ -9,8 +9,12 @@ Usage:
 
 import argparse
 import csv
+import os
 import sys
 from collections import defaultdict
+
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'src'))
+from hdr_sim.j_matrix_spec import JMatrixSpec
 
 
 # ---------------------------------------------------------------------------
@@ -61,6 +65,10 @@ def main():
     parser.add_argument('--csv', default='data/J_matrix_compiled_9x9.csv',
                         help='Path to J matrix CSV (default: 9x9)')
     args = parser.parse_args()
+
+    j_spec = JMatrixSpec.from_csv(args.csv)
+    print(f"J-matrix SHA-256: {j_spec.sha256}")
+    print(f"J-matrix spec: n_axes={j_spec.n_axes}, signs={j_spec.sign_counts}")
 
     with open(args.csv, newline='', encoding='utf-8') as f:
         reader = csv.DictReader(f)

@@ -16,6 +16,7 @@ Steps:
 Produces: results/full_pipeline_report.md
 """
 
+import argparse
 import json
 import os
 import sys
@@ -37,9 +38,23 @@ from hdr_sim.sensitivity import PriorSensitivityAnalysis
 from hdr_sim.synthetic_cohort import SyntheticCohort
 from hdr_sim.tier1_pipeline import Tier1Pipeline
 from hdr_sim.trial_simulator import TrialSimulator
+from hdr_sim.j_matrix_spec import JMatrixSpec, load_default_spec
+
+
+def parse_args():
+    parser = argparse.ArgumentParser(description='End-to-end HDR pipeline')
+    parser.add_argument('--j-matrix', type=str, default=None,
+                        help='Path to J matrix CSV. Default: data/J_matrix_compiled_9x9.csv')
+    parser.add_argument('--axes', type=str, nargs='+', default=None,
+                        help='Axis subset (e.g., I M F). Default: script-specific.')
+    return parser.parse_args()
 
 
 def main():
+    args = parse_args()
+    _csv_path = args.j_matrix or os.path.join(_REPO_ROOT, 'data', 'J_matrix_compiled_9x9.csv')
+    j_spec = JMatrixSpec.from_csv(_csv_path)
+
     results_dir = os.path.join(_REPO_ROOT, "results")
     os.makedirs(results_dir, exist_ok=True)
     md_path = os.path.join(results_dir, "full_pipeline_report.md")
@@ -56,14 +71,17 @@ def main():
     w("# Full Pipeline Report")
     w(f"\nGenerated: {timestamp}")
 
-    output = {"timestamp": timestamp, "steps": {}}
+    output = {"timestamp": timestamp, "j_matrix": j_spec.to_dict(), "steps": {}}
 
     # ==================================================================
     # Step 1: Load mechanistic evidence
     # ==================================================================
     w("\n## Step 1: Load mechanistic evidence")
     model = HDRMechanisticModel(age=65)
-    w(f"- Axes: {model.AXES}")
+    w(f"- All axes: {model.AXES}")
+    w(f"- Fast axes (dynamical): {model.FAST_AXES}")
+    w(f"- Quasi-static axes (forcing): {model.QUASI_STATIC_AXES}")
+    w(f"- Fast subsystem dimension: {model.n}")
     w(f"- Active J entries: {len(model._entries)}")
     w(f"- Excluded entries: {len(model._excluded)}")
     w(f"- Calibration scalar: {model.calibration_scalar:.6f}")
@@ -71,19 +89,30 @@ def main():
         "n_entries": len(model._entries),
         "n_excluded": len(model._excluded),
         "calibration_scalar": model.calibration_scalar,
+        "fast_axes": model.FAST_AXES,
+        "quasi_static_axes": model.QUASI_STATIC_AXES,
+        "n_fast": model.n,
     }
 
     # ==================================================================
     # Step 2-3: Model and stability summary
     # ==================================================================
     w("\n## Step 2-3: Stability summary (age 65)")
-    w(f"- alpha(A): {model.spectral_abscissa:.6f}")
+    from hdr_sim.mechanistic_model import _spectral_abscissa as _sa
+    alpha_fast = model.spectral_abscissa
+    alpha_full = _sa(model.A_full)
+    eq_shift = np.linalg.norm(model.compute_equilibrium_shift())
+    w(f"- alpha(A_fast): {alpha_fast:.6f}  (fast {model.n}-axis subsystem)")
+    w(f"- alpha(A_full): {alpha_full:.6f}  (full 9-axis, E/B-dominated)")
     w(f"- Recovery time: {model.dominant_recovery_time:.1f} days")
     w(f"- Damping ratio: {model.damping_ratio:.4f}")
+    w(f"- Equilibrium shift (E/B forcing): {eq_shift:.4f}")
     output["steps"]["2_stability"] = {
-        "alpha": model.spectral_abscissa,
+        "alpha_fast": alpha_fast,
+        "alpha_full": alpha_full,
         "recovery_time": model.dominant_recovery_time,
         "damping_ratio": model.damping_ratio,
+        "equilibrium_shift": eq_shift,
     }
 
     # ==================================================================
@@ -254,7 +283,7 @@ def main():
     # Sign concordance
     # Generate observed Gamma from model
     model.set_age(65)
-    Q = 0.01 * np.eye(9)
+    Q = 0.01 * np.eye(model.n)
     from scipy import linalg as _la
     Gamma_true = _la.solve_continuous_lyapunov(model.A, -Q)
     Gamma_obs = obs.C @ Gamma_true @ obs.C.T

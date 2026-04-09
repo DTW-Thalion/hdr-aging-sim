@@ -28,6 +28,7 @@ Outputs:
     outputs/dj_primacy_results.json      — machine-readable results
 """
 
+import argparse
 import json
 import os
 import sys
@@ -66,6 +67,7 @@ from run_elsa_validation import (
 )
 
 from hdr_sim.plotting import setup_style, add_panel_label, save_figure
+from hdr_sim.j_matrix_spec import JMatrixSpec, load_default_spec
 
 # ---------------------------------------------------------------------------
 # Configuration
@@ -680,7 +682,20 @@ def write_results_json(results_full, results_naive, fits_full, fits_naive,
 # ---------------------------------------------------------------------------
 # Main
 # ---------------------------------------------------------------------------
+def parse_args():
+    parser = argparse.ArgumentParser(description='D vs. J Primacy Decomposition')
+    parser.add_argument('--j-matrix', type=str, default=None,
+                        help='Path to J matrix CSV. Default: data/J_matrix_compiled_9x9.csv')
+    parser.add_argument('--axes', type=str, nargs='+', default=None,
+                        help='Axis subset (e.g., I M F). Default: script-specific.')
+    return parser.parse_args()
+
+
 def main():
+    args = parse_args()
+    _csv_path = args.j_matrix or os.path.join(ROOT, 'data', 'J_matrix_compiled_9x9.csv')
+    j_spec = JMatrixSpec.from_csv(_csv_path)
+
     print("=" * 72)
     print("D vs. J PRIMACY DECOMPOSITION")
     print("Decomposing age-stratified Γ̂ into variance growth vs. correlation tightening")
@@ -896,6 +911,14 @@ def main():
     write_results_json(results_full, results_naive,
                        fits_full, fits_naive,
                        quad_full, quad_naive)
+
+    # Add J-matrix provenance to JSON output
+    _primacy_json_path = os.path.join(OUTPUT_DIR, 'dj_primacy_results.json')
+    with open(_primacy_json_path, 'r') as f:
+        _primacy_data = json.load(f)
+    _primacy_data['j_matrix'] = j_spec.to_dict()
+    with open(_primacy_json_path, 'w') as f:
+        json.dump(_primacy_data, f, indent=2, default=str)
 
     # Print summary to console
     print("\n" + text)
