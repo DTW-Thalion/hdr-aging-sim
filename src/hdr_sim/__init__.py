@@ -5,9 +5,15 @@ Part 2: 9-axis mechanistic-evidence-informed model with two-timescale
 decomposition (7-axis fast subsystem + quasi-static E/B forcing),
 sensitivity analysis, synthetic cohort generation, intervention
 framework, and Bayesian prior updating scaffold.
+
+Key entry points:
+    configure(axes=('I','M','F'))   — set up aging model for an axis subset
+    tau_of_age(age), J_of_age(age)  — age-interpolated parameters
+    JMatrixSpec.from_csv(path)      — provenance tracking for J-matrix CSVs
 """
-from .csv_loader import load_J_csv, build_J_basin, get_J_anchors
-from .aging_params import configure, tau_of_age, J_of_age
+from .csv_loader import load_J_csv, build_J_basin, get_J_anchors, TAU_REGISTRY
+from .aging_params import configure, tau_of_age, J_of_age, get_axis_names, get_axis_colors
+from .j_matrix_spec import JMatrixSpec
 from .estimation import (
     get_params,
     build_A,

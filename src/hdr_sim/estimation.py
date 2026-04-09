@@ -19,11 +19,13 @@ from scipy.optimize import minimize
 
 def get_params(age):
     """
-    Return (tau, J) at a given age for the 4-axis model (I, M, N, F).
+    Return (tau, J) at a given age for the configured axis model.
     Linear interpolation from age 30 to age 80.
 
-    Delegates to aging_params.tau_of_age / J_of_age, which load coupling
-    values from data/J_matrix_compiled.csv at import time.
+    Delegates to aging_params.tau_of_age / J_of_age. Call
+    aging_params.configure() first to set the J-matrix and axis subset;
+    otherwise auto-configures with defaults (4-axis I, M, N, F) and
+    emits a DeprecationWarning.
     """
     from .aging_params import tau_of_age, J_of_age
     return tau_of_age(age), J_of_age(age)

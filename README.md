@@ -85,14 +85,16 @@ Key findings:
 
 ### J Matrix Uncertainty Propagation
 
-Monte Carlo (N = 10,000) over plausible J matrices within confidence-grade uncertainty bands (grade A: 20% CV, grade B: 40% CV, grade C: 70% CV).
+Monte Carlo (N = 10,000) over plausible J matrices within confidence-grade uncertainty bands (grade A: 20% CV, grade B: 40% CV, grade C: 70% CV). Supports arbitrary axis subsets via `--axes`.
 
 ```bash
-python scripts/run_figure_uncertainty.py
+python scripts/run_figure_uncertainty.py                  # default 4-axis (I, M, N, F)
+python scripts/run_figure_uncertainty.py --axes I M       # 2-axis subset
+python scripts/run_figure_uncertainty.py --axes I M E F   # custom 4-axis
 ```
 
-Key findings:
-* "9/12 positive" structure preserved in 100% of draws (4-axis model)
+Key findings (default 4-axis):
+* "9/12 positive" structure preserved in 100% of draws
 * Monotone α ordering preserved in 100% of draws across all age strata
 * I↔M feedback loop dominates α sensitivity (r ≈ 0.63)
 * N-axis entries have negligible influence on α (<0.05 correlation)
@@ -137,21 +139,30 @@ CSV columns include:
 
 Sign distribution (9×9): 57 positive (pathological), 11 negative (protective), 4 unknown.
 
-**How it works**: At import time, `hdr_sim.csv_loader` loads the CSV, extracts the 4-axis subset (I, M, N, F) for the healthy and disease basins, and applies a calibration scalar (c ≈ 0.30) to map SD-per-SD literature values to simulation coupling rates (day⁻¹). The calibration scalar is computed via Brent's method to match the target spectral abscissa α(30) ≈ −0.134. This preserves the literature-derived relative coupling structure while maintaining dynamical stability.
+**How it works**: `hdr_sim.aging_params.configure()` loads the CSV via `csv_loader`, extracts any axis subset for the healthy and disease basins, looks up per-axis recovery time constants from a built-in registry (`TAU_REGISTRY`), and applies a calibration scalar (c ≈ 0.30) to map SD-per-SD literature values to simulation coupling rates (day⁻¹). The calibration scalar is computed via Brent's method to match the target spectral abscissa α(30) ≈ −0.134. This preserves the literature-derived relative coupling structure while maintaining dynamical stability. Axis subsets from 2×2 through 9×9 are supported.
 
 The ELSA validation uses a 3-axis reduction (I, M, F) and is unaffected by the B-axis addition.
 
 ```python
-from hdr_sim import load_J_csv, build_J_basin, get_J_anchors
+from hdr_sim import configure, tau_of_age, J_of_age, load_J_csv, build_J_basin
 
-# Load full 9-axis matrix for any basin (default: 9x9 CSV)
+# Configure the aging model for a specific axis subset
+configure(axes=('I', 'M', 'F'))       # 3-axis
+tau = tau_of_age(65)                   # 3-element array
+J = J_of_age(65)                      # 3x3 matrix
+
+# Or use a custom J-matrix CSV
+configure(j_matrix_path='path/to/custom.csv', axes=('I', 'M', 'N', 'F'))
+
+# Low-level: load full 9-axis matrix for any basin
 rows = load_J_csv()
 J_9x9 = build_J_basin(rows, basin='disease',
                        axes=('I','M','E','mito','P','C','N','F','B'))
 
-# Get calibrated 4-axis anchors used by the simulation
-# (uses legacy 8x8 CSV to preserve calibration)
-J_30, J_80, c = get_J_anchors()  # c ≈ 0.30
+# Provenance tracking via JMatrixSpec
+from hdr_sim.j_matrix_spec import JMatrixSpec
+spec = JMatrixSpec.from_csv('data/J_matrix_compiled_9x9.csv')
+print(spec.sha256, spec.sign_counts)  # deterministic identity
 ```
 
 The full 9×9 CSV contains entries derived from systematic literature review using evidence triangulation (statistical, molecular, causal). See White (2026), "The Mechanistic Coupling Matrix J_mech" for methodology.
@@ -492,8 +503,11 @@ Coupling values sourced from `data/J_matrix_compiled_9x9.csv`.
 
 | Script | Purpose |
 |--------|---------|
-| `verify_J_matrix_counts.py` | Audits 9×9 J matrix CSV sign counts (57+, 11−, 4?) and generates `outputs/j_matrix_audit_report.json` |
-| `populate_pmids.py` | Populates missing `pmid_primary` entries in `J_matrix_compiled_9x9.csv` (67/72 now cited; 5 gaps in B-axis unknowns and one theoretical mito→N entry) |
+| `verify_J_counts.py` | Audits J matrix CSV sign counts (57+, 11−, 4? for 9×9) with `--csv` for any CSV. Prints SHA-256 and `JMatrixSpec` summary. |
+| `sync_j_from_companion.py` | Copies latest J-matrix CSV from companion repo, compares against provenance snapshot, appends to `data/sync_log.json`. Use `--dry-run` to preview. |
+| `compare_j_runs.py` | Compares two pipeline JSON outputs (from different J versions), producing `j_comparison_report.json` and `.md`. |
+| `run_j_comparison_integration.py` | Integration test: runs pipeline twice (provenance vs default CSV), verifies zero diffs. |
+| `populate_pmids.py` | Populates missing `pmid_primary` entries in `J_matrix_compiled_9x9.csv` |
 | `update_ledger_r6.py` | Updates `outputs/elsa_results_ledger.json` with SHA-256 hashes for R6 figure files |
 
 ### Reproducibility
@@ -536,14 +550,17 @@ pip install -r requirements_part2.txt
 # Run the full end-to-end pipeline (~5s)
 python scripts/run_full_pipeline.py
 
-# Run individual analyses
+# Run with a specific J-matrix CSV and output directory
+python scripts/run_full_pipeline.py --j-matrix data/provenance/J_R6_ontology_v1.6.csv --output-dir results/provenance/
+
+# Run individual analyses (all accept --j-matrix)
 python scripts/run_sensitivity.py          # MC sensitivity (10K draws)
 python scripts/run_synthetic_validation.py  # Synthetic cohort validation
 python scripts/run_intervention_analysis.py # Intervention ranking + factorial
 python scripts/run_dj_primacy_mechanistic.py # D/J primacy with mechanistic priors
 ```
 
-Reports are written to `results/`.
+Reports are written to `results/` (or `--output-dir` if specified).
 
 ### Module descriptions
 
@@ -562,12 +579,14 @@ Reports are written to `results/`.
 
 ### Scripts and outputs
 
+All pipeline scripts accept `--j-matrix <path>` for J-matrix selection and embed `JMatrixSpec` provenance in their JSON output.
+
 | Script | Output | Description |
 |--------|--------|-------------|
-| `run_full_pipeline.py` | `results/full_pipeline_report.md` | End-to-end 10-step pipeline (model, sensitivity, cohort, Tier-1, interventions, ABC) |
+| `run_full_pipeline.py` | `results/full_pipeline_report.md` | End-to-end 10-step pipeline. Accepts `--output-dir`. |
 | `run_sensitivity.py` | `results/sensitivity_report.md` | MC sensitivity analysis (10K draws), entry ranking, stress tests |
 | `run_synthetic_validation.py` | `results/synthetic_validation_report.md` | ELSA-like synthetic cohort under 4 confound conditions |
-| `run_intervention_analysis.py` | `results/intervention_report.md` | Intervention ranking, R6 factorial, pairwise interactions |
+| `run_intervention_analysis.py` | `results/intervention_report.md` | Intervention ranking, R6 factorial. Accepts `--output-dir`. |
 | `run_dj_primacy_mechanistic.py` | `results/dj_primacy_mechanistic.json` | D/J primacy with 5 degradation regimes x 4 confound conditions |
 
 ### J-matrix provenance and comparison workflow
