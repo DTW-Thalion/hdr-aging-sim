@@ -14,26 +14,41 @@ emits a DeprecationWarning.
 
 import warnings
 import numpy as np
-from .csv_loader import load_J_csv, build_J_basin, get_calibration_scalar
-
-AXIS_NAMES = ['I (inflammaging)', 'M (metabolic)', 'N (neuroendocrine)', 'F (functional)']
-AXIS_COLORS = ['#e74c3c', '#e67e22', '#3498db', '#27ae60']  # red, orange, blue, green
+from .csv_loader import load_J_csv, build_J_basin, get_calibration_scalar, TAU_REGISTRY
 
 # ---------------------------------------------------------------------------
-# τ registry: biologically motivated recovery time constants (day units)
-# keyed by axis label → (tau_30, tau_80)
+# Axis display metadata
 # ---------------------------------------------------------------------------
-_TAU_REGISTRY = {
-    'I':    (7.0,    25.0),    # CRP ~1wk / ~3.5wk
-    'M':    (0.1,    0.3),     # glucose ~2-3h / ~7h
-    'N':    (0.01,   0.04),    # HRR ~1-2min / ~58min
-    'F':    (8.0,    42.0),    # muscle ~8d / ~6wk
-    'E':    (1000.0, 1500.0),  # epigenetic ~years
-    'mito': (1.0,    3.0),     # mitochondrial ~days
-    'P':    (0.5,    2.0),     # proteostasis ~days
-    'C':    (1.0,    3.0),     # cellular senescence ~days
-    'B':    (90.0,   120.0),   # bone/body composition ~months
+_AXIS_FULL_NAMES = {
+    'I':    'I (inflammaging)',
+    'M':    'M (metabolic)',
+    'N':    'N (neuroendocrine)',
+    'F':    'F (functional)',
+    'E':    'E (epigenetic)',
+    'mito': 'mito (mitochondrial)',
+    'P':    'P (proteostatic)',
+    'C':    'C (circadian)',
+    'B':    'B (bone/body composition)',
 }
+
+_AXIS_COLORS_MAP = {
+    'I':    '#e74c3c',  # red
+    'M':    '#e67e22',  # orange
+    'N':    '#3498db',  # blue
+    'F':    '#27ae60',  # green
+    'E':    '#9b59b6',  # purple
+    'mito': '#f39c12',  # gold
+    'P':    '#1abc9c',  # teal
+    'C':    '#2980b9',  # dark blue
+    'B':    '#95a5a6',  # grey
+}
+
+# Backward-compatible module-level lists for the default 4-axis model
+AXIS_NAMES = [_AXIS_FULL_NAMES[a] for a in ('I', 'M', 'N', 'F')]
+AXIS_COLORS = [_AXIS_COLORS_MAP[a] for a in ('I', 'M', 'N', 'F')]
+
+# Re-export for backward compatibility
+_TAU_REGISTRY = TAU_REGISTRY
 
 # ---------------------------------------------------------------------------
 # Lazy configuration state
@@ -86,12 +101,12 @@ def configure(j_matrix_path=None, axes=None, target_alpha=-0.134,
     if tau_30 is None or tau_80 is None:
         t30_list, t80_list = [], []
         for ax in axes:
-            if ax not in _TAU_REGISTRY:
+            if ax not in TAU_REGISTRY:
                 raise ValueError(
                     f"No τ entry for axis {ax!r}. "
-                    f"Known axes: {sorted(_TAU_REGISTRY.keys())}"
+                    f"Known axes: {sorted(TAU_REGISTRY.keys())}"
                 )
-            t30_val, t80_val = _TAU_REGISTRY[ax]
+            t30_val, t80_val = TAU_REGISTRY[ax]
             t30_list.append(t30_val)
             t80_list.append(t80_val)
         if tau_30 is None:
@@ -142,6 +157,18 @@ def _ensure_configured():
             stacklevel=3,
         )
         configure()
+
+
+def get_axis_names():
+    """Return human-readable names for the currently configured axes."""
+    _ensure_configured()
+    return [_AXIS_FULL_NAMES.get(a, a) for a in _config['axes']]
+
+
+def get_axis_colors():
+    """Return colour hex codes for the currently configured axes."""
+    _ensure_configured()
+    return [_AXIS_COLORS_MAP.get(a, '#7f8c8d') for a in _config['axes']]
 
 
 # ---------------------------------------------------------------------------

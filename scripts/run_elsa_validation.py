@@ -21,6 +21,7 @@ Outputs:
     (console)                                 — summary statistics
 """
 
+import argparse
 import json
 import os
 import sys
@@ -48,6 +49,25 @@ from hdr_sim.estimation import (
     compute_swds_gamma_batch,
     gamma_stability_proxy,
 )
+from hdr_sim.j_matrix_spec import JMatrixSpec, load_default_spec
+
+
+def parse_args():
+    parser = argparse.ArgumentParser(description='ELSA Cohort Validation Pipeline')
+    parser.add_argument('--j-matrix', type=str, default=None,
+                        help='Path to J matrix CSV. Default: data/J_matrix_compiled_9x9.csv')
+    parser.add_argument('--axes', type=str, nargs='+', default=None,
+                        help='Axis subset for 3-axis model (e.g., I M F). Default: I M F.')
+    return parser.parse_args()
+
+
+# Biomarker-to-axis mapping: which ELSA variables map to which HDR axis
+BIOMARKER_AXIS_MAP = {
+    'I': {'label': 'Inflammaging', 'biomarkers': ['hscrp', 'cfib']},
+    'M': {'label': 'Metabolic', 'biomarkers': ['hba1c', 'chol_ratio', 'trig']},
+    'N': {'label': 'Neuroendocrine', 'biomarkers': ['omsysval', 'omdiaval', 'pulse']},
+    'F': {'label': 'Functional', 'biomarkers': ['grip_strength', 'gait_speed']},
+}
 
 # ---------------------------------------------------------------------------
 # Configuration
@@ -1933,7 +1953,7 @@ def print_data_quality(merged):
 # ---------------------------------------------------------------------------
 # JSON results output
 # ---------------------------------------------------------------------------
-def write_results_json(results_3, results_4, output_path):
+def write_results_json(results_3, results_4, output_path, j_spec=None):
     """Write machine-readable results ledger."""
     print(f"\nWriting results to {output_path}")
 
@@ -2007,6 +2027,9 @@ def write_results_json(results_3, results_4, output_path):
         '3axis_exceeds_threshold': bool(dc_3 is not None and dc_3 >= 0.01),
         '4axis_exceeds_threshold': bool(dc_4 is not None and dc_4 >= 0.01),
     }
+
+    if j_spec is not None:
+        ledger['j_matrix'] = j_spec.to_dict()
 
     with open(output_path, 'w') as f:
         json.dump(ledger, f, indent=2)
@@ -2107,8 +2130,13 @@ def construct_survival_data(harm, eol, baseline_wave=2):
 # Main
 # ---------------------------------------------------------------------------
 def main():
+    args = parse_args()
     warnings.filterwarnings('ignore', category=RuntimeWarning)
     warnings.filterwarnings('ignore', message='DataFrame is highly fragmented')
+
+    # J-matrix provenance
+    _csv_path = args.j_matrix or os.path.join(ROOT, 'data', 'J_matrix_compiled_9x9.csv')
+    j_spec = JMatrixSpec.from_csv(_csv_path)
 
     # Step 1: Load
     files = load_all_files()
@@ -2240,7 +2268,7 @@ def main():
 
     # JSON output
     json_path = os.path.join(OUTPUT_DIR, 'elsa_4axis_results.json')
-    write_results_json(results_3, results_4, json_path)
+    write_results_json(results_3, results_4, json_path, j_spec=j_spec)
 
 
 if __name__ == '__main__':

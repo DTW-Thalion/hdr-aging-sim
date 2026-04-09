@@ -168,15 +168,43 @@ def get_calibration_scalar(J_raw, tau, target_alpha):
 
 
 # ---------------------------------------------------------------------------
+# τ registry: biologically motivated recovery time constants (day units)
+# keyed by axis label → (tau_30, tau_80)
+# ---------------------------------------------------------------------------
+TAU_REGISTRY = {
+    'I':    (7.0,    25.0),    # CRP ~1wk / ~3.5wk
+    'M':    (0.1,    0.3),     # glucose ~2-3h / ~7h
+    'N':    (0.01,   0.04),    # HRR ~1-2min / ~58min
+    'F':    (8.0,    42.0),    # muscle ~8d / ~6wk
+    'E':    (1000.0, 1500.0),  # epigenetic ~years
+    'mito': (1.0,    3.0),     # mitochondrial ~days
+    'P':    (0.5,    2.0),     # proteostasis ~days
+    'C':    (1.0,    3.0),     # cellular senescence ~days
+    'B':    (90.0,   120.0),   # bone/body composition ~months
+}
+
+
+def _tau_for_axes(axes):
+    """Return (tau_30, tau_80) arrays for the given axis labels."""
+    t30, t80 = [], []
+    for ax in axes:
+        if ax not in TAU_REGISTRY:
+            raise ValueError(
+                f"No τ entry for axis {ax!r}. "
+                f"Known axes: {sorted(TAU_REGISTRY.keys())}"
+            )
+        v30, v80 = TAU_REGISTRY[ax]
+        t30.append(v30)
+        t80.append(v80)
+    return np.array(t30), np.array(t80)
+
+
+# ---------------------------------------------------------------------------
 # Convenience: calibrated J anchors for the 4-axis model
 # ---------------------------------------------------------------------------
 
 # Target spectral abscissa at age 30 — matches prior calibration (α ≈ −0.134)
 _TARGET_ALPHA_30 = -0.134
-
-# Recovery time constants (not in CSV — biologically motivated)
-_TAU_30 = np.array([7.0, 0.1, 0.01, 8.0])
-_TAU_80 = np.array([25.0, 0.30, 0.04, 42.0])
 
 # Default 4-axis subset
 _DEFAULT_AXES = ('I', 'M', 'N', 'F')
@@ -202,7 +230,8 @@ def get_J_anchors(axes=_DEFAULT_AXES, target_alpha=_TARGET_ALPHA_30,
     Parameters
     ----------
     axes : tuple[str]
-        Axis labels.  Default ('I', 'M', 'N', 'F').
+        Axis labels.  Default ('I', 'M', 'N', 'F').  Works for any
+        subset from 2 to 9 axes.
     target_alpha : float
         Target spectral abscissa at age 30.
     csv_path : str or None
@@ -223,7 +252,7 @@ def get_J_anchors(axes=_DEFAULT_AXES, target_alpha=_TARGET_ALPHA_30,
     J_healthy = build_J_basin(rows, basin='healthy', axes=axes)
     J_disease = build_J_basin(rows, basin='disease', axes=axes)
 
-    tau_young = _TAU_30 if len(axes) == 4 else _TAU_30[:len(axes)]
+    tau_young, _ = _tau_for_axes(axes)
     c = get_calibration_scalar(J_healthy, tau_young, target_alpha)
 
     return c * J_healthy, c * J_disease, c
