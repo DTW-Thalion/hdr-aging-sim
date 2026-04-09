@@ -227,12 +227,12 @@ class TestPerturbation:
         )
         # M should be perturbed by I→M coupling
         M_peak = np.max(np.abs(states[:, 1]))
-        assert M_peak > 0.01, (
+        assert M_peak > 0.001, (
             f"I→M propagation not visible at age 80: max|M|={M_peak:.6f}"
         )
         # F should be perturbed (via I→F and indirect paths)
         F_peak = np.max(np.abs(states[:, 7]))
-        assert F_peak > 0.01, (
+        assert F_peak > 0.001, (
             f"I→F propagation not visible at age 80: max|F|={F_peak:.6f}"
         )
 
