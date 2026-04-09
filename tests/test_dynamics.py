@@ -90,8 +90,10 @@ def test_recovery_ratio():
 def test_csv_loaded():
     """J matrices should be loaded from CSV, not hardcoded."""
     rows = load_J_csv()
-    assert len(rows) == 56, f"Expected 56 CSV rows, got {len(rows)}"
+    # Default CSV is the 9×9 matrix (72 off-diagonal entries)
+    assert len(rows) == 72, f"Expected 72 CSV rows, got {len(rows)}"
     # Verify that J_of_age(30) signs match CSV healthy-basin signs
+    # for the 4-axis subset used by the simulation model
     J_csv = build_J_basin(rows, 'healthy', ('I', 'M', 'N', 'F'))
     J_sim = J_of_age(30)
     for i in range(4):

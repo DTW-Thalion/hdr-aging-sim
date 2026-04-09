@@ -385,3 +385,65 @@ New 4-panel composite figure (`outputs/figure_disease_demos.pdf`):
 Coupling values from `data/J_matrix_compiled_9x9.csv`:
 - AD: J_{I→P} = 0.08→0.20, J_{P→I} = 0.15→0.35, J_{mito→P} = 0.20→0.40
 - Osteoporosis: J_{I→B} = 0.10→0.25, J_{M→B} = 0.08→0.20, J_{F→B} = −0.30→−0.18, J_{N→B} = 0.15→0.45
+
+---
+
+### Unit Tests (pytest)
+*Run: 2026-04-08 20:23:56*
+
+- **Total**: 50 tests
+- **Passed**: 50 ✅
+- **Failed**: 0 
+- **Duration**: 0.11s
+
+- ✅ `test_stability_age_30` (0.000s)
+- ✅ `test_stability_age_50` (0.001s)
+- ✅ `test_stability_age_65` (0.000s)
+- ✅ `test_stability_age_80` (0.000s)
+- ✅ `test_stability_all_ages` (0.000s)
+- ✅ `test_spectral_drift_monotonic` (0.000s)
+- ✅ `test_recovery_slowing` (0.000s)
+- ✅ `test_damping_decline` (0.000s)
+- ✅ `test_excluded_entries` (0.000s)
+- ✅ `test_diagonal_zero` (0.000s)
+- ✅ `test_A_equals_neg_D_plus_J` (0.000s)
+- ✅ `test_age_interpolation_endpoints` (0.002s)
+- ✅ `test_coupling_signs` (0.000s)
+- ✅ `test_active_entry_count` (0.000s)
+- ✅ `test_perturbation_vector` (0.000s)
+- ✅ `test_perturbation_recovery_age30` (0.024s)
+- ✅ `test_cross_axis_propagation_age80` (0.016s)
+- ✅ `test_bifurcation_margin_positive` (0.000s)
+- ✅ `test_bifurcation_margin_decreases` (0.000s)
+- ✅ `test_stationary_covariance_symmetric` (0.000s)
+- ✅ `test_stationary_covariance_psd` (0.000s)
+- ✅ `test_swds_nonnegative` (0.000s)
+- ✅ `test_swds_zero_at_origin` (0.000s)
+- ✅ `test_age_trajectory_returns_all_ages` (0.001s)
+- ✅ `test_age_trajectory_all_stable` (0.002s)
+- ✅ `test_recovery_ratio` (0.001s)
+- ✅ `test_simulate_ou_shape` (0.004s)
+- ✅ `test_simulate_discrete_shape` (0.001s)
+- ✅ `test_simulate_deterministic_decay` (0.008s)
+- ✅ `test_get_entry_info_active` (0.000s)
+- ✅ `test_get_entry_info_excluded` (0.000s)
+- ✅ `test_get_entry_info_unknown` (0.000s)
+- ✅ `test_calibration_scalar_positive` (0.000s)
+- ✅ `test_basin_classification` (0.000s)
+- ✅ `test_healthy_at_origin` (0.000s)
+- ✅ `test_disease_at_positive_dysregulation` (0.000s)
+- ✅ `test_simulation_produces_switches` (0.032s)
+- ✅ `test_switched_simulation_shape` (0.006s)
+- ✅ `test_a_healthy_differs_from_a_disease` (0.000s)
+- ✅ `test_set_age_updates_both_matrices` (0.000s)
+- ✅ `test_stable_system_has_negative_abscissa` (0.000s)
+- ✅ `test_aged_system_closer_to_zero` (0.000s)
+- ✅ `test_diagonal_J_is_zero` (0.000s)
+- ✅ `test_recovery_timescale_increases_with_age` (0.000s)
+- ✅ `test_f_column_is_negative` (0.000s)
+- ✅ `test_spectral_radius_discrete` (0.001s)
+- ✅ `test_calibration_alpha_range` (0.000s)
+- ✅ `test_recovery_ratio` (0.000s)
+- ✅ `test_csv_loaded` (0.001s)
+- ✅ `test_csv_basin_structure` (0.000s)
+
