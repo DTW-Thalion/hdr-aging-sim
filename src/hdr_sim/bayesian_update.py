@@ -67,7 +67,7 @@ class BayesianPriorUpdate:
 
     def __init__(self, model, prior_spec_path=None, observation_model=None):
         self._model = model
-        self._n = model._n
+        self._n = model.n
 
         if observation_model is None:
             observation_model = ObservationModel("ELSA_3axis")
@@ -92,7 +92,10 @@ class BayesianPriorUpdate:
             if spec.get("distribution") == "truncated_normal"
         }
 
-        # Entry mapping (same structure as PriorSensitivityAnalysis)
+        # Entry mapping — fast subsystem only (same as PriorSensitivityAnalysis)
+        fast_idx = model._fast_axis_idx
+        qs_axes = set(model.QUASI_STATIC_AXES)
+
         self._entry_ids = []
         self._entry_rows = []
         self._entry_cols = []
@@ -105,11 +108,13 @@ class BayesianPriorUpdate:
             entry = model._entries[eid]
             src = entry["source_axis"]
             tgt = entry["target_axis"]
-            if src not in model._axis_idx or tgt not in model._axis_idx:
+            if src in qs_axes or tgt in qs_axes:
+                continue
+            if src not in fast_idx or tgt not in fast_idx:
                 continue
             self._entry_ids.append(eid)
-            self._entry_rows.append(model._axis_idx[tgt])
-            self._entry_cols.append(model._axis_idx[src])
+            self._entry_rows.append(fast_idx[tgt])
+            self._entry_cols.append(fast_idx[src])
             self._entry_j30.append(float(entry.get("J_value_age30", 0.0)))
             self._entry_j80.append(float(entry.get("J_value_age80", 0.0)))
 
@@ -489,7 +494,8 @@ class BayesianPriorUpdate:
     def _build_A_from_vec(self, j80_vec, age):
         """Build A matrix from a J_80 sample vector at a given age."""
         f = HDRMechanisticModel._interp_fraction(age)
-        tau = self._model._tau_of_age(age)
+        tau_full = self._model._tau_of_age_full(age)
+        tau = tau_full[self._model._fast_idx_arr]
         c = self._model.calibration_scalar
         n = self._n
 

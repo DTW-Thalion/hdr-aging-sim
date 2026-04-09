@@ -7,6 +7,10 @@ The intervention_library.json from the mechanistic export provides
 molecular-level detail for each intervention: which J entries are
 modified, by how much (delta_J_fraction), with what evidence level,
 and verified against ChEMBL.
+
+Operates on the fast subsystem (7 axes: I, M, mito, P, C, N, F).
+Interventions affecting quasi-static axes (E, B) modify the forcing
+vector, not the eigenvalue structure.
 """
 
 import copy
@@ -56,11 +60,7 @@ class InterventionModel:
     # ------------------------------------------------------------------
 
     def list_interventions(self):
-        """Return all available interventions with metadata.
-
-        Returns: list of dicts with id, name, evidence_level,
-                 n_couplings, n_tau, coupling_ids.
-        """
+        """Return all available interventions with metadata."""
         result = []
         for iid, spec in self._library.items():
             result.append({
@@ -80,13 +80,9 @@ class InterventionModel:
     # ------------------------------------------------------------------
 
     def apply(self, intervention_id):
-        """Apply a single intervention.
+        """Apply a single intervention to the fast subsystem.
 
-        The intervention modifies:
-          J[i,j] -> J[i,j] * (1 + delta_fraction)
-          tau_k  -> tau_k  * (1 + delta_fraction)
-
-        Returns: (A_treated, J_treated, D_treated) — modified matrices.
+        Returns: (A_treated, J_treated, D_treated) — fast-subsystem matrices.
         """
         if intervention_id not in self._library:
             raise ValueError(
@@ -95,36 +91,31 @@ class InterventionModel:
             )
 
         spec = self._library[intervention_id]
-        J_new = self._model.J.copy()
-        tau_new = self._model.tau.copy()
-        axis_idx = self._model._axis_idx
+        J_new = self._model.J.copy()  # fast subsystem
+        tau_new = self._model.tau.copy()  # fast subsystem
+        fast_axis_idx = self._model._fast_axis_idx
 
-        # Apply J modifications.
-        # Convention: delta_J_fraction < 0 always means "reduce the
-        # pathological contribution."  For pathological entries (J > 0)
-        # this shrinks the coupling.  For protective entries (J < 0)
-        # this STRENGTHENS the protective effect (increases |J|).
         for coupling_id, effect in spec.get("affected_couplings", {}).items():
             if coupling_id not in self._model._entries:
                 continue
             entry = self._model._entries[coupling_id]
             src = entry["source_axis"]
             tgt = entry["target_axis"]
-            if src not in axis_idx or tgt not in axis_idx:
+            # Only modify if both axes are in the fast subsystem
+            if src not in fast_axis_idx or tgt not in fast_axis_idx:
                 continue
-            j_col = axis_idx[src]
-            i_row = axis_idx[tgt]
+            j_col = fast_axis_idx[src]
+            i_row = fast_axis_idx[tgt]
             delta = effect["delta_J_fraction"]
             if J_new[i_row, j_col] >= 0:
                 J_new[i_row, j_col] *= (1.0 + delta)
             else:
                 J_new[i_row, j_col] *= (1.0 - delta)
 
-        # Apply tau modifications
         for axis_name, effect in spec.get("affected_tau", {}).items():
-            if axis_name not in axis_idx:
+            if axis_name not in fast_axis_idx:
                 continue
-            idx = axis_idx[axis_name]
+            idx = fast_axis_idx[axis_name]
             delta = effect["delta_tau_fraction"]
             tau_new[idx] *= (1.0 + delta)
 
@@ -136,14 +127,11 @@ class InterventionModel:
     def apply_combination(self, intervention_ids):
         """Apply multiple interventions simultaneously.
 
-        Modifications are multiplicative: each intervention's delta
-        applies to the already-modified matrix.
-
-        Returns: (A_treated, J_treated, D_treated)
+        Returns: (A_treated, J_treated, D_treated) — fast-subsystem matrices.
         """
         J_new = self._model.J.copy()
         tau_new = self._model.tau.copy()
-        axis_idx = self._model._axis_idx
+        fast_axis_idx = self._model._fast_axis_idx
 
         for iid in intervention_ids:
             if iid not in self._library:
@@ -156,10 +144,10 @@ class InterventionModel:
                 entry = self._model._entries[coupling_id]
                 src = entry["source_axis"]
                 tgt = entry["target_axis"]
-                if src not in axis_idx or tgt not in axis_idx:
+                if src not in fast_axis_idx or tgt not in fast_axis_idx:
                     continue
-                j_col = axis_idx[src]
-                i_row = axis_idx[tgt]
+                j_col = fast_axis_idx[src]
+                i_row = fast_axis_idx[tgt]
                 delta = effect["delta_J_fraction"]
                 if J_new[i_row, j_col] >= 0:
                     J_new[i_row, j_col] *= (1.0 + delta)
@@ -167,9 +155,9 @@ class InterventionModel:
                     J_new[i_row, j_col] *= (1.0 - delta)
 
             for axis_name, effect in spec.get("affected_tau", {}).items():
-                if axis_name not in axis_idx:
+                if axis_name not in fast_axis_idx:
                     continue
-                idx = axis_idx[axis_name]
+                idx = fast_axis_idx[axis_name]
                 tau_new[idx] *= (1.0 + effect["delta_tau_fraction"])
 
         D_new = np.diag(1.0 / tau_new)
@@ -186,8 +174,6 @@ class InterventionModel:
 
         Metrics: 'spectral_abscissa', 'dominant_recovery_time',
                  'lambda_max_gamma', 'bifurcation_margin_IM'.
-
-        Returns: dict with baseline, treated, delta, pct_change.
         """
         baseline = self._evaluate_metric(self._model.A, metric)
         A_treated, J_treated, D_treated = self.apply(intervention_id)
@@ -206,10 +192,7 @@ class InterventionModel:
         }
 
     def rank_interventions(self, metric="spectral_abscissa", age=70):
-        """Rank all interventions by their effect on the chosen metric.
-
-        Returns: sorted list of dicts (most beneficial first).
-        """
+        """Rank all interventions by their effect on the chosen metric."""
         original_age = self._model.age
         self._model.set_age(age)
 
@@ -225,9 +208,6 @@ class InterventionModel:
             )
             results.append(eff)
 
-        # For spectral_abscissa: more negative delta = better
-        # For recovery_time: more negative delta = better (faster recovery)
-        # For lambda_max_gamma: more negative delta = better (less variance)
         results.sort(key=lambda x: x["delta"])
 
         self._model.set_age(original_age)
@@ -238,14 +218,15 @@ class InterventionModel:
     # ------------------------------------------------------------------
 
     def _evaluate_metric(self, A, metric, J=None):
-        """Evaluate a stability metric from an A matrix."""
+        """Evaluate a stability metric from a fast-subsystem A matrix."""
+        n = A.shape[0]
         if metric == "spectral_abscissa":
             return _spectral_abscissa(A)
         elif metric == "dominant_recovery_time":
             alpha = _spectral_abscissa(A)
             return 1.0 / abs(alpha) if alpha != 0 else float("inf")
         elif metric == "lambda_max_gamma":
-            Q = 0.01 * np.eye(A.shape[0])
+            Q = 0.01 * np.eye(n)
             if _spectral_abscissa(A) >= 0:
                 return float("inf")
             Gamma = linalg.solve_continuous_lyapunov(A, -Q)
@@ -254,8 +235,9 @@ class InterventionModel:
             if J is None:
                 J = self._model.J
             tau = self._model.tau
-            i_I = self._model._axis_idx["I"]
-            i_M = self._model._axis_idx["M"]
+            fai = self._model._fast_axis_idx
+            i_I = fai["I"]
+            i_M = fai["M"]
             return float(
                 1.0 / (tau[i_I] * tau[i_M])
                 - J[i_I, i_M] * J[i_M, i_I]

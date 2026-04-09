@@ -1,7 +1,7 @@
 [project]
 name = "hdr-aging-sim"
 version = "0.2.0"
-description = "HDR aging dynamics simulation: 4-axis toy model + 9-axis mechanistic-evidence framework"
+description = "HDR aging dynamics simulation: 4-axis toy model + 9-axis mechanistic-evidence framework with two-timescale decomposition"
 requires-python = ">=3.9"
 dependencies = [
     "numpy",

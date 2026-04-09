@@ -1,7 +1,8 @@
 """Stress-test the prior architecture against specific scenarios.
 
 Replicates and extends R6 Supplementary Note 6 analysis for the
-9-axis mechanistic model parameterised from the enriched evidence base.
+9-axis mechanistic model (7-axis fast subsystem) parameterised from
+the enriched evidence base.
 """
 
 import json
@@ -23,8 +24,9 @@ class PriorStressTest:
 
     def __init__(self, model, prior_spec_path=None):
         self._model = model
-        self._n = model._n
-        self._axis_idx = model._axis_idx
+        self._n = model.n
+        self._axis_idx = model._fast_axis_idx
+        self._qs_axes = set(model.QUASI_STATIC_AXES)
 
         if prior_spec_path is None:
             prior_spec_path = os.path.join(

@@ -100,7 +100,7 @@ class PriorSensitivityAnalysis:
         self._model = model
         self._n_draws = n_draws
         self._seed = seed
-        self._n = model._n
+        self._n = model.n  # fast subsystem dimension
         self._prior_scale = prior_scale
 
         # Load priors
@@ -125,7 +125,11 @@ class PriorSensitivityAnalysis:
             if spec.get("distribution") == "truncated_normal"
         }
 
-        # Pre-compute entry mapping for fast matrix construction
+        # Pre-compute entry mapping for fast-subsystem matrix construction.
+        # Only include entries where both source and target are fast axes.
+        fast_idx = model._fast_axis_idx
+        qs_axes = set(model.QUASI_STATIC_AXES)
+
         self._entry_ids = []
         self._entry_rows = []
         self._entry_cols = []
@@ -138,11 +142,14 @@ class PriorSensitivityAnalysis:
             entry = model._entries[eid]
             src = entry["source_axis"]
             tgt = entry["target_axis"]
-            if src not in model._axis_idx or tgt not in model._axis_idx:
+            # Skip entries involving quasi-static axes
+            if src in qs_axes or tgt in qs_axes:
+                continue
+            if src not in fast_idx or tgt not in fast_idx:
                 continue
             self._entry_ids.append(eid)
-            self._entry_rows.append(model._axis_idx[tgt])
-            self._entry_cols.append(model._axis_idx[src])
+            self._entry_rows.append(fast_idx[tgt])
+            self._entry_cols.append(fast_idx[src])
             self._entry_j30.append(float(entry.get("J_value_age30", 0.0)))
             self._entry_j80.append(float(entry.get("J_value_age80", 0.0)))
 
@@ -152,7 +159,7 @@ class PriorSensitivityAnalysis:
         self._entry_j80 = np.array(self._entry_j80)
         self._n_entries = len(self._entry_ids)
 
-        # Fixed entries: in model but without priors (use nominal values)
+        # Fixed entries: in model but without priors (fast-to-fast only)
         sampled_set = set(self._entry_ids)
         fixed_r, fixed_c, fixed_30, fixed_80 = [], [], [], []
         for eid, entry in model._entries.items():
@@ -160,10 +167,12 @@ class PriorSensitivityAnalysis:
                 continue
             src = entry["source_axis"]
             tgt = entry["target_axis"]
-            if src not in model._axis_idx or tgt not in model._axis_idx:
+            if src in qs_axes or tgt in qs_axes:
                 continue
-            fixed_r.append(model._axis_idx[tgt])
-            fixed_c.append(model._axis_idx[src])
+            if src not in fast_idx or tgt not in fast_idx:
+                continue
+            fixed_r.append(fast_idx[tgt])
+            fixed_c.append(fast_idx[src])
             fixed_30.append(float(entry.get("J_value_age30", 0.0)))
             fixed_80.append(float(entry.get("J_value_age80", 0.0)))
         self._fixed_rows = np.array(fixed_r, dtype=int)
@@ -204,16 +213,18 @@ class PriorSensitivityAnalysis:
         return samples
 
     def _build_A(self, j80_vec, age):
-        """Build A matrix from a sampled J_80 vector at a given age.
+        """Build fast-subsystem A matrix from a sampled J_80 vector.
 
         For each sampled entry, J_30 is scaled proportionally to J_80
         to preserve the age trajectory shape.  The calibration scalar
         is applied uniformly.
 
-        Returns: (A, J) — the dynamics matrix and the coupling matrix.
+        Returns: (A, J) — the fast-subsystem dynamics and coupling matrices.
         """
         f = HDRMechanisticModel._interp_fraction(age)
-        tau = self._model._tau_of_age(age)
+        # Use fast-subsystem tau
+        tau_full = self._model._tau_of_age_full(age)
+        tau = tau_full[self._model._fast_idx_arr]
         c = self._model.calibration_scalar
         n = self._n
 
@@ -271,8 +282,8 @@ class PriorSensitivityAnalysis:
             results.n_positive_offdiag[age] = np.zeros(n, dtype=int)
             results.beta_IM[age] = np.zeros(n)
 
-        i_I = self._model._axis_idx["I"]
-        i_M = self._model._axis_idx["M"]
+        i_I = self._model._fast_axis_idx["I"]
+        i_M = self._model._fast_axis_idx["M"]
         Q = 0.01 * np.eye(self._n)
         offdiag = ~np.eye(self._n, dtype=bool)
         monotone_count = 0
@@ -314,7 +325,8 @@ class PriorSensitivityAnalysis:
                     np.sum(J_mat[offdiag] > 0)
                 )
 
-                tau = self._model._tau_of_age(age)
+                tau_full = self._model._tau_of_age_full(age)
+                tau = tau_full[self._model._fast_idx_arr]
                 results.beta_IM[age][k] = float(
                     1.0 / (tau[i_I] * tau[i_M])
                     - J_mat[i_I, i_M] * J_mat[i_M, i_I]
@@ -363,9 +375,10 @@ class PriorSensitivityAnalysis:
                 G = linalg.solve_continuous_lyapunov(A, -Q)
                 return float(np.max(np.linalg.eigvalsh(G)))
             elif target == "bifurcation_margin":
-                i_I = self._model._axis_idx["I"]
-                i_M = self._model._axis_idx["M"]
-                tau = self._model._tau_of_age(age)
+                i_I = self._model._fast_axis_idx["I"]
+                i_M = self._model._fast_axis_idx["M"]
+                tau_full = self._model._tau_of_age_full(age)
+                tau = tau_full[self._model._fast_idx_arr]
                 return float(
                     1.0 / (tau[i_I] * tau[i_M])
                     - J_mat[i_I, i_M] * J_mat[i_M, i_I]
