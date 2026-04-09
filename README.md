@@ -489,6 +489,8 @@ Coupling values sourced from `data/J_matrix_compiled_9x9.csv`.
 
 Part 2 extends the 4-axis toy simulation with a 9-axis dynamical system parameterised from the enriched mechanistic evidence base produced by the HDR-mechanistic repository. All Part 2 code is **purely additive** — the original R1–R6 scripts and modules are unmodified.
 
+**Note:** The files in `data/mechanistic_evidence/` are automatically synced from `DTW-Thalion/HDR-mechanistic` via GitHub Actions whenever the evidence exports are updated. No manual copy step is needed.
+
 ### Architecture
 
 ```
