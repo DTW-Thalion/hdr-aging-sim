@@ -1,4 +1,10 @@
-"""HDR Aging Dynamics Simulation and Estimation Library."""
+"""HDR Aging Dynamics Simulation and Estimation Library.
+
+Part 1 (R1-R6): 4-axis toy simulation and ELSA validation.
+Part 2: 9-axis mechanistic-evidence-informed model with sensitivity
+analysis, synthetic cohort generation, intervention framework,
+and Bayesian prior updating scaffold.
+"""
 from .csv_loader import load_J_csv, build_J_basin, get_J_anchors
 from .estimation import (
     get_params,
@@ -21,3 +27,15 @@ from .estimation import (
     covariance_sign_concordance,
     lyapunov_residual_norm,
 )
+
+# Part 2: Mechanistic-evidence-informed model classes
+from .mechanistic_model import HDRMechanisticModel
+from .state_conditioned import StateSwitchedModel
+from .observation_model import ObservationModel
+from .sensitivity import PriorSensitivityAnalysis, MCResults
+from .prior_stress import PriorStressTest
+from .synthetic_cohort import SyntheticCohort, CohortData
+from .tier1_pipeline import Tier1Pipeline
+from .intervention import InterventionModel
+from .trial_simulator import TrialSimulator
+from .bayesian_update import BayesianPriorUpdate, ABCResults

@@ -1,0 +1,540 @@
+{
+  "timestamp": "2026-04-09T01:47:56Z",
+  "single_ranking": [
+    {
+      "intervention_id": "nad_precursors",
+      "metric": "spectral_abscissa",
+      "baseline": -0.0019444768002529372,
+      "treated": -0.0019842847974714654,
+      "delta": -3.980799721852823e-05,
+      "pct_change": -2.0472343621353577,
+      "name": "NAD+ precursors (NMN, NR, niacin)",
+      "n_couplings": 3,
+      "evidence_level": "approved_therapy"
+    },
+    {
+      "intervention_id": "exercise_resistance",
+      "metric": "spectral_abscissa",
+      "baseline": -0.0019444768002529372,
+      "treated": -0.0019465814214479368,
+      "delta": -2.1046211949996875e-06,
+      "pct_change": -0.10823586039833022,
+      "name": "Structured exercise (aerobic + resistance)",
+      "n_couplings": 17,
+      "evidence_level": "approved_therapy"
+    },
+    {
+      "intervention_id": "mitoq",
+      "metric": "spectral_abscissa",
+      "baseline": -0.0019444768002529372,
+      "treated": -0.0019455739552243874,
+      "delta": -1.0971549714502028e-06,
+      "pct_change": -0.056424173911845336,
+      "name": "Mitochondria-targeted antioxidants (MitoQ, SS-31, CoQ10)",
+      "n_couplings": 2,
+      "evidence_level": "clinical_trial"
+    },
+    {
+      "intervention_id": "rapamycin",
+      "metric": "spectral_abscissa",
+      "baseline": -0.0019444768002529372,
+      "treated": -0.0019454598777315492,
+      "delta": -9.830774786120412e-07,
+      "pct_change": -0.050557429046423324,
+      "name": "Rapamycin (mTOR inhibitor; autophagy inducer)",
+      "n_couplings": 1,
+      "evidence_level": "clinical_trial"
+    },
+    {
+      "intervention_id": "canakinumab",
+      "metric": "spectral_abscissa",
+      "baseline": -0.0019444768002529372,
+      "treated": -0.001945039912231291,
+      "delta": -5.631119783537555e-07,
+      "pct_change": -0.02895956271015967,
+      "name": "Canakinumab (anti-IL-1beta; CANTOS repurposing candidate)",
+      "n_couplings": 1,
+      "evidence_level": "approved_therapy"
+    },
+    {
+      "intervention_id": "anakinra",
+      "metric": "spectral_abscissa",
+      "baseline": -0.0019444768002529372,
+      "treated": -0.001945039912231291,
+      "delta": -5.631119783537555e-07,
+      "pct_change": -0.02895956271015967,
+      "name": "Anakinra (IL-1 receptor antagonist)",
+      "n_couplings": 1,
+      "evidence_level": "approved_therapy"
+    },
+    {
+      "intervention_id": "colchicine",
+      "metric": "spectral_abscissa",
+      "baseline": -0.0019444768002529372,
+      "treated": -0.001944814425295664,
+      "delta": -3.3762504272677116e-07,
+      "pct_change": -0.017363284698632197,
+      "name": "Colchicine (tubulin inhibitor; indirect NLRP3 suppression)",
+      "n_couplings": 2,
+      "evidence_level": "clinical_trial"
+    },
+    {
+      "intervention_id": "pioglitazone",
+      "metric": "spectral_abscissa",
+      "baseline": -0.0019444768002529372,
+      "treated": -0.0019447887438108966,
+      "delta": -3.119435579594307e-07,
+      "pct_change": -0.016042544602170264,
+      "name": "Pioglitazone (PPAR-gamma agonist)",
+      "n_couplings": 1,
+      "evidence_level": "approved_therapy"
+    },
+    {
+      "intervention_id": "circadian_hygiene",
+      "metric": "spectral_abscissa",
+      "baseline": -0.0019444768002529372,
+      "treated": -0.0019445013893600587,
+      "delta": -2.4589107121535808e-08,
+      "pct_change": -0.00126456160949502,
+      "name": "Circadian hygiene (TRE, morning light, fixed sleep schedule)",
+      "n_couplings": 2,
+      "evidence_level": "clinical_trial"
+    },
+    {
+      "intervention_id": "senolytic_dq",
+      "metric": "spectral_abscissa",
+      "baseline": -0.0019444768002529372,
+      "treated": -0.0019444835762407536,
+      "delta": -6.7759878164160015e-09,
+      "pct_change": -0.00034847357477006577,
+      "name": "Senolytics (dasatinib + quercetin)",
+      "n_couplings": 1,
+      "evidence_level": "preclinical"
+    },
+    {
+      "intervention_id": "romosozumab",
+      "metric": "spectral_abscissa",
+      "baseline": -0.0019444768002529372,
+      "treated": -0.0019444771267994826,
+      "delta": -3.265465454461991e-10,
+      "pct_change": -1.679354289049486e-05,
+      "name": "Romosozumab (anti-sclerostin)",
+      "n_couplings": 1,
+      "evidence_level": "approved_therapy"
+    },
+    {
+      "intervention_id": "mifepristone",
+      "metric": "spectral_abscissa",
+      "baseline": -0.0019444768002529372,
+      "treated": -0.0019444767996794974,
+      "delta": 5.734397331980112e-13,
+      "pct_change": 2.949069554974471e-08,
+      "name": "Mifepristone (GR antagonist; repurposing candidate)",
+      "n_couplings": 1,
+      "evidence_level": "approved_therapy"
+    },
+    {
+      "intervention_id": "tocilizumab",
+      "metric": "spectral_abscissa",
+      "baseline": -0.0019444768002529372,
+      "treated": -0.001943204734549007,
+      "delta": 1.2720657039302224e-06,
+      "pct_change": 0.06541943332853097,
+      "name": "Tocilizumab (anti-IL-6R)",
+      "n_couplings": 1,
+      "evidence_level": "approved_therapy"
+    },
+    {
+      "intervention_id": "semaglutide",
+      "metric": "spectral_abscissa",
+      "baseline": -0.0019444768002529372,
+      "treated": -0.0019424403871797365,
+      "delta": 2.0364130732006096e-06,
+      "pct_change": 0.1047280725044245,
+      "name": "Semaglutide (GLP-1 receptor agonist)",
+      "n_couplings": 2,
+      "evidence_level": "approved_therapy"
+    },
+    {
+      "intervention_id": "anti_tnf",
+      "metric": "spectral_abscissa",
+      "baseline": -0.0019444768002529372,
+      "treated": -0.0019380630593842933,
+      "delta": 6.4137408686438125e-06,
+      "pct_change": 0.3298440417396348,
+      "name": "Anti-TNF biologics (infliximab, adalimumab)",
+      "n_couplings": 3,
+      "evidence_level": "approved_therapy"
+    },
+    {
+      "intervention_id": "teriparatide",
+      "metric": "spectral_abscissa",
+      "baseline": -0.0019444768002529372,
+      "treated": -0.0019357385492358296,
+      "delta": 8.738251017107596e-06,
+      "pct_change": 0.4493882887145234,
+      "name": "Teriparatide (pulsatile PTH, anabolic bone agent)",
+      "n_couplings": 1,
+      "evidence_level": "approved_therapy"
+    },
+    {
+      "intervention_id": "denosumab",
+      "metric": "spectral_abscissa",
+      "baseline": -0.0019444768002529372,
+      "treated": -0.0019314387133433195,
+      "delta": 1.3038086909617679e-05,
+      "pct_change": 0.6705190263993732,
+      "name": "Denosumab (anti-RANKL)",
+      "n_couplings": 3,
+      "evidence_level": "approved_therapy"
+    },
+    {
+      "intervention_id": "metformin",
+      "metric": "spectral_abscissa",
+      "baseline": -0.0019444768002529372,
+      "treated": -0.0019244365919740668,
+      "delta": 2.004020827887031e-05,
+      "pct_change": 1.030622133226968,
+      "name": "Metformin (mitochondrial complex I inhibitor)",
+      "n_couplings": 5,
+      "evidence_level": "approved_therapy"
+    },
+    {
+      "intervention_id": "empagliflozin",
+      "metric": "spectral_abscissa",
+      "baseline": -0.0019444768002529372,
+      "treated": -0.0019194403365153316,
+      "delta": 2.503646373760559e-05,
+      "pct_change": 1.287568138346976,
+      "name": "Empagliflozin (SGLT2 inhibitor)",
+      "n_couplings": 2,
+      "evidence_level": "approved_therapy"
+    }
+  ],
+  "r6_factorial": {
+    "arms": [
+      {
+        "label": "control",
+        "active_interventions": [],
+        "n_persons": 500,
+        "alpha": -0.0019444768002529372,
+        "recovery_time": 514.2771566469295,
+        "lambda_max_gamma": 4.096299018918619,
+        "swds_mean": 0.6786685126175892,
+        "swds_std": 0.8907152486556082,
+        "trajectory_norm_mean": 2.5077204903804464
+      },
+      {
+        "label": "circadian_hygiene",
+        "active_interventions": [
+          "circadian_hygiene"
+        ],
+        "n_persons": 500,
+        "alpha": -0.0019445013893600587,
+        "recovery_time": 514.270653377678,
+        "lambda_max_gamma": 4.096807335317366,
+        "swds_mean": 0.5957710431985442,
+        "swds_std": 0.7611313730716806,
+        "trajectory_norm_mean": 2.5218260646482533
+      },
+      {
+        "label": "exercise_resistance",
+        "active_interventions": [
+          "exercise_resistance"
+        ],
+        "n_persons": 500,
+        "alpha": -0.0019465814214479368,
+        "recovery_time": 513.7211261659758,
+        "lambda_max_gamma": 4.044509150781999,
+        "swds_mean": 0.49426400864969455,
+        "swds_std": 0.6271929465038814,
+        "trajectory_norm_mean": 2.5077285522429573
+      },
+      {
+        "label": "exercise_resistance+circadian_hygiene",
+        "active_interventions": [
+          "exercise_resistance",
+          "circadian_hygiene"
+        ],
+        "n_persons": 500,
+        "alpha": -0.001946594697633,
+        "recovery_time": 513.7176224798976,
+        "lambda_max_gamma": 4.045026576112408,
+        "swds_mean": 0.5091438313179121,
+        "swds_std": 0.6253546899048492,
+        "trajectory_norm_mean": 2.5256235065139077
+      },
+      {
+        "label": "colchicine",
+        "active_interventions": [
+          "colchicine"
+        ],
+        "n_persons": 500,
+        "alpha": -0.001944814425295664,
+        "recovery_time": 514.187876742005,
+        "lambda_max_gamma": 4.0891967795975415,
+        "swds_mean": 0.6161958815445081,
+        "swds_std": 0.7469163658833186,
+        "trajectory_norm_mean": 2.502647173707397
+      },
+      {
+        "label": "colchicine+circadian_hygiene",
+        "active_interventions": [
+          "colchicine",
+          "circadian_hygiene"
+        ],
+        "n_persons": 500,
+        "alpha": -0.0019448392774057343,
+        "recovery_time": 514.1813061971491,
+        "lambda_max_gamma": 4.089714842015847,
+        "swds_mean": 0.7174563917551529,
+        "swds_std": 0.8896666705930968,
+        "trajectory_norm_mean": 2.542938762020087
+      },
+      {
+        "label": "colchicine+exercise_resistance",
+        "active_interventions": [
+          "colchicine",
+          "exercise_resistance"
+        ],
+        "n_persons": 500,
+        "alpha": -0.0019473515130314543,
+        "recovery_time": 513.5179721319515,
+        "lambda_max_gamma": 4.038037918181951,
+        "swds_mean": 0.5383051906097458,
+        "swds_std": 0.632864826803082,
+        "trajectory_norm_mean": 2.539356707614232
+      },
+      {
+        "label": "colchicine+exercise_resistance+circadian_hygiene",
+        "active_interventions": [
+          "colchicine",
+          "exercise_resistance",
+          "circadian_hygiene"
+        ],
+        "n_persons": 500,
+        "alpha": -0.0019473652722982466,
+        "recovery_time": 513.5143438291972,
+        "lambda_max_gamma": 4.038563826763444,
+        "swds_mean": 0.5107263972068038,
+        "swds_std": 0.6589118048803265,
+        "trajectory_norm_mean": 2.4975096048000114
+      }
+    ],
+    "main_effects": {
+      "colchicine": {
+        "delta_swds": 0.02620911633311762,
+        "delta_alpha": -5.540448342917104e-07
+      },
+      "exercise_resistance": {
+        "delta_swds": -0.1389131003329096,
+        "delta_alpha": -2.315253024061034e-06
+      },
+      "circadian_hygiene": {
+        "delta_swds": 0.0014160175142188258,
+        "delta_alpha": -1.9119167261969633e-08
+      }
+    },
+    "interactions_2way": {
+      "colchicine*exercise_resistance": {
+        "interaction_swds": -0.00679448481729239,
+        "synergistic": "True"
+      },
+      "colchicine*circadian_hygiene": {
+        "interaction_swds": 0.0708496817792651,
+        "synergistic": "False"
+      },
+      "exercise_resistance*circadian_hygiene": {
+        "interaction_swds": -0.015531005763162131,
+        "synergistic": "True"
+      }
+    },
+    "interactions_3way": {
+      "colchicine*exercise_resistance*circadian_hygiene": {
+        "interaction_swds": -0.22661659570084924,
+        "synergistic": "True"
+      }
+    }
+  },
+  "pair_interactions": [
+    {
+      "pair": "metformin+empagliflozin",
+      "delta_a": 2.004020827887031e-05,
+      "delta_b": 2.503646373760559e-05,
+      "delta_combo": 3.699600908771785e-05,
+      "interaction": -8.080662928758049e-06,
+      "synergistic": true
+    },
+    {
+      "pair": "exercise_resistance+empagliflozin",
+      "delta_a": -2.1046211949996875e-06,
+      "delta_b": 2.503646373760559e-05,
+      "delta_combo": 1.7394624720982414e-05,
+      "interaction": -5.5372178216234885e-06,
+      "synergistic": true
+    },
+    {
+      "pair": "exercise_resistance+metformin",
+      "delta_a": -2.1046211949996875e-06,
+      "delta_b": 2.004020827887031e-05,
+      "delta_combo": 1.245609363345352e-05,
+      "interaction": -5.479493450417103e-06,
+      "synergistic": true
+    },
+    {
+      "pair": "metformin+teriparatide",
+      "delta_a": 2.004020827887031e-05,
+      "delta_b": 8.738251017107596e-06,
+      "delta_combo": 2.4299578177327174e-05,
+      "interaction": -4.478881118650732e-06,
+      "synergistic": true
+    },
+    {
+      "pair": "teriparatide+empagliflozin",
+      "delta_a": 8.738251017107596e-06,
+      "delta_b": 2.503646373760559e-05,
+      "delta_combo": 2.9490797559065087e-05,
+      "interaction": -4.283917195648098e-06,
+      "synergistic": true
+    },
+    {
+      "pair": "exercise_resistance+denosumab",
+      "delta_a": -2.1046211949996875e-06,
+      "delta_b": 1.3038086909617679e-05,
+      "delta_combo": 8.55843675617667e-06,
+      "interaction": -2.3750289584413206e-06,
+      "synergistic": true
+    },
+    {
+      "pair": "teriparatide+denosumab",
+      "delta_a": 8.738251017107596e-06,
+      "delta_b": 1.3038086909617679e-05,
+      "delta_combo": 1.955900040401487e-05,
+      "interaction": -2.217337522710406e-06,
+      "synergistic": true
+    },
+    {
+      "pair": "exercise_resistance+teriparatide",
+      "delta_a": -2.1046211949996875e-06,
+      "delta_b": 8.738251017107596e-06,
+      "delta_combo": 4.745441959607376e-06,
+      "interaction": -1.8881878625005323e-06,
+      "synergistic": true
+    },
+    {
+      "pair": "anti_tnf+denosumab",
+      "delta_a": 6.4137408686438125e-06,
+      "delta_b": 1.3038086909617679e-05,
+      "delta_combo": 1.7612919099777155e-05,
+      "interaction": -1.8389086784843366e-06,
+      "synergistic": true
+    },
+    {
+      "pair": "anti_tnf+teriparatide",
+      "delta_a": 6.4137408686438125e-06,
+      "delta_b": 8.738251017107596e-06,
+      "delta_combo": 1.3346477511477859e-05,
+      "interaction": -1.805514374273549e-06,
+      "synergistic": true
+    },
+    {
+      "pair": "anti_tnf+empagliflozin",
+      "delta_a": 6.4137408686438125e-06,
+      "delta_b": 2.503646373760559e-05,
+      "delta_combo": 2.9744569982574328e-05,
+      "interaction": -1.7056346236750744e-06,
+      "synergistic": true
+    },
+    {
+      "pair": "anti_tnf+exercise_resistance",
+      "delta_a": 6.4137408686438125e-06,
+      "delta_b": -2.1046211949996875e-06,
+      "delta_combo": 2.8136080880251935e-06,
+      "interaction": -1.4955115856189315e-06,
+      "synergistic": true
+    },
+    {
+      "pair": "anti_tnf+metformin",
+      "delta_a": 6.4137408686438125e-06,
+      "delta_b": 2.004020827887031e-05,
+      "delta_combo": 2.5062086063025587e-05,
+      "interaction": -1.391863084488536e-06,
+      "synergistic": true
+    },
+    {
+      "pair": "metformin+denosumab",
+      "delta_a": 2.004020827887031e-05,
+      "delta_b": 1.3038086909617679e-05,
+      "delta_combo": 3.1755094743581534e-05,
+      "interaction": -1.3232004449064555e-06,
+      "synergistic": true
+    },
+    {
+      "pair": "metformin+semaglutide",
+      "delta_a": 2.004020827887031e-05,
+      "delta_b": 2.0364130732006096e-06,
+      "delta_combo": 2.0764100027032386e-05,
+      "interaction": -1.3125213250385348e-06,
+      "synergistic": true
+    },
+    {
+      "pair": "semaglutide+empagliflozin",
+      "delta_a": 2.0364130732006096e-06,
+      "delta_b": 2.503646373760559e-05,
+      "delta_combo": 2.587982877379452e-05,
+      "interaction": -1.1930480370116788e-06,
+      "synergistic": true
+    },
+    {
+      "pair": "exercise_resistance+semaglutide",
+      "delta_a": -2.1046211949996875e-06,
+      "delta_b": 2.0364130732006096e-06,
+      "delta_combo": -1.1811672291299046e-06,
+      "interaction": -1.1129591073308267e-06,
+      "synergistic": true
+    },
+    {
+      "pair": "denosumab+empagliflozin",
+      "delta_a": 1.3038086909617679e-05,
+      "delta_b": 2.503646373760559e-05,
+      "delta_combo": 3.7195897175661954e-05,
+      "interaction": -8.786534715613144e-07,
+      "synergistic": true
+    },
+    {
+      "pair": "canakinumab+denosumab",
+      "delta_a": -5.631119783537555e-07,
+      "delta_b": 1.3038086909617679e-05,
+      "delta_combo": 1.1621202957189537e-05,
+      "interaction": -8.537719740743868e-07,
+      "synergistic": true
+    },
+    {
+      "pair": "denosumab+anakinra",
+      "delta_a": 1.3038086909617679e-05,
+      "delta_b": -5.631119783537555e-07,
+      "delta_combo": 1.1621202957189537e-05,
+      "interaction": -8.537719740743868e-07,
+      "synergistic": true
+    }
+  ],
+  "optimal_combinations": {
+    "best_2": {
+      "pair": "nad_precursors+mitoq",
+      "delta_alpha": -4.064867716925525e-05
+    },
+    "best_3": {
+      "triple": "nad_precursors+rapamycin+mitoq",
+      "delta_alpha": -4.141966149496536e-05
+    }
+  },
+  "acceptance_checks": {
+    "all_interventions_improve_alpha": true,
+    "exercise_broadest": true,
+    "anti_tnf_largest_J_IM": true,
+    "at_least_one_synergistic_pair": true,
+    "r6_factorial_interpretable": true,
+    "report_produced": true
+  },
+  "total_elapsed_s": 0.3
+}

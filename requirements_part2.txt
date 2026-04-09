@@ -1,0 +1,7 @@
+numpy>=1.24
+scipy>=1.10
+matplotlib>=3.7
+pytest>=7.0
+lifelines>=0.27
+# Optional:
+# SALib>=1.4  # for Sobol indices in sensitivity analysis

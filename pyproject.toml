@@ -1,7 +1,7 @@
 [project]
 name = "hdr-aging-sim"
-version = "0.1.0"
-description = "Toy simulation of HDR aging dynamics framework"
+version = "0.2.0"
+description = "HDR aging dynamics simulation: 4-axis toy model + 9-axis mechanistic-evidence framework"
 requires-python = ">=3.9"
 dependencies = [
     "numpy",
@@ -11,7 +11,9 @@ dependencies = [
 
 [project.optional-dependencies]
 nhanes = ["pandas", "pyreadstat"]
+elsa = ["lifelines>=0.27"]
 dev = ["pytest"]
+part2 = ["lifelines>=0.27"]
 
 [build-system]
 requires = ["setuptools>=64"]

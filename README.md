@@ -484,3 +484,81 @@ Coupling values sourced from `data/J_matrix_compiled_9x9.csv`.
 ### Reproducibility
 
 `outputs/elsa_results_ledger.json` contains SHA-256 hashes of all data files and every numerical result reported in Appendix H. Use this to verify that your ELSA data extract and pipeline output match ours.
+
+## Part 2: Mechanistic-Evidence-Informed Model
+
+Part 2 extends the 4-axis toy simulation with a 9-axis dynamical system parameterised from the enriched mechanistic evidence base produced by the HDR-mechanistic repository. All Part 2 code is **purely additive** — the original R1–R6 scripts and modules are unmodified.
+
+### Architecture
+
+```
+data/mechanistic_evidence/
+  J_matrix_mechanistic_9x9.json   ← 39 active entries with age-interpolated values
+  prior_specification.json         ← per-entry Bayesian priors (truncated normal)
+  intervention_library.json        ← 18 interventions with delta_J_fraction
+  state_conditioning_export.json   ← 7 healthy/disease switching specs
+
+src/hdr_sim/
+  mechanistic_model.py     ← HDRMechanisticModel (9-axis A = -D + J)
+  state_conditioned.py     ← StateSwitchedModel (healthy/disease SLDS)
+  sensitivity.py           ← PriorSensitivityAnalysis (MC, OAT, Sobol)
+  prior_stress.py          ← PriorStressTest (concordance, ablation)
+  observation_model.py     ← ObservationModel (C matrix, ELSA/InCHIANTI configs)
+  synthetic_cohort.py      ← SyntheticCohort + CohortData
+  tier1_pipeline.py        ← Tier1Pipeline (Gamma_change, SWDS, primacy)
+  intervention.py          ← InterventionModel (18 evidence-based interventions)
+  trial_simulator.py       ← TrialSimulator (RCT, factorial, R6 design)
+  bayesian_update.py       ← BayesianPriorUpdate (ABC scaffold)
+```
+
+### Quick start
+
+```bash
+pip install -r requirements_part2.txt
+
+# Run the full end-to-end pipeline (~5s)
+python scripts/run_full_pipeline.py
+
+# Run individual analyses
+python scripts/run_sensitivity.py          # MC sensitivity (10K draws)
+python scripts/run_synthetic_validation.py  # Synthetic cohort validation
+python scripts/run_intervention_analysis.py # Intervention ranking + factorial
+python scripts/run_dj_primacy_mechanistic.py # D/J primacy with mechanistic priors
+```
+
+Reports are written to `results/`.
+
+### Module descriptions
+
+| Module | Class | Purpose |
+|--------|-------|---------|
+| `mechanistic_model` | `HDRMechanisticModel` | 9-axis dynamical system with age-dependent A = -D + J, calibrated via Brent's method. Loads enriched J matrix from JSON export. |
+| `state_conditioned` | `StateSwitchedModel` | Switched linear system with 7 state-conditioned entries that change between healthy and disease regimes. |
+| `sensitivity` | `PriorSensitivityAnalysis` | Monte Carlo uncertainty propagation through J priors. 10,000-draw MC, one-at-a-time sensitivity, variance-based Sobol indices. |
+| `prior_stress` | `PriorStressTest` | Stress tests: correct/null/adversarial concordance, grade ablation, exclusion impact, decomposition vs uniform priors. |
+| `observation_model` | `ObservationModel` | Observation matrix C projecting 9-dim latent state to biomarker space (ELSA 3-axis, InCHIANTI 4-axis, full 9-axis configs). |
+| `synthetic_cohort` | `SyntheticCohort` | Longitudinal cohort generation matching ELSA design: N persons, discrete visits, survivorship bias, medication effects. |
+| `tier1_pipeline` | `Tier1Pipeline` | Computes Tier-1 observables: lambda_max(Gamma_change), lambda_max(Gamma_cross), SWDS-Gamma, primacy ratio Pi. |
+| `intervention` | `InterventionModel` | Applies 18 evidence-based interventions to J/tau with sign-aware convention. Ranks by stability improvement. |
+| `trial_simulator` | `TrialSimulator` | In silico RCT and 2^k factorial designs. Replicates R6 proposed colchicine x exercise x circadian hygiene trial. |
+| `bayesian_update` | `BayesianPriorUpdate` | ABC scaffold for updating J priors from Tier-1 cohort observables within the identifiable subspace. |
+
+### Scripts and outputs
+
+| Script | Output | Description |
+|--------|--------|-------------|
+| `run_full_pipeline.py` | `results/full_pipeline_report.md` | End-to-end 10-step pipeline (model, sensitivity, cohort, Tier-1, interventions, ABC) |
+| `run_sensitivity.py` | `results/sensitivity_report.md` | MC sensitivity analysis (10K draws), entry ranking, stress tests |
+| `run_synthetic_validation.py` | `results/synthetic_validation_report.md` | ELSA-like synthetic cohort under 4 confound conditions |
+| `run_intervention_analysis.py` | `results/intervention_report.md` | Intervention ranking, R6 factorial, pairwise interactions |
+| `run_dj_primacy_mechanistic.py` | `results/dj_primacy_mechanistic.json` | D/J primacy with 5 degradation regimes x 4 confound conditions |
+
+### Relationship to HDR-mechanistic
+
+The `data/mechanistic_evidence/` directory contains exports from the [HDR-mechanistic](https://github.com/DTW-Thalion/HDR-mechanistic) repository (pipeline v3.5). That repository performs the mechanistic decomposition of each J entry into molecular pathway steps, validates against ChEMBL, and produces the enriched evidence base consumed here. This repository (hdr-aging-sim) is the simulation consumer — it does not modify the mechanistic evidence.
+
+### Dependencies
+
+Core (in `pyproject.toml`): numpy, scipy, matplotlib.
+Part 2 additions (in `requirements_part2.txt`): pytest, lifelines (for Cox models).
+Optional: SALib (for Sobol indices).

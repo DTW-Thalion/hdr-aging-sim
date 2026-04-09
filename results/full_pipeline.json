@@ -1,0 +1,113 @@
+{
+  "timestamp": "2026-04-09T01:55:29Z",
+  "steps": {
+    "1_load": {
+      "n_entries": 39,
+      "n_excluded": 3,
+      "calibration_scalar": 0.06253357190173693
+    },
+    "2_stability": {
+      "alpha": -0.002149179923414892,
+      "recovery_time": 465.2937565185664,
+      "damping_ratio": 1.0
+    },
+    "4_trajectory": [
+      {
+        "age": 30,
+        "alpha": -0.005537792533388447,
+        "recovery_time": 180.5773679621983,
+        "damping_ratio": 1.0,
+        "stable": true,
+        "lambda_max_gamma": 0.9226765632313345,
+        "bifurcation_margin_IM": 0.023784496944789155
+      },
+      {
+        "age": 40,
+        "alpha": -0.003923723887259348,
+        "recovery_time": 254.85993121154158,
+        "damping_ratio": 1.0,
+        "stable": true,
+        "lambda_max_gamma": 1.3635997734643428,
+        "bifurcation_margin_IM": 0.012113163514224604
+      },
+      {
+        "age": 50,
+        "alpha": -0.003000914194026399,
+        "recovery_time": 333.2317871635896,
+        "damping_ratio": 1.0,
+        "stable": true,
+        "lambda_max_gamma": 1.954645063097987,
+        "bifurcation_margin_IM": 0.007303006998750663
+      },
+      {
+        "age": 60,
+        "alpha": -0.0023875227951247967,
+        "recovery_time": 418.8441685423697,
+        "damping_ratio": 1.0,
+        "stable": true,
+        "lambda_max_gamma": 2.8162678694656216,
+        "bifurcation_margin_IM": 0.004861119998842752
+      },
+      {
+        "age": 70,
+        "alpha": -0.0019444768002529372,
+        "recovery_time": 514.2771566469295,
+        "damping_ratio": 1.0,
+        "stable": true,
+        "lambda_max_gamma": 4.096299018918617,
+        "bifurcation_margin_IM": 0.003449791267651141
+      },
+      {
+        "age": 80,
+        "alpha": -0.0016243214186015716,
+        "recovery_time": 615.6417003113404,
+        "damping_ratio": 1.0,
+        "stable": true,
+        "lambda_max_gamma": 6.033855715449094,
+        "bifurcation_margin_IM": 0.002557517574169877
+      }
+    ],
+    "5_sensitivity": {
+      "elapsed_s": 0.8,
+      "monotone_fraction": 0.998,
+      "stable_80": 1.0
+    },
+    "6_cohort": {
+      "elapsed_s": 3.4,
+      "n_persons": 2000
+    },
+    "7_tier1": {
+      "gamma_change_increases": false,
+      "swds_increases": true
+    },
+    "8_interventions": {
+      "top3": [
+        {
+          "id": "nad_precursors",
+          "delta": -3.980799721852823e-05
+        },
+        {
+          "id": "exercise_resistance",
+          "delta": -2.1046211949996875e-06
+        },
+        {
+          "id": "mitoq",
+          "delta": -1.0971549714502028e-06
+        }
+      ]
+    },
+    "9_factorial": {
+      "n_arms": 8,
+      "any_synergy": false
+    },
+    "10_abc": {
+      "elapsed_s": 1.0,
+      "n_accepted": 25,
+      "acceptance_rate": 0.05,
+      "mean_std_ratio": 0.7610824395855268,
+      "sign_concordance": 1.0,
+      "sign_concordance_p": 0.029
+    }
+  },
+  "total_elapsed_s": 5.3
+}
