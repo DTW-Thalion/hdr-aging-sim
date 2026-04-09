@@ -1,0 +1,114 @@
+{
+  "J_I_mito": {
+    "healthy_regime": {
+      "J_fraction": 0.05,
+      "description": "Acute, transient NF-κB activation (<72h)"
+    },
+    "disease_regime": {
+      "J_fraction": 1.0,
+      "description": "Chronic, sustained NF-κB activation"
+    },
+    "threshold": {
+      "biomarker": "hs-CRP",
+      "value": 3.0,
+      "unit": "mg/L",
+      "direction": "above_is_disease"
+    }
+  },
+  "J_M_I": {
+    "healthy_regime": {
+      "J_fraction": 0.05,
+      "description": "Normal insulin sensitivity"
+    },
+    "disease_regime": {
+      "J_fraction": 1.0,
+      "description": "Insulin resistance / metabolic syndrome"
+    },
+    "threshold": {
+      "biomarker": "HOMA-IR",
+      "value": 2.5,
+      "unit": "",
+      "direction": "above_is_disease"
+    }
+  },
+  "J_N_I": {
+    "healthy_regime": {
+      "J_fraction": -0.2,
+      "description": "Normal diurnal cortisol rhythm with acute stress response"
+    },
+    "disease_regime": {
+      "J_fraction": 1.0,
+      "description": "Flattened diurnal cortisol / chronic HPA dysregulation"
+    },
+    "threshold": {
+      "biomarker": "Cortisol diurnal slope",
+      "value": -0.04,
+      "unit": "ug/dL/hr",
+      "direction": "above_is_disease"
+    }
+  },
+  "J_N_B": {
+    "healthy_regime": {
+      "J_fraction": -1.0,
+      "description": "Intermittent, pulsatile PTH exposure"
+    },
+    "disease_regime": {
+      "J_fraction": 1.0,
+      "description": "Continuous, elevated PTH (secondary hyperparathyroidism)"
+    },
+    "threshold": {
+      "biomarker": "Serum PTH",
+      "value": 65,
+      "unit": "pg/mL",
+      "direction": "above_is_disease"
+    }
+  },
+  "J_C_I": {
+    "healthy_regime": {
+      "J_fraction": -0.1,
+      "description": "Robust circadian oscillation"
+    },
+    "disease_regime": {
+      "J_fraction": 1.0,
+      "description": "Collapsed circadian amplitude"
+    },
+    "threshold": {
+      "biomarker": "Melatonin onset-offset duration",
+      "value": 8,
+      "unit": "hours",
+      "direction": "below_is_disease"
+    }
+  },
+  "J_C_M": {
+    "healthy_regime": {
+      "J_fraction": 0.05,
+      "description": "Intact circadian glucose/insulin rhythm"
+    },
+    "disease_regime": {
+      "J_fraction": 1.0,
+      "description": "Disrupted circadian metabolic rhythm"
+    },
+    "threshold": {
+      "biomarker": "Nocturnal glucose dip",
+      "value": 10,
+      "unit": "%",
+      "direction": "below_is_disease"
+    }
+  },
+  "J_mito_E": {
+    "healthy_regime": {
+      "J_fraction": 0.05,
+      "description": "Normal mitochondrial NAD+/acetyl-CoA/α-KG supply"
+    },
+    "disease_regime": {
+      "J_fraction": 1.0,
+      "description": "Depleted mitochondrial metabolite supply"
+    },
+    "threshold": {
+      "biomarker": "NAD+/NADH ratio",
+      "value": 1.0,
+      "unit": "",
+      "direction": "below_is_disease"
+    }
+  }
+}
