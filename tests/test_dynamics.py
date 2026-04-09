@@ -5,8 +5,11 @@ import pytest
 from scipy import linalg
 
 from hdr_sim.dynamics import build_A, spectral_abscissa, recovery_timescale, spectral_radius_discrete
-from hdr_sim.aging_params import tau_of_age, J_of_age
+from hdr_sim.aging_params import configure, tau_of_age, J_of_age
 from hdr_sim.csv_loader import load_J_csv, build_J_basin
+
+# Explicit configuration for the 4-axis model
+configure()
 
 
 def _A_at_age(age):

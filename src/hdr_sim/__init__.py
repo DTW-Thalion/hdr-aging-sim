@@ -1,11 +1,13 @@
 """HDR Aging Dynamics Simulation and Estimation Library.
 
 Part 1 (R1-R6): 4-axis toy simulation and ELSA validation.
-Part 2: 9-axis mechanistic-evidence-informed model with sensitivity
-analysis, synthetic cohort generation, intervention framework,
-and Bayesian prior updating scaffold.
+Part 2: 9-axis mechanistic-evidence-informed model with two-timescale
+decomposition (7-axis fast subsystem + quasi-static E/B forcing),
+sensitivity analysis, synthetic cohort generation, intervention
+framework, and Bayesian prior updating scaffold.
 """
 from .csv_loader import load_J_csv, build_J_basin, get_J_anchors
+from .aging_params import configure, tau_of_age, J_of_age
 from .estimation import (
     get_params,
     build_A,
