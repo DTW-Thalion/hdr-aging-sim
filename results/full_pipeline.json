@@ -1,79 +1,79 @@
 {
-  "timestamp": "2026-04-09T01:55:29Z",
+  "timestamp": "2026-04-09T12:03:13Z",
   "steps": {
     "1_load": {
       "n_entries": 39,
       "n_excluded": 3,
-      "calibration_scalar": 0.06253357190173693
+      "calibration_scalar": 0.034513576833021614
     },
     "2_stability": {
-      "alpha": -0.002149179923414892,
-      "recovery_time": 465.2937565185664,
+      "alpha": -0.0003562375973866757,
+      "recovery_time": 2807.115271762168,
       "damping_ratio": 1.0
     },
     "4_trajectory": [
       {
         "age": 30,
-        "alpha": -0.005537792533388447,
-        "recovery_time": 180.5773679621983,
+        "alpha": -0.0009932193150897586,
+        "recovery_time": 1006.8269764866873,
         "damping_ratio": 1.0,
         "stable": true,
-        "lambda_max_gamma": 0.9226765632313345,
-        "bifurcation_margin_IM": 0.023784496944789155
+        "lambda_max_gamma": 5.040786728952327,
+        "bifurcation_margin_IM": 0.3571352335461479
       },
       {
         "age": 40,
-        "alpha": -0.003923723887259348,
-        "recovery_time": 254.85993121154158,
+        "alpha": -0.0006986071782874217,
+        "recovery_time": 1431.4195889761943,
         "damping_ratio": 1.0,
         "stable": true,
-        "lambda_max_gamma": 1.3635997734643428,
-        "bifurcation_margin_IM": 0.012113163514224604
+        "lambda_max_gamma": 7.182834157569062,
+        "bifurcation_margin_IM": 0.18220521811202667
       },
       {
         "age": 50,
-        "alpha": -0.003000914194026399,
-        "recovery_time": 333.2317871635896,
+        "alpha": -0.0005260645667526146,
+        "recovery_time": 1900.9073471208653,
         "damping_ratio": 1.0,
         "stable": true,
-        "lambda_max_gamma": 1.954645063097987,
-        "bifurcation_margin_IM": 0.007303006998750663
+        "lambda_max_gamma": 9.57898275067814,
+        "bifurcation_margin_IM": 0.11021538289094109
       },
       {
         "age": 60,
-        "alpha": -0.0023875227951247967,
-        "recovery_time": 418.8441685423697,
+        "alpha": -0.0004058222876905018,
+        "recovery_time": 2464.13277518815,
         "damping_ratio": 1.0,
         "stable": true,
-        "lambda_max_gamma": 2.8162678694656216,
-        "bifurcation_margin_IM": 0.004861119998842752
+        "lambda_max_gamma": 12.503490328167032,
+        "bifurcation_margin_IM": 0.07377211689002244
       },
       {
         "age": 70,
-        "alpha": -0.0019444768002529372,
-        "recovery_time": 514.2771566469295,
+        "alpha": -0.0003111034604713796,
+        "recovery_time": 3214.3647598288176,
         "damping_ratio": 1.0,
         "stable": true,
-        "lambda_max_gamma": 4.096299018918617,
-        "bifurcation_margin_IM": 0.003449791267651141
+        "lambda_max_gamma": 16.481851722565953,
+        "bifurcation_margin_IM": 0.05280975140652485
       },
       {
         "age": 80,
-        "alpha": -0.0016243214186015716,
-        "recovery_time": 615.6417003113404,
+        "alpha": -0.00022969928987157475,
+        "recovery_time": 4353.518030286909,
         "damping_ratio": 1.0,
         "stable": true,
-        "lambda_max_gamma": 6.033855715449094,
-        "bifurcation_margin_IM": 0.002557517574169877
+        "lambda_max_gamma": 22.6544500374691,
+        "bifurcation_margin_IM": 0.03965573797535898
       }
     ],
     "5_sensitivity": {
-      "elapsed_s": 0.8,
-      "monotone_fraction": 0.998,
+      "elapsed_s": 0.7,
+      "monotone_fraction": 1.0,
       "stable_80": 1.0
     },
     "6_cohort": {
-      "elapsed_s": 3.4,
+      "elapsed_s": 3.2,
       "n_persons": 2000
     },
     "7_tier1": {
@@ -84,30 +84,30 @@
       "top3": [
         {
           "id": "nad_precursors",
-          "delta": -3.980799721852823e-05
+          "delta": -7.689754764556912e-07
         },
         {
-          "id": "exercise_resistance",
-          "delta": -2.1046211949996875e-06
+          "id": "canakinumab",
+          "delta": -2.3481074108190614e-07
         },
         {
-          "id": "mitoq",
-          "delta": -1.0971549714502028e-06
+          "id": "anakinra",
+          "delta": -2.3481074108190614e-07
         }
       ]
     },
     "9_factorial": {
       "n_arms": 8,
-      "any_synergy": false
+      "any_synergy": true
     },
     "10_abc": {
-      "elapsed_s": 1.0,
+      "elapsed_s": 0.9,
       "n_accepted": 25,
       "acceptance_rate": 0.05,
-      "mean_std_ratio": 0.7610824395855268,
+      "mean_std_ratio": 0.7370065226321895,
       "sign_concordance": 1.0,
       "sign_concordance_p": 0.029
     }
   },
-  "total_elapsed_s": 5.3
+  "total_elapsed_s": 4.9
 }
