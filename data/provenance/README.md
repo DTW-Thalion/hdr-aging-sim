@@ -1,0 +1,1 @@
+This directory contains frozen J-matrix snapshots used for reproducibility of published results. Files in this directory must never be modified after creation. Each file is identified by its SHA-256 hash recorded in the output metadata of any results produced against it.
