@@ -29,16 +29,23 @@ Nat Commun).
 The 9-axis mechanistic model (`HDRMechanisticModel`) uses a two-timescale
 decomposition based on singular perturbation theory:
 
-- **Fast subsystem** (7 axes: I, M, mito, P, C, N, F): perturbation-recovery
-  dynamics with tau ranging from 0.003d (N) to 57d (mito at age 80) in the V2
-  registry. These determine the spectral abscissa, recovery time, and damping ratio.
-- **Quasi-static axes** (E, B): tau_E = 500-5000d (epigenetic drift),
-  tau_B = 135-500d (bone remodelling). These drift secularly with age and enter
-  the fast subsystem as constant forcing, shifting its equilibrium without
-  changing eigenvalues.
+- **Fast subsystem** (6 axes: I, M, P, C, N, F): perturbation-recovery
+  dynamics with tau ranging from 0.003d (N) to 6d (C/F at age 25) in the V2
+  registry. These determine the spectral abscissa, recovery time, and damping
+  ratio. Calibrated to alpha_fast(25) = -0.24, stable through age 120.
+- **Intermediate/quasi-static axes** (mito, E, B): mito tau = 36-65d
+  (mitochondrial protein turnover), tau_E = 500-5000d (epigenetic drift),
+  tau_B = 135-500d (bone remodelling). These drift secularly with age and
+  enter the fast subsystem as constant forcing.
 
-All stability metrics (α, ζ, recovery time) refer to the fast subsystem.
-The full 9×9 system is available via `model.A_full` for validation.
+The original `HDRMechanisticModel` uses a 7-axis fast subsystem (including
+mito). With the V2 literature-calibrated tau values, mito's intermediate
+timescale (36-65d) constrains the coupling budget and limits the 7-axis
+system to c~0.01. The 6-axis decomposition (excluding mito) achieves
+c=1.57 with full 25-120 stability. See the V2 section below for details.
+
+All stability metrics (alpha, zeta, recovery time) refer to the fast subsystem.
+The full 9x9 system is available via `model.A_full` for validation.
 
 ## Setup
 
@@ -58,7 +65,7 @@ pip install pandas pyreadstat
 python scripts/run_figure_network_schematic.py  # Main Fig 1: 9-axis network diagram
 python scripts/run_figure_J_heatmap.py          # Main Fig 2: 9x9 coupling heatmap
 python scripts/run_figure2b.py                  # Spectral-abscissa drift demo (legacy tau)
-python scripts/run_figure2b_v2.py               # Same with V2 lit-calibrated tau (25-120)
+python scripts/run_figure2b_v3.py               # V2 fast-subsystem calibration (6-axis, 25-120)
 python scripts/run_figure_frailty.py            # Frailty perturbation-response
 python scripts/run_figure_t2d.py                # T2D phase portrait
 ```
@@ -272,9 +279,12 @@ Note: NHANES XPT files are downloaded from CDC servers at runtime (~7 MB total).
 | `run_elsa_basin_recovery.py` | `outputs/elsa_basin_recovery.json` | Data-driven basin recovery (GMM/HMM) |
 | `run_elsa_basin_recovery.py` | `outputs/elsa_basin_recovery_table.txt` | Basin recovery comparison table |
 | `run_figure_disease_demos.py` | `outputs/figure_disease_demos.pdf` | ED Fig 2: disease demo panels (T2D, frailty, AD, osteoporosis) |
-| `run_figure2b_v2.py` | `outputs/figure_2b_v2.pdf` | V2: Spectral-abscissa drift with lit-calibrated tau (25-120) |
-| `run_stability_verification.py` | `outputs/stability_verification_25_120.json` | V2: Stability verification across 25-120, 4 axis configs |
+| `run_figure2b_v2.py` | `outputs/figure_2b_v2.pdf` | V2: Spectral-abscissa drift with lit-calibrated tau (4-axis) |
+| `run_figure2b_v3.py` | `outputs/figure_2b_v3.pdf` | V2: Spectral drift with fast-subsystem calibration (6-axis, 25-120) |
+| `run_stability_verification.py` | `outputs/stability_verification_25_120.json` | V2: Stability sweep across 25-120, 4 axis configs |
+| `run_stability_verification_v2.py` | `outputs/stability_verification_v2.json` | V2: Fast-subsystem calibration (6-axis + 7-axis) |
 | `run_monotonicity_25_120.py` | `outputs/monotonicity_25_120.json` | V2: Monotonicity re-verification with V2 tau |
+| `run_monotonicity_v2.py` | `outputs/monotonicity_v2.json` | V2: Fast-subsystem monotonicity (6-axis, Metzler) |
 | `run_tau_comparison.py` | `outputs/tau_comparison_old_vs_new.md` | V2: Legacy vs lit-calibrated tau comparison table |
 
 ## R4 Revision: Γ-Native Pivot
@@ -614,34 +624,57 @@ Replaces the ad-hoc tau registry with PMID-cited recovery time constants at thre
 
 2. **Qual-only imputation** (`build_J_basin_imputed()`): Fills qual_only entries from tier defaults (S=0.20/0.40, M=0.10/0.20, W=0.05/0.10), increasing J matrix fill from 42/72 (58%) to 68/72 (94%).
 
-3. **Gompertz J interpolation** (`J_at_age()`): Non-linear aging trajectory for the coupling matrix. Pathological entries accelerate on a Gompertz curve; protective entries weaken on an inverse trajectory.
+3. **Gompertz J interpolation** (`J_at_age()`, `j_at_age_blended()`): Non-linear aging trajectory for the coupling matrix with Gompertz-shaped blending function and tunable blend amplitude.
 
-4. **Three-point calibration** (`calibrate_three_point()`): Calibrates at age 25 and verifies alpha at 80 and 120 against the Pyrkov 2021 target trajectory.
+4. **Fast-subsystem calibration** (`calibrate_stable_system()`): Jointly finds the coupling scalar c and J blend amplitude A ensuring the fast subsystem remains stable from age 25 to 120. The 6-axis fast subsystem (I, M, P, C, N, F) achieves:
+   - c = 1.57, alpha_fast(25) = -0.24, alpha_fast(120) = -0.004
+   - Monotonic critical slowing-down (recovery: 4.1d at 25 -> 250d at 120)
+   - J blend amplitude A = 0.001 (tau degradation dominates J evolution)
+
+### Two-timescale calibration architecture
+
+The single-scalar calibration fails for the full 9x9 system because the E axis (tau_E=500d) constrains alpha to -0.002. It also fails for the 7-axis system (excl. E, B) because mito (tau=36-65d) limits c to ~0.01. The correct decomposition is:
+
+| Cluster | Axes | tau range | Role |
+|---------|------|-----------|------|
+| Fast | I, M, P, C, N, F | 0.003-18d | Perturbation-recovery dynamics; alpha, SWDS-Gamma, Lambda_max |
+| Intermediate | mito | 36-65d | Mitochondrial turnover; too slow for fast cluster |
+| Quasi-static | E, B | 135-5000d | Secular drift; constant forcing on fast subsystem |
+
+The calibration targets the **6-axis fast subsystem** explicitly:
+1. Find (c, amplitude) such that alpha_fast(120) = -0.004 with stability at all ages
+2. Apply the same c to the full 9x9 J matrix
+3. Report alpha_fast (empirically testable) and alpha_full (E-dominated, ~+0.10)
+
+The full 9x9 alpha is positive because the cross-coupling from fast to slow axes (scaled by c=1.57) overwhelms the weak E-axis diagonal (-1/500 = -0.002). This confirms the two-timescale decomposition is necessary — the ELSA empirical analyses (SWDS-Gamma, Lambda_max, Pi statistic) all measure the fast-subsystem covariance structure, not the full 9x9 eigenvalues.
 
 ### Stability findings
 
-| Configuration | Max stable age | Notes |
-|--------------|---------------|-------|
-| 9x9 imputed (68/72) | 120 | alpha constrained near -0.002 by E axis (tau_E=500d) |
-| 9x9 Metzler projection | 120 | Monotonicity passes |
-| 7-axis fast (excl. E,B) | ~51 | Strong coupling destabilises above 50 |
-| 7-axis Metzler projection | 120 | Monotonicity passes |
-| 4-axis classic (I,M,N,F) | ~30 | Large calibration scalar (c=14.6) overwhelms at older ages |
-
-The 9x9 system achieves stability across 25-120 but with alpha values much less negative than the Pyrkov target, because the quasi-static E axis (tau=500 days) constrains the spectral abscissa to alpha >= -1/tau_E = -0.002. The fast subsystems (7-axis, 4-axis) achieve the target alpha at age 25 but go unstable at older ages due to the combination of increasing tau and worsening J.
+| Configuration | Max stable age | alpha(25) | Recovery at 120 | Notes |
+|--------------|---------------|-----------|-----------------|-------|
+| **6-axis fast (I,M,P,C,N,F)** | **120** | **-0.242** | **250d** | Primary: fast-subsystem calibration |
+| 7-axis fast (incl. mito) | 120 | -0.028 | 75d | mito constrains c to 0.01 |
+| 9x9 full system | 120 | -0.002 | 5000d | E-dominated; trivially stable |
+| 4-axis classic (I,M,N,F) | ~30 | -0.134 | -- | Unstable beyond 30 |
 
 ### V2 scripts
 
 ```bash
-python scripts/run_stability_verification.py   # Stability sweep 25-120
-python scripts/run_monotonicity_25_120.py       # Monotonicity verification
-python scripts/run_figure2b_v2.py               # ED Fig 1 with V2 params
-python scripts/run_tau_comparison.py             # Old vs new comparison table
+# Fast-subsystem calibration (primary)
+python scripts/run_stability_verification_v2.py # 6-axis + 7-axis stability sweep
+python scripts/run_monotonicity_v2.py           # Monotonicity verification
+python scripts/run_figure2b_v3.py               # Spectral drift figure (25-120)
+
+# Initial V2 exploration (full 9x9 and subsystem comparison)
+python scripts/run_stability_verification.py    # All configurations comparison
+python scripts/run_monotonicity_25_120.py       # Monotonicity 9x9/7-axis/4-axis
+python scripts/run_figure2b_v2.py               # V2 figure (4-axis)
+python scripts/run_tau_comparison.py            # Old vs new tau comparison table
 ```
 
 ### Backward compatibility
 
-All existing scripts and tests are unaffected. The legacy `TAU_REGISTRY`, `configure()`, `get_J_anchors()`, and `_tau_for_axes()` functions continue to work with the original 2-anchor values. The V2 system is opt-in via `configure_v2()` or direct use of `TAU_REGISTRY_V2` / `tau_vector()` / `tau_at_age()`.
+All existing scripts and tests are unaffected. The legacy `TAU_REGISTRY`, `configure()`, `get_J_anchors()`, and `_tau_for_axes()` functions continue to work with the original 2-anchor values. The V2 system is opt-in via `configure_v2()` or direct use of `TAU_REGISTRY_V2` / `tau_vector()` / `tau_at_age()`. The fast-subsystem calibration is accessed via `calibrate_stable_system()` and `build_system_at_age()`.
 
 ## Part 2: Mechanistic-Evidence-Informed Model
 

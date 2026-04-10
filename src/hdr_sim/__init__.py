@@ -12,6 +12,8 @@ Key entry points:
     tau_of_age(age), J_of_age(age)     — age-interpolated parameters
     tau_at_age(axis, age)              — V2 single-axis tau at any age
     tau_vector(axes, age)              — V2 multi-axis tau vector
+    calibrate_stable_system(...)       — 6-axis fast-subsystem calibration (25-120)
+    build_system_at_age(age, ...)      — two-timescale A_full + A_fast at any age
     JMatrixSpec.from_csv(path)         — provenance tracking for J-matrix CSVs
 """
 from .csv_loader import (

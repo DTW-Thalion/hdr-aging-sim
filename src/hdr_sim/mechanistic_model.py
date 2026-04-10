@@ -1,13 +1,19 @@
 """9-axis HDR dynamical system with two-timescale decomposition.
 
 Loads the enriched J matrix from data/mechanistic_evidence/ and builds
-the A = -D + J dynamics matrix.  E (τ ≈ 1000 d) and B (τ ≈ 90-120 d)
-are treated as quasi-static: they drift secularly with age and enter the
-fast subsystem as constant forcing, but do not participate in
-perturbation-recovery eigenvalue computation.
+the A = -D + J dynamics matrix.  E and B are treated as quasi-static:
+they drift secularly with age and enter the fast subsystem as constant
+forcing, but do not participate in perturbation-recovery eigenvalue
+computation.
 
-The primary dynamics matrix A is 7×7 (fast subsystem: I, M, mito, P, C,
-N, F).  The full 9×9 system is available via A_full for reference.
+This class uses a **7-axis fast subsystem** (I, M, mito, P, C, N, F)
+with legacy tau values.  With the V2 literature-calibrated tau registry,
+mito's intermediate timescale (tau=36-65d) constrains the 7-axis coupling
+budget to c~0.01.  The csv_loader module provides a 6-axis fast subsystem
+(I, M, P, C, N, F) via ``calibrate_stable_system()`` that achieves
+c=1.57 with full 25-120 stability.  See csv_loader.py for details.
+
+The full 9x9 system is available via A_full for reference.
 
 This is a parallel model class.  The original R6 code (aging_params.py,
 csv_loader.py) is unmodified and continues to work independently.
@@ -83,12 +89,17 @@ class HDRMechanisticModel:
     """9-axis HDR dynamical system with two-timescale decomposition.
 
     The fast subsystem (7 axes: I, M, mito, P, C, N, F) determines
-    perturbation-recovery dynamics (α, ζ, recovery time).  The quasi-static
-    axes E and B drift with age and enter as constant forcing on the fast
-    system.
+    perturbation-recovery dynamics (alpha, zeta, recovery time).  The
+    quasi-static axes E and B drift with age and enter as constant forcing
+    on the fast system.
 
     Calibration: a single scalar c is applied to all J entries so that
-    α(A_fast) at age 30 matches the R6 target (≈ -0.134).
+    alpha(A_fast) at age 30 matches the R6 target (approx -0.134).
+
+    Note: with V2 literature-calibrated tau values, the 7-axis fast
+    subsystem (including mito, tau=36-65d) is constrained to c~0.01.
+    The csv_loader module provides a 6-axis alternative via
+    ``calibrate_stable_system()`` with c=1.57 and full 25-120 stability.
     """
 
     AXES = ["I", "M", "E", "mito", "P", "C", "N", "F", "B"]

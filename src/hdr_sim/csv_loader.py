@@ -20,6 +20,14 @@ Additional V2 features:
   - build_J_basin_imputed(): fills qual_only entries from tier defaults (68/72 fill)
   - J_at_age(): Gompertz-like J interpolation for ages 25-120
   - calibrate_three_point(): three-point calibration with Pyrkov targets
+
+Fast-subsystem calibration (two-timescale architecture):
+  - calibrate_stable_system(): joint (c, amplitude) optimization for 25-120
+    stability on the 6-axis fast subsystem (I, M, P, C, N, F)
+  - calibrate_fast_subsystem(): single-point c calibration at age 25
+  - j_blend_fraction(), find_j_blend_amplitude(): Gompertz J trajectory
+  - j_at_age_blended(), build_system_at_age(): two-timescale system builder
+  - Axis constants: _ALL_9_AXES, _FAST_7_AXES, _FAST_6_AXES, _SLOW_3_AXES
 """
 
 import os
