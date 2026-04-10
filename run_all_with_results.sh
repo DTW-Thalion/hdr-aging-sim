@@ -56,6 +56,10 @@ echo "--- R6 D vs. J Bayesian + Misspecification Robustness ---"
 python3 scripts/run_dj_bayes_robust.py
 
 echo ""
+echo "--- R6 Pi Strong-Coupling Regime Analysis ---"
+python3 scripts/run_pi_regime_analysis.py
+
+echo ""
 echo "--- R6 Change-Covariance Estimator Bias ---"
 python3 scripts/run_estimator_bias.py
 

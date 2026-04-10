@@ -244,6 +244,7 @@ Note: NHANES XPT files are downloaded from CDC servers at runtime (~7 MB total).
 | `run_dj_validation.py` | `outputs/figure_dj_validation.pdf` | Supp Fig 5: D vs J validation (2×2 panel) |
 | `run_dj_power.py` | `outputs/figure_dj_power.pdf` | Supp Fig 6: D vs J power analysis (3-panel) |
 | `run_dj_bayes_robust.py` | `outputs/figure_dj_bayes_robust.pdf` | Supp Fig 7: Bayesian + misspecification robustness |
+| `run_pi_regime_analysis.py` | `outputs/pi_regime_analysis.json` | SI Note 6: Π strong-coupling regime analysis |
 | `run_estimator_bias.py` | `outputs/figure_estimator_bias.pdf` | Supp Fig 8: Change-covariance estimator bias (2×2 panel) |
 | `run_elsa_ici_deployment.py` | `outputs/elsa_ici_deployment.json` | ELSA ICI deployment assessment |
 | `run_elsa_ici_deployment.py` | `outputs/elsa_ici_deployment_table.txt` | ICI deployment manuscript table |
@@ -427,6 +428,24 @@ python scripts/run_dj_bayes_robust.py
 | `run_dj_bayes_robust.py` | `outputs/figure_dj_bayes_robust.pdf` | 5-panel: posteriors, TOST, M1/M2/M3 robustness |
 | `run_dj_bayes_robust.py` | `outputs/dj_bayes_robust_results.json` | Machine-readable Bayes factors, TOST, power |
 | `run_dj_bayes_robust.py` | `outputs/dj_bayes_robust_summary.md` | SI-ready markdown (Section S9) |
+
+### Π Statistic — Strong-Coupling Regime Analysis
+
+Analyses whether the primacy ratio Π = C_norm / V_norm retains its discrimination property at the strong-coupling strengths (ε = ρ(D⁻¹J) ~ 0.45–3.17) present in the HDR parameterisation, where the perturbative expansion that motivates Π is quantitatively inaccurate.
+
+```bash
+python scripts/run_pi_regime_analysis.py
+```
+
+Key findings:
+* **Coupling strength**: ε_spectral ranges from 0.45 (age 30) to 3.17 (age 80) in the 3-axis model, exceeding unity for ages ≥ 50; the 7-axis model remains perturbative (ε < 0.5)
+* **Perturbative error**: First-order correlation approximation incurs 18%–131% relative error (3-axis), confirming the expansion is quantitatively uninformative at these coupling strengths
+* **Monotonicity**: Simple pure-D/pure-J monotonicity of Π does not hold in the strong-coupling regime
+* **Conclusion**: Π is justified by the simulation validation (Supp Figs 5–7), not by the perturbative expansion — the simulation demonstrates empirical discrimination with Cohen's d > 3 under realistic confounds
+
+| Script | Output | Description |
+|--------|--------|-------------|
+| `run_pi_regime_analysis.py` | `outputs/pi_regime_analysis.json` | Coupling strengths, weak-coupling errors, monotonicity tests |
 
 ### Change-Covariance Estimator Bias Study
 
