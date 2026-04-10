@@ -244,6 +244,7 @@ Note: NHANES XPT files are downloaded from CDC servers at runtime (~7 MB total).
 | `run_dj_validation.py` | `outputs/figure_dj_validation.pdf` | Supp Fig 5: D vs J validation (2×2 panel) |
 | `run_dj_power.py` | `outputs/figure_dj_power.pdf` | Supp Fig 6: D vs J power analysis (3-panel) |
 | `run_dj_bayes_robust.py` | `outputs/figure_dj_bayes_robust.pdf` | Supp Fig 7: Bayesian + misspecification robustness |
+| `run_estimator_bias.py` | `outputs/figure_estimator_bias.pdf` | Supp Fig 8: Change-covariance estimator bias (2×2 panel) |
 | `run_elsa_ici_deployment.py` | `outputs/elsa_ici_deployment.json` | ELSA ICI deployment assessment |
 | `run_elsa_ici_deployment.py` | `outputs/elsa_ici_deployment_table.txt` | ICI deployment manuscript table |
 | `run_elsa_basin_recovery.py` | `outputs/elsa_basin_recovery.json` | Data-driven basin recovery (GMM/HMM) |
@@ -426,6 +427,31 @@ python scripts/run_dj_bayes_robust.py
 | `run_dj_bayes_robust.py` | `outputs/figure_dj_bayes_robust.pdf` | 5-panel: posteriors, TOST, M1/M2/M3 robustness |
 | `run_dj_bayes_robust.py` | `outputs/dj_bayes_robust_results.json` | Machine-readable Bayes factors, TOST, power |
 | `run_dj_bayes_robust.py` | `outputs/dj_bayes_robust_summary.md` | SI-ready markdown (Section S9) |
+
+### Change-Covariance Estimator Bias Study
+
+Validates the approximation Γ̂_change ≈ 2Γ used by the visit-pair change-covariance estimator. The R6 claim that λ_max(Γ̂_change) increases with age relies on the assumption that between consecutive ELSA visits (~4 years apart) the OU process fully equilibrates.
+
+```bash
+python scripts/run_estimator_bias.py
+```
+
+Design:
+* **Panel (a)** — Bias ratio λ_max(Γ̂_change) / (2 λ_max(Γ_true)) as a function of visit interval Δt, for ages 30, 50, 65, 80. N=5,000 samples, 200 MC runs per condition.
+* **Panel (b)** — Recovered λ_max age trend at five visit intervals (1 month to 4 years) vs true λ_max(Γ), with 95% CI bands.
+* **Panel (c)** — Same as (b) with survivorship bias (χ² 90th percentile threshold) and medication compression (40% medicated, 0.7× variance).
+* **Panel (d)** — Sensitivity to τ-scaling: bias ratio at age 80 with τ multiplied by 1× to 20×, holding J fixed.
+
+Key findings:
+* **Bias at 4 yr / age 80: 1.001** (0.1% — essentially unbiased)
+* **Min Δt for <1% bias: 180 days** (6 months) — ELSA's 4-year cadence provides a >7× safety margin
+* **τ-scaling threshold: 4.0×** — at k=4 the recovery time (1,850 days) exceeds the visit interval, causing 37.5% bias; at k=4.5 the system becomes unstable
+* **7-axis monotone trend: preserved** — the λ_max increase with age holds for the full 7-axis (I, M, mito, P, C, N, F) model at 4-year cadence
+
+| Script | Output | Description |
+|--------|--------|-------------|
+| `run_estimator_bias.py` | `outputs/figure_estimator_bias.pdf` | 2×2 panel: bias ratio, age trends (clean/confounded), τ-scaling |
+| `run_estimator_bias.py` | `outputs/estimator_bias_results.json` | Machine-readable bias ratios, trend recovery, τ sensitivity |
 
 ### ELSA ICI Deployment Assessment
 

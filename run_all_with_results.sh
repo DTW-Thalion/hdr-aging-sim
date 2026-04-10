@@ -55,6 +55,10 @@ echo ""
 echo "--- R6 D vs. J Bayesian + Misspecification Robustness ---"
 python3 scripts/run_dj_bayes_robust.py
 
+echo ""
+echo "--- R6 Change-Covariance Estimator Bias ---"
+python3 scripts/run_estimator_bias.py
+
 # ELSA validation (only if data is present)
 if [ -f "data/elsa/gh_elsa_h_hdr_subset.tab" ]; then
     echo ""
