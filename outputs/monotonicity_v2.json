@@ -1,0 +1,93 @@
+{
+  "timestamp": "2026-04-10T23:12:53Z",
+  "script": "run_monotonicity_v2.py",
+  "calibration": {
+    "c": 1.5721225199249507,
+    "amplitude": 0.0012395058781081885,
+    "gamma": 0.038,
+    "axes_fast": [
+      "I",
+      "M",
+      "P",
+      "C",
+      "N",
+      "F"
+    ],
+    "alpha_fast_25": -0.2419341458493274,
+    "alpha_fast_120": -0.004
+  },
+  "results": [
+    {
+      "label": "6-axis fast (standard)",
+      "axes_fast": [
+        "I",
+        "M",
+        "P",
+        "C",
+        "N",
+        "F"
+      ],
+      "use_metzler": false,
+      "n_age_points": 7000,
+      "alpha_range": [
+        -0.2419341458493274,
+        -0.004000000000986381
+      ],
+      "rec_time_range": [
+        4.133356192816137,
+        249.99999993835118
+      ],
+      "all_stable": true,
+      "monotonicity_checks": [
+        {
+          "quantity": "spectral_abscissa_increasing",
+          "monotone": true,
+          "n_violations": 0,
+          "n_points": 7000
+        },
+        {
+          "quantity": "recovery_timescale_increasing",
+          "monotone": true,
+          "n_violations": 0,
+          "n_points": 7000
+        }
+      ]
+    },
+    {
+      "label": "6-axis fast (Metzler)",
+      "axes_fast": [
+        "I",
+        "M",
+        "P",
+        "C",
+        "N",
+        "F"
+      ],
+      "use_metzler": true,
+      "n_age_points": 7000,
+      "alpha_range": [
+        0.00805680821944438,
+        0.2399690589060376
+      ],
+      "rec_time_range": [
+        124.11863020229156,
+        4.167203907698619
+      ],
+      "all_stable": false,
+      "monotonicity_checks": [
+        {
+          "quantity": "spectral_abscissa_increasing",
+          "monotone": true,
+          "n_violations": 0,
+          "n_points": 7000
+        },
+        {
+          "quantity": "recovery_timescale_increasing",
+          "monotone": false,
+          "n_violations": 6999,
+          "n_points": 7000
+        }
+      ]
+    }
+  ]
+}

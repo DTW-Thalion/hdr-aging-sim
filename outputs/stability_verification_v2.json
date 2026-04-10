@@ -1,0 +1,1920 @@
+{
+  "timestamp": "2026-04-10T23:12:45Z",
+  "script": "run_stability_verification_v2.py",
+  "tau_registry": "V2 (literature-calibrated)",
+  "architecture": "Two-timescale: fast (6-axis) + slow (E, mito, B)",
+  "note": "The 6-axis fast subsystem excludes mito (tau=36-65d) which is intermediate between fast and slow timescales. Including mito constrains c to ~0.01, yielding alpha_fast(25)=-0.028. The 6-axis system achieves alpha_fast(25)=-0.24 with full stability through age 120.",
+  "results": {
+    "fast_6axis": {
+      "label": "6-axis fast (I,M,P,C,N,F)",
+      "calibration": {
+        "c": 1.5721225199249507,
+        "amplitude": 0.0012395058781081885,
+        "gamma": 0.038,
+        "axes_fast": [
+          "I",
+          "M",
+          "P",
+          "C",
+          "N",
+          "F"
+        ],
+        "alpha_fast_25": -0.2419341458493274,
+        "alpha_fast_120": -0.004
+      },
+      "stability_summary": {
+        "fast_subsystem_stable_to": 120,
+        "full_system_stable_to": 24,
+        "alpha_fast_monotone": true
+      },
+      "age_sweep": [
+        {
+          "age": 25,
+          "alpha_fast": -0.2419341458493274,
+          "alpha_full": 0.09566293046859377,
+          "recovery_fast_days": 4.133356192816137,
+          "pyrkov_target": -0.134,
+          "stable_fast": true
+        },
+        {
+          "age": 30,
+          "alpha_fast": -0.23499356833270105,
+          "alpha_full": 0.09813539361455602,
+          "recovery_fast_days": 4.255435615089738,
+          "pyrkov_target": -0.11081252394841055,
+          "stable_fast": true
+        },
+        {
+          "age": 35,
+          "alpha_fast": -0.22846557213370017,
+          "alpha_full": 0.09986456937215228,
+          "recovery_fast_days": 4.37702709717152,
+          "pyrkov_target": -0.09163742883445569,
+          "stable_fast": true
+        },
+        {
+          "age": 40,
+          "alpha_fast": -0.2193208478894759,
+          "alpha_full": 0.10115630130222301,
+          "recovery_fast_days": 4.559530065759813,
+          "pyrkov_target": -0.07578040878573797,
+          "stable_fast": true
+        },
+        {
+          "age": 45,
+          "alpha_fast": -0.19664382740011577,
+          "alpha_full": 0.10216095486360359,
+          "recovery_fast_days": 5.085336332298276,
+          "pyrkov_target": -0.06266730121932784,
+          "stable_fast": true
+        },
+        {
+          "age": 50,
+          "alpha_fast": -0.17654582304764624,
+          "alpha_full": 0.1029621927240465,
+          "recovery_fast_days": 5.66425182276966,
+          "pyrkov_target": -0.051823297142903166,
+          "stable_fast": true
+        },
+        {
+          "age": 55,
+          "alpha_fast": -0.15865442220172715,
+          "alpha_full": 0.1036114676824926,
+          "recovery_fast_days": 6.303007417773154,
+          "pyrkov_target": -0.04285574892338473,
+          "stable_fast": true
+        },
+        {
+          "age": 60,
+          "alpha_fast": -0.14266048175604334,
+          "alpha_full": 0.1041431707804565,
+          "recovery_fast_days": 7.009649677967937,
+          "pyrkov_target": -0.03543995301417641,
+          "stable_fast": true
+        },
+        {
+          "age": 65,
+          "alpha_fast": -0.12830566830832152,
+          "alpha_full": 0.10458190456703025,
+          "recovery_fast_days": 7.793887933282703,
+          "pyrkov_target": -0.029307392851596777,
+          "stable_fast": true
+        },
+        {
+          "age": 70,
+          "alpha_fast": -0.11537271390479756,
+          "alpha_full": 0.10494622912452108,
+          "recovery_fast_days": 8.667560692254956,
+          "pyrkov_target": -0.024236016210694364,
+          "stable_fast": true
+        },
+        {
+          "age": 75,
+          "alpha_fast": -0.10367778060359661,
+          "alpha_full": 0.10525071221024952,
+          "recovery_fast_days": 9.645268197082816,
+          "pyrkov_target": -0.0200421949758331,
+          "stable_fast": true
+        },
+        {
+          "age": 80,
+          "alpha_fast": -0.09306444607340343,
+          "alpha_full": 0.1055071185920526,
+          "recovery_fast_days": 10.745242057436869,
+          "pyrkov_target": -0.016574076199538948,
+          "stable_fast": true
+        },
+        {
+          "age": 85,
+          "alpha_fast": -0.07619101954561722,
+          "alpha_full": 0.10361994388657374,
+          "recovery_fast_days": 13.12490639925455,
+          "pyrkov_target": -0.013706083699882023,
+          "stable_fast": true
+        },
+        {
+          "age": 90,
+          "alpha_fast": -0.061659543952161895,
+          "alpha_full": 0.10219359035388764,
+          "recovery_fast_days": 16.21808946196298,
+          "pyrkov_target": -0.011334371106209674,
+          "stable_fast": true
+        },
+        {
+          "age": 95,
+          "alpha_fast": -0.04900322445737202,
+          "alpha_full": 0.10111156930400939,
+          "recovery_fast_days": 20.40682038933788,
+          "pyrkov_target": -0.009373061713783819,
+          "stable_fast": true
+        },
+        {
+          "age": 100,
+          "alpha_fast": -0.037871581023728215,
+          "alpha_full": 0.10029167980856309,
+          "recovery_fast_days": 26.40502384554413,
+          "pyrkov_target": -0.007751138997228354,
+          "stable_fast": true
+        },
+        {
+          "age": 105,
+          "alpha_fast": -0.027995547064289944,
+          "alpha_full": 0.09967494151925142,
+          "recovery_fast_days": 35.71996638263811,
+          "pyrkov_target": -0.006409875192222581,
+          "stable_fast": true
+        },
+        {
+          "age": 110,
+          "alpha_fast": -0.01916457642924048,
+          "alpha_full": 0.09921837458252708,
+          "recovery_fast_days": 52.17960353531443,
+          "pyrkov_target": -0.005300704837645429,
+          "stable_fast": true
+        },
+        {
+          "age": 115,
+          "alpha_fast": -0.011211150469941977,
+          "alpha_full": 0.0988902393143563,
+          "recovery_fast_days": 89.19691183175918,
+          "pyrkov_target": -0.004383466281828656,
+          "stable_fast": true
+        },
+        {
+          "age": 120,
+          "alpha_fast": -0.004000000000986381,
+          "alpha_full": 0.09866685359614565,
+          "recovery_fast_days": 249.99999993835118,
+          "pyrkov_target": -0.003624947480090956,
+          "stable_fast": true
+        }
+      ],
+      "age_sweep_full": [
+        {
+          "age": 25,
+          "alpha_fast": -0.2419341458493274,
+          "alpha_full": 0.09566293046859377,
+          "recovery_fast_days": 4.133356192816137,
+          "pyrkov_target": -0.134,
+          "stable_fast": true
+        },
+        {
+          "age": 26,
+          "alpha_fast": -0.2405118342647533,
+          "alpha_full": 0.09624173428728618,
+          "recovery_fast_days": 4.157799565485035,
+          "pyrkov_target": -0.12900353407942075,
+          "stable_fast": true
+        },
+        {
+          "age": 27,
+          "alpha_fast": -0.2391069137053618,
+          "alpha_full": 0.09677268033339055,
+          "recovery_fast_days": 4.182229549548888,
+          "pyrkov_target": -0.12419337167895722,
+          "stable_fast": true
+        },
+        {
+          "age": 28,
+          "alpha_fast": -0.23771906063871018,
+          "alpha_full": 0.09726198325412971,
+          "recovery_fast_days": 4.206646271078021,
+          "pyrkov_target": -0.11956256608824271,
+          "stable_fast": true
+        },
+        {
+          "age": 29,
+          "alpha_fast": -0.23634801484868787,
+          "alpha_full": 0.09771478892145795,
+          "recovery_fast_days": 4.23104886512463,
+          "pyrkov_target": -0.11510442961931054,
+          "stable_fast": true
+        },
+        {
+          "age": 30,
+          "alpha_fast": -0.23499356833270105,
+          "alpha_full": 0.09813539361455602,
+          "recovery_fast_days": 4.255435615089738,
+          "pyrkov_target": -0.11081252394841055,
+          "stable_fast": true
+        },
+        {
+          "age": 31,
+          "alpha_fast": -0.2336555555516849,
+          "alpha_full": 0.09852741173389194,
+          "recovery_fast_days": 4.279804080150787,
+          "pyrkov_target": -0.1066806508179508,
+          "stable_fast": true
+        },
+        {
+          "age": 32,
+          "alpha_fast": -0.23233384492741072,
+          "alpha_full": 0.09889390558428705,
+          "recovery_fast_days": 4.304151210997413,
+          "pyrkov_target": -0.10270284308513658,
+          "stable_fast": true
+        },
+        {
+          "age": 33,
+          "alpha_fast": -0.23102833147956375,
+          "alpha_full": 0.09923748684449958,
+          "recovery_fast_days": 4.3284734542977805,
+          "pyrkov_target": -0.09887335610437922,
+          "stable_fast": true
+        },
+        {
+          "age": 34,
+          "alpha_fast": -0.22973893049615784,
+          "alpha_full": 0.09956039665349749,
+          "recovery_fast_days": 4.352766846438871,
+          "pyrkov_target": -0.09518665943102976,
+          "stable_fast": true
+        },
+        {
+          "age": 35,
+          "alpha_fast": -0.22846557213370017,
+          "alpha_full": 0.09986456937215228,
+          "recovery_fast_days": 4.37702709717152,
+          "pyrkov_target": -0.09163742883445569,
+          "stable_fast": true
+        },
+        {
+          "age": 36,
+          "alpha_fast": -0.22720819684822277,
+          "alpha_full": 0.10015168375745084,
+          "recovery_fast_days": 4.401249663840295,
+          "pyrkov_target": -0.08822053860892684,
+          "stable_fast": true
+        },
+        {
+          "age": 37,
+          "alpha_fast": -0.22596675156384752,
+          "alpha_full": 0.10042320434042928,
+          "recovery_fast_days": 4.425429816905817,
+          "pyrkov_target": -0.08493105417120558,
+          "stable_fast": true
+        },
+        {
+          "age": 38,
+          "alpha_fast": -0.22474118649201916,
+          "alpha_full": 0.10068041511482723,
+          "recovery_fast_days": 4.449562697469835,
+          "pyrkov_target": -0.0817642249341511,
+          "stable_fast": true
+        },
+        {
+          "age": 39,
+          "alpha_fast": -0.22353145252128773,
+          "alpha_full": 0.10092444714138848,
+          "recovery_fast_days": 4.473643367502237,
+          "pyrkov_target": -0.07871547744604614,
+          "stable_fast": true
+        },
+        {
+          "age": 40,
+          "alpha_fast": -0.2193208478894759,
+          "alpha_full": 0.10115630130222301,
+          "recovery_fast_days": 4.559530065759813,
+          "pyrkov_target": -0.07578040878573797,
+          "stable_fast": true
+        },
+        {
+          "age": 41,
+          "alpha_fast": -0.21455873533688824,
+          "alpha_full": 0.10137686716183045,
+          "recovery_fast_days": 4.660728440768703,
+          "pyrkov_target": -0.0729547802040551,
+          "stable_fast": true
+        },
+        {
+          "age": 42,
+          "alpha_fast": -0.20991364295599954,
+          "alpha_full": 0.10158693868252354,
+          "recovery_fast_days": 4.763863777113392,
+          "pyrkov_target": -0.07023451100231695,
+          "stable_fast": true
+        },
+        {
+          "age": 43,
+          "alpha_fast": -0.20538183351675177,
+          "alpha_full": 0.1017872273827035,
+          "recovery_fast_days": 4.86897980642692,
+          "pyrkov_target": -0.06761567263909586,
+          "stable_fast": true
+        },
+        {
+          "age": 44,
+          "alpha_fast": -0.20095971363546944,
+          "alpha_full": 0.10197837340466076,
+          "recovery_fast_days": 4.976121740569099,
+          "pyrkov_target": -0.0650944830567206,
+          "stable_fast": true
+        },
+        {
+          "age": 45,
+          "alpha_fast": -0.19664382740011577,
+          "alpha_full": 0.10216095486360359,
+          "recovery_fast_days": 5.085336332298276,
+          "pyrkov_target": -0.06266730121932784,
+          "stable_fast": true
+        },
+        {
+          "age": 46,
+          "alpha_fast": -0.1924308502832478,
+          "alpha_full": 0.10233549577738112,
+          "recovery_fast_days": 5.196671939702258,
+          "pyrkov_target": -0.06033062185457376,
+          "stable_fast": true
+        },
+        {
+          "age": 47,
+          "alpha_fast": -0.1883175833330986,
+          "alpha_full": 0.10250247281741848,
+          "recovery_fast_days": 5.310178594588201,
+          "pyrkov_target": -0.058081070391411575,
+          "stable_fast": true
+        },
+        {
+          "age": 48,
+          "alpha_fast": -0.18430094763302357,
+          "alpha_full": 0.10266232107731266,
+          "recovery_fast_days": 5.425908075042459,
+          "pyrkov_target": -0.055915398086624615,
+          "stable_fast": true
+        },
+        {
+          "age": 49,
+          "alpha_fast": -0.1803779790193552,
+          "alpha_full": 0.10281543901843217,
+          "recovery_fast_days": 5.5439139823863774,
+          "pyrkov_target": -0.05383047733307654,
+          "stable_fast": true
+        },
+        {
+          "age": 50,
+          "alpha_fast": -0.17654582304764624,
+          "alpha_full": 0.1029621927240465,
+          "recovery_fast_days": 5.66425182276966,
+          "pyrkov_target": -0.051823297142903166,
+          "stable_fast": true
+        },
+        {
+          "age": 51,
+          "alpha_fast": -0.17280173019718698,
+          "alpha_full": 0.10310291956963875,
+          "recovery_fast_days": 5.78697909366349,
+          "pyrkov_target": -0.0498909587991228,
+          "stable_fast": true
+        },
+        {
+          "age": 52,
+          "alpha_fast": -0.16914305130386095,
+          "alpha_full": 0.10323793139915562,
+          "recovery_fast_days": 5.912155375531962,
+          "pyrkov_target": -0.04803067166938518,
+          "stable_fast": true
+        },
+        {
+          "age": 53,
+          "alpha_fast": -0.16556723321140682,
+          "alpha_full": 0.10336751728108506,
+          "recovery_fast_days": 6.039842428985548,
+          "pyrkov_target": -0.04623974917581342,
+          "stable_fast": true
+        },
+        {
+          "age": 54,
+          "alpha_fast": -0.162071814631283,
+          "alpha_full": 0.10349194590674278,
+          "recovery_fast_days": 6.170104297746171,
+          "pyrkov_target": -0.04451560491511877,
+          "stable_fast": true
+        },
+        {
+          "age": 55,
+          "alpha_fast": -0.15865442220172715,
+          "alpha_full": 0.1036114676824926,
+          "recovery_fast_days": 6.303007417773154,
+          "pyrkov_target": -0.04285574892338473,
+          "stable_fast": true
+        },
+        {
+          "age": 56,
+          "alpha_fast": -0.15531276673662228,
+          "alpha_full": 0.10372631655955282,
+          "recovery_fast_days": 6.438620732935556,
+          "pyrkov_target": -0.041257784080126564,
+          "stable_fast": true
+        },
+        {
+          "age": 57,
+          "alpha_fast": -0.1520446396551164,
+          "alpha_full": 0.10383671163826999,
+          "recovery_fast_days": 6.577015817646087,
+          "pyrkov_target": -0.03971940264643276,
+          "stable_fast": true
+        },
+        {
+          "age": 58,
+          "alpha_fast": -0.14884790958336036,
+          "alpha_full": 0.10394285857811102,
+          "recovery_fast_days": 6.718267006900509,
+          "pyrkov_target": -0.03823838293218897,
+          "stable_fast": true
+        },
+        {
+          "age": 59,
+          "alpha_fast": -0.14572051911981856,
+          "alpha_full": 0.10404495083950988,
+          "recovery_fast_days": 6.862451534212219,
+          "pyrkov_target": -0.03681258608757149,
+          "stable_fast": true
+        },
+        {
+          "age": 60,
+          "alpha_fast": -0.14266048175604334,
+          "alpha_full": 0.1041431707804565,
+          "recovery_fast_days": 7.009649677967937,
+          "pyrkov_target": -0.03543995301417641,
+          "stable_fast": true
+        },
+        {
+          "age": 61,
+          "alpha_fast": -0.139665878945188,
+          "alpha_full": 0.10423769062678373,
+          "recovery_fast_days": 7.159944916771339,
+          "pyrkov_target": -0.03411850139132371,
+          "stable_fast": true
+        },
+        {
+          "age": 62,
+          "alpha_fast": -0.136734857310702,
+          "alpha_full": 0.10432867333275443,
+          "recovery_fast_days": 7.313424094396826,
+          "pyrkov_target": -0.03284632281324173,
+          "stable_fast": true
+        },
+        {
+          "age": 63,
+          "alpha_fast": -0.13386562598808077,
+          "alpha_full": 0.10441627334598852,
+          "recovery_fast_days": 7.4701775950238245,
+          "pyrkov_target": -0.03162158003299764,
+          "stable_fast": true
+        },
+        {
+          "age": 64,
+          "alpha_fast": -0.1310564540928558,
+          "alpha_full": 0.10450063728889047,
+          "recovery_fast_days": 7.630299529479735,
+          "pyrkov_target": -0.030442504309193593,
+          "stable_fast": true
+        },
+        {
+          "age": 65,
+          "alpha_fast": -0.12830566830832152,
+          "alpha_full": 0.10458190456703025,
+          "recovery_fast_days": 7.793887933282703,
+          "pyrkov_target": -0.029307392851596777,
+          "stable_fast": true
+        },
+        {
+          "age": 66,
+          "alpha_fast": -0.12561165058676182,
+          "alpha_full": 0.1046602079136538,
+          "recovery_fast_days": 7.961044977346948,
+          "pyrkov_target": -0.028214606362014453,
+          "stable_fast": true
+        },
+        {
+          "age": 67,
+          "alpha_fast": -0.12297283595840358,
+          "alpha_full": 0.1047356738778809,
+          "recovery_fast_days": 8.131877192278926,
+          "pyrkov_target": -0.027162566666862488,
+          "stable_fast": true
+        },
+        {
+          "age": 68,
+          "alpha_fast": -0.12038771044226994,
+          "alpha_full": 0.10480842326367869,
+          "recovery_fast_days": 8.306495707296754,
+          "pyrkov_target": -0.02614975443800845,
+          "stable_fast": true
+        },
+        {
+          "age": 69,
+          "alpha_fast": -0.11785480905392087,
+          "alpha_full": 0.10487857152531768,
+          "recovery_fast_days": 8.485016504863035,
+          "pyrkov_target": -0.025174706998597814,
+          "stable_fast": true
+        },
+        {
+          "age": 70,
+          "alpha_fast": -0.11537271390479756,
+          "alpha_full": 0.10494622912452108,
+          "recovery_fast_days": 8.667560692254956,
+          "pyrkov_target": -0.024236016210694364,
+          "stable_fast": true
+        },
+        {
+          "age": 71,
+          "alpha_fast": -0.11294005238850935,
+          "alpha_full": 0.10501150185379471,
+          "recovery_fast_days": 8.854254791382948,
+          "pyrkov_target": -0.023332326441684353,
+          "stable_fast": true
+        },
+        {
+          "age": 72,
+          "alpha_fast": -0.11055549544957385,
+          "alpha_full": 0.10507449112980907,
+          "recovery_fast_days": 9.045231048293896,
+          "pyrkov_target": -0.02246233260650744,
+          "stable_fast": true
+        },
+        {
+          "age": 73,
+          "alpha_fast": -0.10821775593022177,
+          "alpha_full": 0.10513529426028213,
+          "recovery_fast_days": 9.24062776393917,
+          "pyrkov_target": -0.021624778282887065,
+          "stable_fast": true
+        },
+        {
+          "age": 74,
+          "alpha_fast": -0.10592558699133442,
+          "alpha_full": 0.10519400468737457,
+          "recovery_fast_days": 9.440589647917724,
+          "pyrkov_target": -0.020818453896838347,
+          "stable_fast": true
+        },
+        {
+          "age": 75,
+          "alpha_fast": -0.10367778060359661,
+          "alpha_full": 0.10525071221024952,
+          "recovery_fast_days": 9.645268197082816,
+          "pyrkov_target": -0.0200421949758331,
+          "stable_fast": true
+        },
+        {
+          "age": 76,
+          "alpha_fast": -0.10147316610534751,
+          "alpha_full": 0.10530550318897602,
+          "recovery_fast_days": 9.854822101064817,
+          "pyrkov_target": -0.01929488046709911,
+          "stable_fast": true
+        },
+        {
+          "age": 77,
+          "alpha_fast": -0.09931060882356287,
+          "alpha_full": 0.10535846073197855,
+          "recovery_fast_days": 10.069417676983727,
+          "pyrkov_target": -0.01857543111862514,
+          "stable_fast": true
+        },
+        {
+          "age": 78,
+          "alpha_fast": -0.09718900875489343,
+          "alpha_full": 0.10540966486874656,
+          "recovery_fast_days": 10.289229335818803,
+          "pyrkov_target": -0.017882807920533518,
+          "stable_fast": true
+        },
+        {
+          "age": 79,
+          "alpha_fast": -0.0951072993035722,
+          "alpha_full": 0.1054591927093117,
+          "recovery_fast_days": 10.514440083174986,
+          "pyrkov_target": -0.017216010604569253,
+          "stable_fast": true
+        },
+        {
+          "age": 80,
+          "alpha_fast": -0.09306444607340343,
+          "alpha_full": 0.1055071185920526,
+          "recovery_fast_days": 10.745242057436869,
+          "pyrkov_target": -0.016574076199538948,
+          "stable_fast": true
+        },
+        {
+          "age": 81,
+          "alpha_fast": -0.08947482893073118,
+          "alpha_full": 0.10508568015475615,
+          "recovery_fast_days": 11.176327599063319,
+          "pyrkov_target": -0.01595607764061297,
+          "stable_fast": true
+        },
+        {
+          "age": 82,
+          "alpha_fast": -0.08599787350566931,
+          "alpha_full": 0.10468761313231344,
+          "recovery_fast_days": 11.62819450336846,
+          "pyrkov_target": -0.015361122430482831,
+          "stable_fast": true
+        },
+        {
+          "age": 83,
+          "alpha_fast": -0.08262821664011985,
+          "alpha_full": 0.10431149768471909,
+          "recovery_fast_days": 12.102403278959954,
+          "pyrkov_target": -0.0147883513504399,
+          "stable_fast": true
+        },
+        {
+          "age": 84,
+          "alpha_fast": -0.07936083536116767,
+          "alpha_full": 0.10395601591329759,
+          "recovery_fast_days": 12.600673814092858,
+          "pyrkov_target": -0.014236937219514334,
+          "stable_fast": true
+        },
+        {
+          "age": 85,
+          "alpha_fast": -0.07619101954561722,
+          "alpha_full": 0.10361994388657374,
+          "recovery_fast_days": 13.12490639925455,
+          "pyrkov_target": -0.013706083699882023,
+          "stable_fast": true
+        },
+        {
+          "age": 86,
+          "alpha_fast": -0.07311434722532925,
+          "alpha_full": 0.10330214428148757,
+          "recovery_fast_days": 13.67720615651707,
+          "pyrkov_target": -0.013195024146814354,
+          "stable_fast": true
+        },
+        {
+          "age": 87,
+          "alpha_fast": -0.07012666223684462,
+          "alpha_full": 0.10300155960622635,
+          "recovery_fast_days": 14.259911538675784,
+          "pyrkov_target": -0.012703020501510039,
+          "stable_fast": true
+        },
+        {
+          "age": 88,
+          "alpha_fast": -0.0672240539565302,
+          "alpha_full": 0.1027172059682545,
+          "recovery_fast_days": 14.875627712762467,
+          "pyrkov_target": -0.012229362225209926,
+          "stable_fast": true
+        },
+        {
+          "age": 89,
+          "alpha_fast": -0.0644028388949584,
+          "alpha_full": 0.10244816734985915,
+          "recovery_fast_days": 15.527265834212818,
+          "pyrkov_target": -0.011773365273055595,
+          "stable_fast": true
+        },
+        {
+          "age": 90,
+          "alpha_fast": -0.061659543952161895,
+          "alpha_full": 0.10219359035388764,
+          "recovery_fast_days": 16.21808946196298,
+          "pyrkov_target": -0.011334371106209674,
+          "stable_fast": true
+        },
+        {
+          "age": 91,
+          "alpha_fast": -0.0589908911593212,
+          "alpha_full": 0.10195267938359251,
+          "recovery_fast_days": 16.951769677444332,
+          "pyrkov_target": -0.01091174574081135,
+          "stable_fast": true
+        },
+        {
+          "age": 92,
+          "alpha_fast": -0.056393783753339005,
+          "alpha_full": 0.1017246922218411,
+          "recovery_fast_days": 17.732450873910217,
+          "pyrkov_target": -0.010504878832393517,
+          "stable_fast": true
+        },
+        {
+          "age": 93,
+          "alpha_fast": -0.05386529344877414,
+          "alpha_full": 0.10150893597722743,
+          "recovery_fast_days": 18.564829707110004,
+          "pyrkov_target": -0.010113182794439271,
+          "stable_fast": true
+        },
+        {
+          "age": 94,
+          "alpha_fast": -0.05140264878714694,
+          "alpha_full": 0.10130476336633347,
+          "recovery_fast_days": 19.454250385829273,
+          "pyrkov_target": -0.009736091949804914,
+          "stable_fast": true
+        },
+        {
+          "age": 95,
+          "alpha_fast": -0.04900322445737202,
+          "alpha_full": 0.10111156930400939,
+          "recovery_fast_days": 20.40682038933788,
+          "pyrkov_target": -0.009373061713783819,
+          "stable_fast": true
+        },
+        {
+          "age": 96,
+          "alpha_fast": -0.04666453149290303,
+          "alpha_full": 0.10092878777511302,
+          "recovery_fast_days": 21.429551910364403,
+          "pyrkov_target": -0.009023567807631527,
+          "stable_fast": true
+        },
+        {
+          "age": 97,
+          "alpha_fast": -0.04438420826161649,
+          "alpha_full": 0.10075588896385489,
+          "recovery_fast_days": 22.530535953365224,
+          "pyrkov_target": -0.008687105501416104,
+          "stable_fast": true
+        },
+        {
+          "age": 98,
+          "alpha_fast": -0.04216001217364694,
+          "alpha_full": 0.10059237661828775,
+          "recovery_fast_days": 23.719158236511905,
+          "pyrkov_target": -0.008363188885100414,
+          "stable_fast": true
+        },
+        {
+          "age": 99,
+          "alpha_fast": -0.03998981204019756,
+          "alpha_full": 0.10043778562973858,
+          "recovery_fast_days": 25.00636909707915,
+          "pyrkov_target": -0.008051350166803613,
+          "stable_fast": true
+        },
+        {
+          "age": 100,
+          "alpha_fast": -0.037871581023728215,
+          "alpha_full": 0.10029167980856309,
+          "recovery_fast_days": 26.40502384554413,
+          "pyrkov_target": -0.007751138997228354,
+          "stable_fast": true
+        },
+        {
+          "age": 101,
+          "alpha_fast": -0.03580339012584208,
+          "alpha_full": 0.10015364983925774,
+          "recovery_fast_days": 27.930315997596626,
+          "pyrkov_target": -0.0074621218192781735,
+          "stable_fast": true
+        },
+        {
+          "age": 102,
+          "alpha_fast": -0.033783402164899626,
+          "alpha_full": 0.10002331139939882,
+          "recovery_fast_days": 29.60033436297848,
+          "pyrkov_target": -0.00718388124192568,
+          "stable_fast": true
+        },
+        {
+          "age": 103,
+          "alpha_fast": -0.03180986620014316,
+          "alpha_full": 0.09990030342841524,
+          "recovery_fast_days": 31.436787369935544,
+          "pyrkov_target": -0.006916015437427391,
+          "stable_fast": true
+        },
+        {
+          "age": 104,
+          "alpha_fast": -0.029881112363554396,
+          "alpha_full": 0.0997842865332488,
+          "recovery_fast_days": 33.46595628145648,
+          "pyrkov_target": -0.0066581375610146615,
+          "stable_fast": true
+        },
+        {
+          "age": 105,
+          "alpha_fast": -0.027995547064289944,
+          "alpha_full": 0.09967494151925142,
+          "recovery_fast_days": 35.71996638263811,
+          "pyrkov_target": -0.006409875192222581,
+          "stable_fast": true
+        },
+        {
+          "age": 106,
+          "alpha_fast": -0.02615164853424671,
+          "alpha_full": 0.0995719680357181,
+          "recovery_fast_days": 38.238507170607505,
+          "pyrkov_target": -0.006170869797050146,
+          "stable_fast": true
+        },
+        {
+          "age": 107,
+          "alpha_fast": -0.024347962686057434,
+          "alpha_full": 0.0994750833263286,
+          "recovery_fast_days": 41.0711981488553,
+          "pyrkov_target": -0.005940776210174824,
+          "stable_fast": true
+        },
+        {
+          "age": 108,
+          "alpha_fast": -0.022583099257772382,
+          "alpha_full": 0.09938402107568614,
+          "recovery_fast_days": 44.280901774623864,
+          "pyrkov_target": -0.005719262136473881,
+          "stable_fast": true
+        },
+        {
+          "age": 109,
+          "alpha_fast": -0.02085572822069693,
+          "alpha_full": 0.09929853034400343,
+          "recovery_fast_days": 47.94845758526974,
+          "pyrkov_target": -0.005506007671132455,
+          "stable_fast": true
+        },
+        {
+          "age": 110,
+          "alpha_fast": -0.01916457642924048,
+          "alpha_full": 0.09921837458252708,
+          "recovery_fast_days": 52.17960353531443,
+          "pyrkov_target": -0.005300704837645429,
+          "stable_fast": true
+        },
+        {
+          "age": 111,
+          "alpha_fast": -0.01750842449334683,
+          "alpha_full": 0.09914333072318922,
+          "recovery_fast_days": 57.11536182938666,
+          "pyrkov_target": -0.005103057143045841,
+          "stable_fast": true
+        },
+        {
+          "age": 112,
+          "alpha_fast": -0.01588610385605977,
+          "alpha_full": 0.0990731883363,
+          "recovery_fast_days": 62.948096591887065,
+          "pyrkov_target": -0.004912779149717503,
+          "stable_fast": true
+        },
+        {
+          "age": 113,
+          "alpha_fast": -0.014296494060138325,
+          "alpha_full": 0.09900774885088431,
+          "recovery_fast_days": 69.94721893308187,
+          "pyrkov_target": -0.004729596063173505,
+          "stable_fast": true
+        },
+        {
+          "age": 114,
+          "alpha_fast": -0.012738520189181465,
+          "alpha_full": 0.09894682483254891,
+          "recovery_fast_days": 78.5020540179602,
+          "pyrkov_target": -0.004553243335205203,
+          "stable_fast": true
+        },
+        {
+          "age": 115,
+          "alpha_fast": -0.011211150469941977,
+          "alpha_full": 0.0988902393143563,
+          "recovery_fast_days": 89.19691183175918,
+          "pyrkov_target": -0.004383466281828656,
+          "stable_fast": true
+        },
+        {
+          "age": 116,
+          "alpha_fast": -0.00971339402368543,
+          "alpha_full": 0.09883782517644989,
+          "recovery_fast_days": 102.95062648149248,
+          "pyrkov_target": -0.004220019715476677,
+          "stable_fast": true
+        },
+        {
+          "age": 117,
+          "alpha_fast": -0.00824429875541513,
+          "alpha_full": 0.09878942457075483,
+          "recovery_fast_days": 121.29594398106529,
+          "pyrkov_target": -0.004062667590905394,
+          "stable_fast": true
+        },
+        {
+          "age": 118,
+          "alpha_fast": -0.006802949370844857,
+          "alpha_full": 0.09874488838704676,
+          "recovery_fast_days": 146.99506721094562,
+          "pyrkov_target": -0.0039111826643038975,
+          "stable_fast": true
+        },
+        {
+          "age": 119,
+          "alpha_fast": -0.005388465511729449,
+          "alpha_full": 0.09870407575742268,
+          "recovery_fast_days": 185.5815904960754,
+          "pyrkov_target": -0.0037653461651146816,
+          "stable_fast": true
+        },
+        {
+          "age": 120,
+          "alpha_fast": -0.004000000000986381,
+          "alpha_full": 0.09866685359614565,
+          "recovery_fast_days": 249.99999993835118,
+          "pyrkov_target": -0.003624947480090956,
+          "stable_fast": true
+        }
+      ]
+    },
+    "fast_7axis": {
+      "label": "7-axis fast (I,M,mito,P,C,N,F)",
+      "calibration": {
+        "c": 0.01,
+        "amplitude": 1.0,
+        "gamma": 0.038,
+        "axes_fast": [
+          "I",
+          "M",
+          "mito",
+          "P",
+          "C",
+          "N",
+          "F"
+        ],
+        "alpha_fast_25": -0.02776640921077036,
+        "alpha_fast_120": -0.004
+      },
+      "stability_summary": {
+        "fast_subsystem_stable_to": 120,
+        "full_system_stable_to": 116,
+        "alpha_fast_monotone": true
+      },
+      "age_sweep": [
+        {
+          "age": 25,
+          "alpha_fast": -0.02776640921077036,
+          "alpha_full": -0.001978056221730563,
+          "recovery_fast_days": 36.01473969533332,
+          "pyrkov_target": -0.134,
+          "stable_fast": true
+        },
+        {
+          "age": 30,
+          "alpha_fast": -0.023909975086052162,
+          "alpha_full": -0.0015458393021359014,
+          "recovery_fast_days": 41.823548389364404,
+          "pyrkov_target": -0.11081252394841055,
+          "stable_fast": true
+        },
+        {
+          "age": 35,
+          "alpha_fast": -0.021467140512557336,
+          "alpha_full": -0.0012652788639614977,
+          "recovery_fast_days": 46.58282268265044,
+          "pyrkov_target": -0.09163742883445569,
+          "stable_fast": true
+        },
+        {
+          "age": 40,
+          "alpha_fast": -0.019808475488817815,
+          "alpha_full": -0.001068163992266913,
+          "recovery_fast_days": 50.48344081625641,
+          "pyrkov_target": -0.07578040878573797,
+          "stable_fast": true
+        },
+        {
+          "age": 45,
+          "alpha_fast": -0.018628254844673592,
+          "alpha_full": -0.0009218106542658208,
+          "recovery_fast_days": 53.68189389388409,
+          "pyrkov_target": -0.06266730121932784,
+          "stable_fast": true
+        },
+        {
+          "age": 50,
+          "alpha_fast": -0.017759907935905254,
+          "alpha_full": -0.0008085651598363822,
+          "recovery_fast_days": 56.306598187837295,
+          "pyrkov_target": -0.051823297142903166,
+          "stable_fast": true
+        },
+        {
+          "age": 55,
+          "alpha_fast": -0.017104806087555043,
+          "alpha_full": -0.0007180250636074942,
+          "recovery_fast_days": 58.46310065611154,
+          "pyrkov_target": -0.04285574892338473,
+          "stable_fast": true
+        },
+        {
+          "age": 60,
+          "alpha_fast": -0.016600706775319163,
+          "alpha_full": -0.0006436309626460054,
+          "recovery_fast_days": 60.23839909555743,
+          "pyrkov_target": -0.03543995301417641,
+          "stable_fast": true
+        },
+        {
+          "age": 65,
+          "alpha_fast": -0.016206254635784845,
+          "alpha_full": -0.0005810054042725744,
+          "recovery_fast_days": 61.70457162828427,
+          "pyrkov_target": -0.029307392851596777,
+          "stable_fast": true
+        },
+        {
+          "age": 70,
+          "alpha_fast": -0.015892718177838328,
+          "alpha_full": -0.0005270714720822561,
+          "recovery_fast_days": 62.92189849527782,
+          "pyrkov_target": -0.024236016210694364,
+          "stable_fast": true
+        },
+        {
+          "age": 75,
+          "alpha_fast": -0.01563925404761097,
+          "alpha_full": -0.000479548852438645,
+          "recovery_fast_days": 63.94166863430156,
+          "pyrkov_target": -0.0200421949758331,
+          "stable_fast": true
+        },
+        {
+          "age": 80,
+          "alpha_fast": -0.01542997751641699,
+          "alpha_full": -0.00043664304378328447,
+          "recovery_fast_days": 64.80890843399044,
+          "pyrkov_target": -0.016574076199538948,
+          "stable_fast": true
+        },
+        {
+          "age": 85,
+          "alpha_fast": -0.015252061691981678,
+          "alpha_full": -0.00035028290700933655,
+          "recovery_fast_days": 65.56490658084084,
+          "pyrkov_target": -0.013706083699882023,
+          "stable_fast": true
+        },
+        {
+          "age": 90,
+          "alpha_fast": -0.015093719706449592,
+          "alpha_full": -0.000283451093347217,
+          "recovery_fast_days": 66.25272096265952,
+          "pyrkov_target": -0.011334371106209674,
+          "stable_fast": true
+        },
+        {
+          "age": 95,
+          "alpha_fast": -0.014942894881320707,
+          "alpha_full": -0.00022772977905717736,
+          "recovery_fast_days": 66.92143710721308,
+          "pyrkov_target": -0.009373061713783819,
+          "stable_fast": true
+        },
+        {
+          "age": 100,
+          "alpha_fast": -0.014784775487713498,
+          "alpha_full": -0.000177757324767668,
+          "recovery_fast_days": 67.63714476631883,
+          "pyrkov_target": -0.007751138997228354,
+          "stable_fast": true
+        },
+        {
+          "age": 105,
+          "alpha_fast": -0.014597882641902088,
+          "alpha_full": -0.0001295123346786743,
+          "recovery_fast_days": 68.5030853124944,
+          "pyrkov_target": -0.006409875192222581,
+          "stable_fast": true
+        },
+        {
+          "age": 110,
+          "alpha_fast": -0.014346985648729278,
+          "alpha_full": -7.939337820719176e-05,
+          "recovery_fast_days": 69.70105250565791,
+          "pyrkov_target": -0.005300704837645429,
+          "stable_fast": true
+        },
+        {
+          "age": 115,
+          "alpha_fast": -0.013971146825921614,
+          "alpha_full": -2.3578878071070952e-05,
+          "recovery_fast_days": 71.57608551823623,
+          "pyrkov_target": -0.004383466281828656,
+          "stable_fast": true
+        },
+        {
+          "age": 120,
+          "alpha_fast": -0.013371889730122684,
+          "alpha_full": 4.2595350916203276e-05,
+          "recovery_fast_days": 74.78374561729393,
+          "pyrkov_target": -0.003624947480090956,
+          "stable_fast": true
+        }
+      ],
+      "age_sweep_full": [
+        {
+          "age": 25,
+          "alpha_fast": -0.02776640921077036,
+          "alpha_full": -0.001978056221730563,
+          "recovery_fast_days": 36.01473969533332,
+          "pyrkov_target": -0.134,
+          "stable_fast": true
+        },
+        {
+          "age": 26,
+          "alpha_fast": -0.02683053336720007,
+          "alpha_full": -0.0018738395711603087,
+          "recovery_fast_days": 37.270969842980655,
+          "pyrkov_target": -0.12900353407942075,
+          "stable_fast": true
+        },
+        {
+          "age": 27,
+          "alpha_fast": -0.025988827366175752,
+          "alpha_full": -0.0017798191527864796,
+          "recovery_fast_days": 38.47807313159084,
+          "pyrkov_target": -0.12419337167895722,
+          "stable_fast": true
+        },
+        {
+          "age": 28,
+          "alpha_fast": -0.0252283292177883,
+          "alpha_full": -0.0016945626944056668,
+          "recovery_fast_days": 39.63797964452231,
+          "pyrkov_target": -0.11956256608824271,
+          "stable_fast": true
+        },
+        {
+          "age": 29,
+          "alpha_fast": -0.024538345377145866,
+          "alpha_full": -0.0016168942550639238,
+          "recovery_fast_days": 40.7525440134755,
+          "pyrkov_target": -0.11510442961931054,
+          "stable_fast": true
+        },
+        {
+          "age": 30,
+          "alpha_fast": -0.023909975086052162,
+          "alpha_full": -0.0015458393021359014,
+          "recovery_fast_days": 41.823548389364404,
+          "pyrkov_target": -0.11081252394841055,
+          "stable_fast": true
+        },
+        {
+          "age": 31,
+          "alpha_fast": -0.023335749587645414,
+          "alpha_full": -0.001480583330671696,
+          "recovery_fast_days": 42.852705298544485,
+          "pyrkov_target": -0.1066806508179508,
+          "stable_fast": true
+        },
+        {
+          "age": 32,
+          "alpha_fast": -0.022809355101212327,
+          "alpha_full": -0.0014204402829648636,
+          "recovery_fast_days": 43.8416603872702,
+          "pyrkov_target": -0.10270284308513658,
+          "stable_fast": true
+        },
+        {
+          "age": 33,
+          "alpha_fast": -0.022325417714970413,
+          "alpha_full": -0.0013648281630309095,
+          "recovery_fast_days": 44.79199505993768,
+          "pyrkov_target": -0.09887335610437922,
+          "stable_fast": true
+        },
+        {
+          "age": 34,
+          "alpha_fast": -0.0218793346308903,
+          "alpha_full": -0.0013132500037668412,
+          "recovery_fast_days": 45.70522901496976,
+          "pyrkov_target": -0.09518665943102976,
+          "stable_fast": true
+        },
+        {
+          "age": 35,
+          "alpha_fast": -0.021467140512557336,
+          "alpha_full": -0.0012652788639614977,
+          "recovery_fast_days": 46.58282268265044,
+          "pyrkov_target": -0.09163742883445569,
+          "stable_fast": true
+        },
+        {
+          "age": 36,
+          "alpha_fast": -0.021085400702667303,
+          "alpha_full": -0.001220545893769709,
+          "recovery_fast_days": 47.426179568572294,
+          "pyrkov_target": -0.08822053860892684,
+          "stable_fast": true
+        },
+        {
+          "age": 37,
+          "alpha_fast": -0.02073112521197113,
+          "alpha_full": -0.0011787307603880024,
+          "recovery_fast_days": 48.236648506784995,
+          "pyrkov_target": -0.08493105417120558,
+          "stable_fast": true
+        },
+        {
+          "age": 38,
+          "alpha_fast": -0.02040169891371159,
+          "alpha_full": -0.001139553906751721,
+          "recovery_fast_days": 49.01552582603399,
+          "pyrkov_target": -0.0817642249341511,
+          "stable_fast": true
+        },
+        {
+          "age": 39,
+          "alpha_fast": -0.020094824489393884,
+          "alpha_full": -0.0011027702462950188,
+          "recovery_fast_days": 49.76405743318651,
+          "pyrkov_target": -0.07871547744604614,
+          "stable_fast": true
+        },
+        {
+          "age": 40,
+          "alpha_fast": -0.019808475488817815,
+          "alpha_full": -0.001068163992266913,
+          "recovery_fast_days": 50.48344081625641,
+          "pyrkov_target": -0.07578040878573797,
+          "stable_fast": true
+        },
+        {
+          "age": 41,
+          "alpha_fast": -0.019540857471822454,
+          "alpha_full": -0.0010355443903957626,
+          "recovery_fast_days": 51.17482697174272,
+          "pyrkov_target": -0.0729547802040551,
+          "stable_fast": true
+        },
+        {
+          "age": 42,
+          "alpha_fast": -0.019290375653927834,
+          "alpha_full": -0.0010047421756396344,
+          "recovery_fast_days": 51.839322257904485,
+          "pyrkov_target": -0.07023451100231695,
+          "stable_fast": true
+        },
+        {
+          "age": 43,
+          "alpha_fast": -0.019055607819674466,
+          "alpha_full": -0.0009756066137376159,
+          "recovery_fast_days": 52.47799017817336,
+          "pyrkov_target": -0.06761567263909586,
+          "stable_fast": true
+        },
+        {
+          "age": 44,
+          "alpha_fast": -0.018835281529215535,
+          "alpha_full": -0.0009480030180332387,
+          "recovery_fast_days": 53.09185309754426,
+          "pyrkov_target": -0.0650944830567206,
+          "stable_fast": true
+        },
+        {
+          "age": 45,
+          "alpha_fast": -0.018628254844673592,
+          "alpha_full": -0.0009218106542658208,
+          "recovery_fast_days": 53.68189389388409,
+          "pyrkov_target": -0.06266730121932784,
+          "stable_fast": true
+        },
+        {
+          "age": 46,
+          "alpha_fast": -0.018433499957198455,
+          "alpha_full": -0.0008969209648672304,
+          "recovery_fast_days": 54.24905754859053,
+          "pyrkov_target": -0.06033062185457376,
+          "stable_fast": true
+        },
+        {
+          "age": 47,
+          "alpha_fast": -0.018250089218066756,
+          "alpha_full": -0.0008732360568397607,
+          "recovery_fast_days": 54.79425267740859,
+          "pyrkov_target": -0.058081070391411575,
+          "stable_fast": true
+        },
+        {
+          "age": 48,
+          "alpha_fast": -0.01807718317092162,
+          "alpha_full": -0.0008506674089403479,
+          "recovery_fast_days": 55.31835300582494,
+          "pyrkov_target": -0.055915398086624615,
+          "stable_fast": true
+        },
+        {
+          "age": 49,
+          "alpha_fast": -0.01791402025848292,
+          "alpha_full": -0.0008291347615290911,
+          "recovery_fast_days": 55.82219879016073,
+          "pyrkov_target": -0.05383047733307654,
+          "stable_fast": true
+        },
+        {
+          "age": 50,
+          "alpha_fast": -0.017759907935905254,
+          "alpha_full": -0.0008085651598363822,
+          "recovery_fast_days": 56.306598187837295,
+          "pyrkov_target": -0.051823297142903166,
+          "stable_fast": true
+        },
+        {
+          "age": 51,
+          "alpha_fast": -0.017614214971096658,
+          "alpha_full": -0.000788892126123982,
+          "recovery_fast_days": 56.772328578986354,
+          "pyrkov_target": -0.0498909587991228,
+          "stable_fast": true
+        },
+        {
+          "age": 52,
+          "alpha_fast": -0.017476364750744922,
+          "alpha_full": -0.0007700549413889554,
+          "recovery_fast_days": 57.220137841159186,
+          "pyrkov_target": -0.04803067166938518,
+          "stable_fast": true
+        },
+        {
+          "age": 53,
+          "alpha_fast": -0.01734582944123974,
+          "alpha_full": -0.0007519980190751777,
+          "recovery_fast_days": 57.650745580519676,
+          "pyrkov_target": -0.04623974917581342,
+          "stable_fast": true
+        },
+        {
+          "age": 54,
+          "alpha_fast": -0.01722212487928905,
+          "alpha_full": -0.0007346703581865167,
+          "recovery_fast_days": 58.064844321421575,
+          "pyrkov_target": -0.04451560491511877,
+          "stable_fast": true
+        },
+        {
+          "age": 55,
+          "alpha_fast": -0.017104806087555043,
+          "alpha_full": -0.0007180250636074942,
+          "recovery_fast_days": 58.46310065611154,
+          "pyrkov_target": -0.04285574892338473,
+          "stable_fast": true
+        },
+        {
+          "age": 56,
+          "alpha_fast": -0.016993463327028502,
+          "alpha_full": -0.0007020189242715433,
+          "recovery_fast_days": 58.846156357631735,
+          "pyrkov_target": -0.041257784080126564,
+          "stable_fast": true
+        },
+        {
+          "age": 57,
+          "alpha_fast": -0.01688771861201012,
+          "alpha_full": -0.0006866120411017885,
+          "recovery_fast_days": 59.21462945793195,
+          "pyrkov_target": -0.03971940264643276,
+          "stable_fast": true
+        },
+        {
+          "age": 58,
+          "alpha_fast": -0.016787222625014614,
+          "alpha_full": -0.0006717674980041968,
+          "recovery_fast_days": 59.56911529307425,
+          "pyrkov_target": -0.03823838293218897,
+          "stable_fast": true
+        },
+        {
+          "age": 59,
+          "alpha_fast": -0.01669165197809022,
+          "alpha_full": -0.0006574510698007836,
+          "recovery_fast_days": 59.91018751844449,
+          "pyrkov_target": -0.03681258608757149,
+          "stable_fast": true
+        },
+        {
+          "age": 60,
+          "alpha_fast": -0.016600706775319163,
+          "alpha_full": -0.0006436309626460054,
+          "recovery_fast_days": 60.23839909555743,
+          "pyrkov_target": -0.03543995301417641,
+          "stable_fast": true
+        },
+        {
+          "age": 61,
+          "alpha_fast": -0.016514108437384725,
+          "alpha_full": -0.0006302775822787387,
+          "recovery_fast_days": 60.55428325371746,
+          "pyrkov_target": -0.03411850139132371,
+          "stable_fast": true
+        },
+        {
+          "age": 62,
+          "alpha_fast": -0.01643159775507229,
+          "alpha_full": -0.0006173633268453182,
+          "recovery_fast_days": 60.85835442821188,
+          "pyrkov_target": -0.03284632281324173,
+          "stable_fast": true
+        },
+        {
+          "age": 63,
+          "alpha_fast": -0.01635293314307658,
+          "alpha_full": -0.0006048624011225025,
+          "recovery_fast_days": 61.15110917721662,
+          "pyrkov_target": -0.03162158003299764,
+          "stable_fast": true
+        },
+        {
+          "age": 64,
+          "alpha_fast": -0.01627788906885677,
+          "alpha_full": -0.000592750649298147,
+          "recovery_fast_days": 61.433027081700835,
+          "pyrkov_target": -0.030442504309193593,
+          "stable_fast": true
+        },
+        {
+          "age": 65,
+          "alpha_fast": -0.016206254635784845,
+          "alpha_full": -0.0005810054042725744,
+          "recovery_fast_days": 61.70457162828427,
+          "pyrkov_target": -0.029307392851596777,
+          "stable_fast": true
+        },
+        {
+          "age": 66,
+          "alpha_fast": -0.016137832301144128,
+          "alpha_full": -0.0005696053512637879,
+          "recovery_fast_days": 61.96619108063867,
+          "pyrkov_target": -0.028214606362014453,
+          "stable_fast": true
+        },
+        {
+          "age": 67,
+          "alpha_fast": -0.016072436713057248,
+          "alpha_full": -0.0005585304041822963,
+          "recovery_fast_days": 62.21831934093727,
+          "pyrkov_target": -0.027162566666862488,
+          "stable_fast": true
+        },
+        {
+          "age": 68,
+          "alpha_fast": -0.01600989365214775,
+          "alpha_full": -0.0005477615931015884,
+          "recovery_fast_days": 62.461376804076934,
+          "pyrkov_target": -0.02614975443800845,
+          "stable_fast": true
+        },
+        {
+          "age": 69,
+          "alpha_fast": -0.01595003906486553,
+          "alpha_full": -0.0005372809614672562,
+          "recovery_fast_days": 62.69577120991401,
+          "pyrkov_target": -0.025174706998597814,
+          "stable_fast": true
+        },
+        {
+          "age": 70,
+          "alpha_fast": -0.015892718177838328,
+          "alpha_full": -0.0005270714720822561,
+          "recovery_fast_days": 62.92189849527782,
+          "pyrkov_target": -0.024236016210694364,
+          "stable_fast": true
+        },
+        {
+          "age": 71,
+          "alpha_fast": -0.015837784682983733,
+          "alpha_full": -0.000517116920656653,
+          "recovery_fast_days": 63.14014365117677,
+          "pyrkov_target": -0.023332326441684353,
+          "stable_fast": true
+        },
+        {
+          "age": 72,
+          "alpha_fast": -0.015785099984719525,
+          "alpha_full": -0.000507401856019313,
+          "recovery_fast_days": 63.35088158884211,
+          "pyrkov_target": -0.02246233260650744,
+          "stable_fast": true
+        },
+        {
+          "age": 73,
+          "alpha_fast": -0.015734532501163176,
+          "alpha_full": -0.0004979115062474645,
+          "recovery_fast_days": 63.55447801999042,
+          "pyrkov_target": -0.021624778282887065,
+          "stable_fast": true
+        },
+        {
+          "age": 74,
+          "alpha_fast": -0.015685957012181978,
+          "alpha_full": -0.0004886317100283674,
+          "recovery_fast_days": 63.7512903562966,
+          "pyrkov_target": -0.020818453896838347,
+          "stable_fast": true
+        },
+        {
+          "age": 75,
+          "alpha_fast": -0.01563925404761097,
+          "alpha_full": -0.000479548852438645,
+          "recovery_fast_days": 63.94166863430156,
+          "pyrkov_target": -0.0200421949758331,
+          "stable_fast": true
+        },
+        {
+          "age": 76,
+          "alpha_fast": -0.015594309309412406,
+          "alpha_full": -0.0004706498046482032,
+          "recovery_fast_days": 64.12595647287954,
+          "pyrkov_target": -0.01929488046709911,
+          "stable_fast": true
+        },
+        {
+          "age": 77,
+          "alpha_fast": -0.015551013122376112,
+          "alpha_full": -0.0004619218671321482,
+          "recovery_fast_days": 64.30449206946624,
+          "pyrkov_target": -0.01857543111862514,
+          "stable_fast": true
+        },
+        {
+          "age": 78,
+          "alpha_fast": -0.015509259907343705,
+          "alpha_full": -0.0004533527156703026,
+          "recovery_fast_days": 64.4776092459767,
+          "pyrkov_target": -0.017882807920533518,
+          "stable_fast": true
+        },
+        {
+          "age": 79,
+          "alpha_fast": -0.015468947672410478,
+          "alpha_full": -0.00044493034989995527,
+          "recovery_fast_days": 64.64563855132448,
+          "pyrkov_target": -0.017216010604569253,
+          "stable_fast": true
+        },
+        {
+          "age": 80,
+          "alpha_fast": -0.01542997751641699,
+          "alpha_full": -0.00043664304378328447,
+          "recovery_fast_days": 64.80890843399044,
+          "pyrkov_target": -0.016574076199538948,
+          "stable_fast": true
+        },
+        {
+          "age": 81,
+          "alpha_fast": -0.015392278118781494,
+          "alpha_full": -0.00041722341986767544,
+          "recovery_fast_days": 64.96764106541258,
+          "pyrkov_target": -0.01595607764061297,
+          "stable_fast": true
+        },
+        {
+          "age": 82,
+          "alpha_fast": -0.015355729053942932,
+          "alpha_full": -0.0003990006356974865,
+          "recovery_fast_days": 65.12227433077997,
+          "pyrkov_target": -0.015361122430482831,
+          "stable_fast": true
+        },
+        {
+          "age": 83,
+          "alpha_fast": -0.01532023760360074,
+          "alpha_full": -0.0003818437317477916,
+          "recovery_fast_days": 65.27313909054311,
+          "pyrkov_target": -0.0147883513504399,
+          "stable_fast": true
+        },
+        {
+          "age": 84,
+          "alpha_fast": -0.015285712156238987,
+          "alpha_full": -0.00036563811193054757,
+          "recovery_fast_days": 65.42056986149919,
+          "pyrkov_target": -0.014236937219514334,
+          "stable_fast": true
+        },
+        {
+          "age": 85,
+          "alpha_fast": -0.015252061691981678,
+          "alpha_full": -0.00035028290700933655,
+          "recovery_fast_days": 65.56490658084084,
+          "pyrkov_target": -0.013706083699882023,
+          "stable_fast": true
+        },
+        {
+          "age": 86,
+          "alpha_fast": -0.015219195246743512,
+          "alpha_full": -0.0003356888178077049,
+          "recovery_fast_days": 65.70649655171303,
+          "pyrkov_target": -0.013195024146814354,
+          "stable_fast": true
+        },
+        {
+          "age": 87,
+          "alpha_fast": -0.015187021348573802,
+          "alpha_full": -0.0003217763383719941,
+          "recovery_fast_days": 65.845696601586,
+          "pyrkov_target": -0.012703020501510039,
+          "stable_fast": true
+        },
+        {
+          "age": 88,
+          "alpha_fast": -0.015155447418708485,
+          "alpha_full": -0.00030847428183361985,
+          "recovery_fast_days": 65.98287548842407,
+          "pyrkov_target": -0.012229362225209926,
+          "stable_fast": true
+        },
+        {
+          "age": 89,
+          "alpha_fast": -0.015124379129023608,
+          "alpha_full": -0.0002957185489841113,
+          "recovery_fast_days": 66.11841659542937,
+          "pyrkov_target": -0.011773365273055595,
+          "stable_fast": true
+        },
+        {
+          "age": 90,
+          "alpha_fast": -0.015093719706449592,
+          "alpha_full": -0.000283451093347217,
+          "recovery_fast_days": 66.25272096265952,
+          "pyrkov_target": -0.011334371106209674,
+          "stable_fast": true
+        },
+        {
+          "age": 91,
+          "alpha_fast": -0.015063369173729154,
+          "alpha_full": -0.00027161904519900574,
+          "recovery_fast_days": 66.38621071201135,
+          "pyrkov_target": -0.01091174574081135,
+          "stable_fast": true
+        },
+        {
+          "age": 92,
+          "alpha_fast": -0.015033223514640079,
+          "alpha_full": -0.0002601739655559735,
+          "recovery_fast_days": 66.51933293123406,
+          "pyrkov_target": -0.010504878832393517,
+          "stable_fast": true
+        },
+        {
+          "age": 93,
+          "alpha_fast": -0.01500317375010442,
+          "alpha_full": -0.0002490712067970875,
+          "recovery_fast_days": 66.65256409451635,
+          "pyrkov_target": -0.010113182794439271,
+          "stable_fast": true
+        },
+        {
+          "age": 94,
+          "alpha_fast": -0.014973104909727154,
+          "alpha_full": -0.00023826936071713026,
+          "recovery_fast_days": 66.78641511089381,
+          "pyrkov_target": -0.009736091949804914,
+          "stable_fast": true
+        },
+        {
+          "age": 95,
+          "alpha_fast": -0.014942894881320707,
+          "alpha_full": -0.00022772977905717736,
+          "recovery_fast_days": 66.92143710721308,
+          "pyrkov_target": -0.009373061713783819,
+          "stable_fast": true
+        },
+        {
+          "age": 96,
+          "alpha_fast": -0.014912413118519048,
+          "alpha_full": -0.00021741615369194874,
+          "recovery_fast_days": 67.05822807162883,
+          "pyrkov_target": -0.009023567807631527,
+          "stable_fast": true
+        },
+        {
+          "age": 97,
+          "alpha_fast": -0.014881519184029211,
+          "alpha_full": -0.00020729414654501786,
+          "recovery_fast_days": 67.19744050548255,
+          "pyrkov_target": -0.008687105501416104,
+          "stable_fast": true
+        },
+        {
+          "age": 98,
+          "alpha_fast": -0.014850061103386132,
+          "alpha_full": -0.000197331060438236,
+          "recovery_fast_days": 67.33979025661911,
+          "pyrkov_target": -0.008363188885100414,
+          "stable_fast": true
+        },
+        {
+          "age": 99,
+          "alpha_fast": -0.014817873500992625,
+          "alpha_full": -0.00018749554405376754,
+          "recovery_fast_days": 67.48606673778202,
+          "pyrkov_target": -0.008051350166803613,
+          "stable_fast": true
+        },
+        {
+          "age": 100,
+          "alpha_fast": -0.014784775487713498,
+          "alpha_full": -0.000177757324767668,
+          "recovery_fast_days": 67.63714476631883,
+          "pyrkov_target": -0.007751138997228354,
+          "stable_fast": true
+        },
+        {
+          "age": 101,
+          "alpha_fast": -0.01475056826651926,
+          "alpha_full": -0.0001680869646270071,
+          "recovery_fast_days": 67.79399830105483,
+          "pyrkov_target": -0.0074621218192781735,
+          "stable_fast": true
+        },
+        {
+          "age": 102,
+          "alpha_fast": -0.014715032421331382,
+          "alpha_full": -0.0001584556348489107,
+          "recovery_fast_days": 67.95771639282071,
+          "pyrkov_target": -0.00718388124192568,
+          "stable_fast": true
+        },
+        {
+          "age": 103,
+          "alpha_fast": -0.014677924853708836,
+          "alpha_full": -0.00014883490534260463,
+          "recovery_fast_days": 68.12952171146446,
+          "pyrkov_target": -0.006916015437427391,
+          "stable_fast": true
+        },
+        {
+          "age": 104,
+          "alpha_fast": -0.01463897533425058,
+          "alpha_full": -0.00013919654566410755,
+          "recovery_fast_days": 68.31079205798754,
+          "pyrkov_target": -0.0066581375610146615,
+          "stable_fast": true
+        },
+        {
+          "age": 105,
+          "alpha_fast": -0.014597882641902088,
+          "alpha_full": -0.0001295123346786743,
+          "recovery_fast_days": 68.5030853124944,
+          "pyrkov_target": -0.006409875192222581,
+          "stable_fast": true
+        },
+        {
+          "age": 106,
+          "alpha_fast": -0.01455431027591933,
+          "alpha_full": -0.00011975387612671534,
+          "recovery_fast_days": 68.70816830492743,
+          "pyrkov_target": -0.006170869797050146,
+          "stable_fast": true
+        },
+        {
+          "age": 107,
+          "alpha_fast": -0.01450788174655648,
+          "alpha_full": -0.00010989241752478146,
+          "recovery_fast_days": 68.92805010885584,
+          "pyrkov_target": -0.005940776210174824,
+          "stable_fast": true
+        },
+        {
+          "age": 108,
+          "alpha_fast": -0.014458175483546025,
+          "alpha_full": -9.989867009333128e-05,
+          "recovery_fast_days": 69.16502024325541,
+          "pyrkov_target": -0.005719262136473881,
+          "stable_fast": true
+        },
+        {
+          "age": 109,
+          "alpha_fast": -0.014404719453071058,
+          "alpha_full": -8.974262704403781e-05,
+          "recovery_fast_days": 69.42169219316534,
+          "pyrkov_target": -0.005506007671132455,
+          "stable_fast": true
+        },
+        {
+          "age": 110,
+          "alpha_fast": -0.014346985648729278,
+          "alpha_full": -7.939337820719176e-05,
+          "recovery_fast_days": 69.70105250565791,
+          "pyrkov_target": -0.005300704837645429,
+          "stable_fast": true
+        },
+        {
+          "age": 111,
+          "alpha_fast": -0.014284384728301064,
+          "alpha_full": -6.88189179819187e-05,
+          "recovery_fast_days": 70.00651543771018,
+          "pyrkov_target": -0.005103057143045841,
+          "stable_fast": true
+        },
+        {
+          "age": 112,
+          "alpha_fast": -0.014216261211741963,
+          "alpha_full": -5.798594425462889e-05,
+          "recovery_fast_days": 70.34198268487407,
+          "pyrkov_target": -0.004912779149717503,
+          "stable_fast": true
+        },
+        {
+          "age": 113,
+          "alpha_fast": -0.014141889842373405,
+          "alpha_full": -4.6859644947996274e-05,
+          "recovery_fast_days": 70.71190704680048,
+          "pyrkov_target": -0.004729596063173505,
+          "stable_fast": true
+        },
+        {
+          "age": 114,
+          "alpha_fast": -0.014060473939644649,
+          "alpha_full": -3.540346906931159e-05,
+          "recovery_fast_days": 71.12135794942294,
+          "pyrkov_target": -0.004553243335205203,
+          "stable_fast": true
+        },
+        {
+          "age": 115,
+          "alpha_fast": -0.013971146825921614,
+          "alpha_full": -2.3578878071070952e-05,
+          "recovery_fast_days": 71.57608551823623,
+          "pyrkov_target": -0.004383466281828656,
+          "stable_fast": true
+        },
+        {
+          "age": 116,
+          "alpha_fast": -0.013872977654009196,
+          "alpha_full": -1.1345073255336478e-05,
+          "recovery_fast_days": 72.08257844421792,
+          "pyrkov_target": -0.004220019715476677,
+          "stable_fast": true
+        },
+        {
+          "age": 117,
+          "alpha_fast": -0.013764983133472065,
+          "alpha_full": 1.3413064020030024e-06,
+          "recovery_fast_days": 72.64810935861722,
+          "pyrkov_target": -0.004062667590905394,
+          "stable_fast": true
+        },
+        {
+          "age": 118,
+          "alpha_fast": -0.013646146647313272,
+          "alpha_full": 1.4526522280243216e-05,
+          "recovery_fast_days": 73.28076019151425,
+          "pyrkov_target": -0.0039111826643038975,
+          "stable_fast": true
+        },
+        {
+          "age": 119,
+          "alpha_fast": -0.013515445932721824,
+          "alpha_full": 2.8260117429571452e-05,
+          "recovery_fast_days": 73.98941958540422,
+          "pyrkov_target": -0.0037653461651146816,
+          "stable_fast": true
+        },
+        {
+          "age": 120,
+          "alpha_fast": -0.013371889730122684,
+          "alpha_full": 4.2595350916203276e-05,
+          "recovery_fast_days": 74.78374561729393,
+          "pyrkov_target": -0.003624947480090956,
+          "stable_fast": true
+        }
+      ]
+    }
+  }
+}

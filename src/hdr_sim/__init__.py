@@ -20,6 +20,11 @@ from .csv_loader import (
     TAU_REGISTRY, TAU_REGISTRY_LEGACY, TAU_REGISTRY_V2,
     tau_at_age, tau_vector, J_at_age,
     calibrate_three_point,
+    calibrate_fast_subsystem, calibrate_stable_system,
+    find_j_blend_amplitude,
+    j_blend_fraction, j_at_age_blended, build_system_at_age,
+    _extract_submatrix, _ALL_9_AXES, _FAST_7_AXES, _FAST_6_AXES,
+    _SLOW_2_AXES, _SLOW_3_AXES,
 )
 from .aging_params import configure, configure_v2, tau_of_age, J_of_age, get_axis_names, get_axis_colors
 from .j_matrix_spec import JMatrixSpec

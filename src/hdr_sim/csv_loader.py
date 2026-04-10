@@ -612,3 +612,327 @@ def get_J_anchors_v2(axes=('I', 'M', 'E', 'mito', 'P', 'C', 'N', 'F', 'B'),
     c = get_calibration_scalar(J_healthy, tau_25, target_alpha)
 
     return c * J_healthy, c * J_disease, c
+
+
+# ---------------------------------------------------------------------------
+# Fast-subsystem calibration (two-timescale architecture)
+# ---------------------------------------------------------------------------
+
+_ALL_9_AXES = ('I', 'M', 'E', 'mito', 'P', 'C', 'N', 'F', 'B')
+_FAST_7_AXES = ('I', 'M', 'mito', 'P', 'C', 'N', 'F')
+_FAST_6_AXES = ('I', 'M', 'P', 'C', 'N', 'F')
+_SLOW_2_AXES = ('E', 'B')
+_SLOW_3_AXES = ('E', 'mito', 'B')
+
+
+def _extract_submatrix(J_full, axes_all, axes_sub):
+    """Extract a submatrix for a subset of axes."""
+    idx = [axes_all.index(a) for a in axes_sub]
+    return J_full[np.ix_(idx, idx)]
+
+
+def calibrate_fast_subsystem(
+    J_full_h, J_full_d,
+    axes_all=_ALL_9_AXES,
+    axes_fast=_FAST_7_AXES,
+    target_alpha_fast=-0.134,
+):
+    """Calibrate c on the fast subsystem at age 25.
+
+    Finds c such that alpha(A_fast(25)) = target.  Does NOT guarantee
+    stability at older ages — use calibrate_stable_system() for that.
+
+    Parameters
+    ----------
+    J_full_h, J_full_d : np.ndarray
+        Unscaled full healthy/disease-basin J.
+    axes_all : tuple[str]
+        All axis labels in J_full order.
+    axes_fast : tuple[str]
+        Fast-subsystem axis labels.
+    target_alpha_fast : float
+        Target spectral abscissa for the fast subsystem at age 25.
+
+    Returns
+    -------
+    c : float
+        Calibration scalar.
+    alpha_fast_25 : float
+        Achieved fast-subsystem alpha at age 25.
+    alpha_full_25 : float
+        Full-system alpha at age 25.
+    """
+    J_fast_h = _extract_submatrix(J_full_h, axes_all, axes_fast)
+    tau_fast_25 = tau_vector(axes_fast, 25)
+
+    c = get_calibration_scalar(J_fast_h, tau_fast_25, target_alpha_fast)
+
+    # Verify fast subsystem
+    A_fast = _build_A(tau_fast_25, c * J_fast_h)
+    alpha_fast = _spectral_abscissa(A_fast)
+
+    # Verify full system
+    tau_full_25 = tau_vector(axes_all, 25)
+    A_full = _build_A(tau_full_25, c * J_full_h)
+    alpha_full = _spectral_abscissa(A_full)
+
+    return c, float(alpha_fast), float(alpha_full)
+
+
+def calibrate_stable_system(
+    J_full_h, J_full_d,
+    axes_all=_ALL_9_AXES,
+    axes_fast=_FAST_6_AXES,
+    target_alpha_120=-0.004,
+    gamma=0.038,
+):
+    """Find (c, amplitude) ensuring fast-subsystem stability 25-120.
+
+    Jointly calibrates the coupling scalar c and blend amplitude A so
+    that alpha_fast(120) = target_alpha_120 and the fast subsystem
+    remains stable at all ages 25-120.  Maximises |alpha_fast(25)| to
+    get the strongest young-adult stability margin.
+
+    The 6-axis fast subsystem (I, M, P, C, N, F) excludes the
+    intermediate-timescale mito axis (tau=36-65d) which constrains the
+    7-axis system.  Mito joins E and B in the slow/quasi-static cluster.
+
+    Parameters
+    ----------
+    J_full_h, J_full_d : np.ndarray
+        Unscaled full healthy/disease-basin J.
+    axes_all : tuple[str]
+        All axis labels.
+    axes_fast : tuple[str]
+        Fast-subsystem axis labels.
+    target_alpha_120 : float
+        Target alpha_fast at age 120.
+    gamma : float
+        Gompertz blending parameter.
+
+    Returns
+    -------
+    dict with keys:
+        c : float - calibration scalar
+        amplitude : float - J blend amplitude
+        gamma : float - Gompertz parameter
+        axes_fast : tuple - fast axis labels
+        alpha_fast_25 : float - achieved alpha at 25
+        alpha_fast_120 : float - achieved alpha at 120
+    """
+    J_fh = _extract_submatrix(J_full_h, axes_all, axes_fast)
+    J_fd = _extract_submatrix(J_full_d, axes_all, axes_fast)
+    delta_J = J_fd - J_fh
+    blend_120 = j_blend_fraction(120, gamma)
+    tau_25 = tau_vector(axes_fast, 25)
+    tau_120 = tau_vector(axes_fast, 120)
+
+    # Find c_max: maximum c where alpha_fast(120)=0 with amp=0
+    def alpha_120_amp0(c):
+        return _spectral_abscissa(_build_A(tau_120, c * J_fh))
+
+    # Search for c_max
+    c_lo, c_hi = 0.0, 0.1
+    while alpha_120_amp0(c_hi) < 0 and c_hi < 100:
+        c_hi *= 2
+    if alpha_120_amp0(c_hi) < 0:
+        # Even c=100 doesn't destabilise — use that
+        c_max = c_hi
+    else:
+        c_max = brentq(alpha_120_amp0, c_lo, c_hi)
+
+    # Search over c values: for each c, find amplitude for target alpha(120)
+    best = None
+    n_search = 80
+    for c_try in np.linspace(0.01, c_max * 0.99, n_search):
+        a120_amp0 = _spectral_abscissa(_build_A(tau_120, c_try * J_fh))
+        if a120_amp0 > target_alpha_120:
+            continue  # already above target with amp=0
+
+        a120_amp1 = _spectral_abscissa(
+            _build_A(tau_120, c_try * (J_fh + blend_120 * delta_J)))
+        if a120_amp1 <= target_alpha_120:
+            amp = 1.0
+        else:
+            try:
+                amp = brentq(
+                    lambda a: _spectral_abscissa(
+                        _build_A(tau_120, c_try * (J_fh + a * blend_120 * delta_J))
+                    ) - target_alpha_120,
+                    0.0, 1.0, xtol=1e-10)
+            except ValueError:
+                continue
+
+        # Verify stability at all ages
+        all_stable = True
+        for age in range(25, 121):
+            tau_a = tau_vector(axes_fast, age)
+            bl = j_blend_fraction(age, gamma)
+            J_a = J_fh + amp * bl * delta_J
+            if _spectral_abscissa(_build_A(tau_a, c_try * J_a)) >= 0:
+                all_stable = False
+                break
+
+        if not all_stable:
+            continue
+
+        a25 = _spectral_abscissa(_build_A(tau_25, c_try * J_fh))
+        if best is None or a25 < best['alpha_fast_25']:
+            best = {
+                'c': float(c_try),
+                'amplitude': float(amp),
+                'gamma': gamma,
+                'axes_fast': axes_fast,
+                'alpha_fast_25': float(a25),
+                'alpha_fast_120': float(target_alpha_120),
+            }
+
+    if best is None:
+        raise RuntimeError(
+            "Could not find stable (c, amplitude) pair for "
+            f"axes_fast={axes_fast}, target_alpha_120={target_alpha_120}"
+        )
+
+    return best
+
+
+def j_blend_fraction(age, gamma=0.038):
+    """Gompertz-shaped blending from J_healthy (age 25) toward J_disease.
+
+    f(25) = 0, increases slowly before 60, accelerates after.
+    Normalised so f(120) = raw Gompertz value (not clamped to 1).
+    """
+    raw = (np.exp(gamma * (age - 25)) - 1) / (np.exp(gamma * 95) - 1)
+    return max(0.0, raw)
+
+
+def find_j_blend_amplitude(J_h, J_d, axes_fast, c, gamma=0.038,
+                           target_alpha_120=-0.004):
+    """Find the J blend amplitude A such that alpha_fast(120) = target.
+
+    J(age) = c * [J_h + A * blend(age) * (J_d - J_h)]
+    A = 1.0 means full J_disease reached at blend(120).
+    A < 1.0 means the system never reaches full disease coupling.
+
+    Parameters
+    ----------
+    J_h : np.ndarray
+        Unscaled fast-subsystem healthy J.
+    J_d : np.ndarray
+        Unscaled fast-subsystem disease J.
+    axes_fast : tuple[str]
+        Fast-subsystem axis labels.
+    c : float
+        Calibration scalar.
+    gamma : float
+        Gompertz acceleration parameter.
+    target_alpha_120 : float
+        Target alpha_fast at age 120.
+
+    Returns
+    -------
+    amplitude : float
+        J blend amplitude.
+    """
+    delta_J = J_d - J_h
+    blend_120 = j_blend_fraction(120, gamma)
+    tau_fast_120 = tau_vector(axes_fast, 120)
+
+    def alpha_at_120(amplitude):
+        J_120 = J_h + amplitude * blend_120 * delta_J
+        A = _build_A(tau_fast_120, c * J_120)
+        return _spectral_abscissa(A)
+
+    obj = lambda amp: alpha_at_120(amp) - target_alpha_120
+
+    # Check bracket
+    obj_0 = obj(0.0)
+    obj_1 = obj(1.0)
+
+    if obj_0 * obj_1 < 0:
+        return float(brentq(obj, 0.0, 1.0, xtol=1e-10))
+    elif obj_1 < 0:
+        # Full amplitude still stable — try higher
+        for hi in [2.0, 5.0, 10.0, 20.0]:
+            if obj(hi) > 0:
+                return float(brentq(obj, 1.0, hi, xtol=1e-10))
+        return 10.0  # fallback
+    else:
+        # Even zero amplitude overshoots — return minimal
+        return 0.0
+
+
+def j_at_age_blended(J_h, J_d, age, c, amplitude, gamma=0.038):
+    """Compute calibrated J matrix at a given age with Gompertz blending.
+
+    Parameters
+    ----------
+    J_h : np.ndarray
+        Unscaled healthy-basin J.
+    J_d : np.ndarray
+        Unscaled disease-basin J.
+    age : float
+        Chronological age (25-120).
+    c : float
+        Calibration scalar.
+    amplitude : float
+        J blend amplitude (from find_j_blend_amplitude).
+    gamma : float
+        Gompertz acceleration parameter.
+
+    Returns
+    -------
+    J : np.ndarray
+        Calibrated J matrix at the given age.
+    """
+    blend = j_blend_fraction(age, gamma)
+    J = J_h + amplitude * blend * (J_d - J_h)
+    return c * J
+
+
+def build_system_at_age(age, J_h_full, J_d_full, c, amplitude,
+                        axes_all=_ALL_9_AXES, axes_fast=_FAST_7_AXES,
+                        gamma=0.038):
+    """Build the full A matrix at a given age with two-timescale structure.
+
+    Parameters
+    ----------
+    age : float
+        Chronological age (25-120).
+    J_h_full : np.ndarray
+        Unscaled full healthy-basin J (9x9).
+    J_d_full : np.ndarray
+        Unscaled full disease-basin J (9x9).
+    c : float
+        Calibration scalar (from calibrate_fast_subsystem).
+    amplitude : float
+        J blend amplitude (from find_j_blend_amplitude).
+    axes_all : tuple[str]
+        All axis labels.
+    axes_fast : tuple[str]
+        Fast-subsystem axis labels.
+    gamma : float
+        Gompertz acceleration parameter.
+
+    Returns
+    -------
+    A_full : np.ndarray
+        Full 9x9 dynamics matrix.
+    A_fast : np.ndarray
+        7x7 fast-subsystem dynamics matrix.
+    alpha_fast : float
+        Fast-subsystem spectral abscissa.
+    alpha_full : float
+        Full-system spectral abscissa.
+    """
+    tau_full = tau_vector(axes_all, age)
+    J_full = j_at_age_blended(J_h_full, J_d_full, age, c, amplitude, gamma)
+
+    A_full = _build_A(tau_full, J_full)
+    alpha_full = float(_spectral_abscissa(A_full))
+
+    fast_idx = [axes_all.index(a) for a in axes_fast]
+    A_fast = A_full[np.ix_(fast_idx, fast_idx)]
+    alpha_fast = float(_spectral_abscissa(A_fast))
+
+    return A_full, A_fast, alpha_fast, alpha_full
