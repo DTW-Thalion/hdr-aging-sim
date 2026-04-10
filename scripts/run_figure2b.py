@@ -18,7 +18,7 @@ import matplotlib.gridspec as gridspec
 
 from hdr_sim.dynamics import (build_A, spectral_abscissa, recovery_timescale,
                                damping_ratio, simulate)
-from hdr_sim.aging_params import tau_of_age, J_of_age, AXIS_NAMES, AXIS_COLORS
+from hdr_sim.aging_params import tau_of_age, J_of_age, AXIS_NAMES, AXIS_COLORS, configure
 from hdr_sim.plotting import setup_style, add_panel_label, save_figure
 from hdr_sim.j_matrix_spec import JMatrixSpec, load_default_spec
 
@@ -38,6 +38,7 @@ _REPO_ROOT = os.path.dirname(_SCRIPT_DIR)
 _OUTPUT_DIR = os.path.join(_REPO_ROOT, 'outputs')
 os.makedirs(_OUTPUT_DIR, exist_ok=True)
 setup_style()
+configure()
 
 ages = np.arange(25, 91, 1)
 

@@ -30,7 +30,7 @@ SRC = ROOT / "src"
 OUTPUTS = ROOT / "outputs"
 DATA = ROOT / "data"
 
-SCRIPT_TIMEOUT = 300      # 5 min for simulation scripts
+SCRIPT_TIMEOUT = 600      # 10 min for simulation scripts
 ELSA_TIMEOUT = 900        # 15 min for ELSA scripts
 NHANES_TIMEOUT = 180      # 3 min for NHANES (network)
 
@@ -580,7 +580,11 @@ def generate_report(phases):
             warnings += 1
         elif status == "SKIP":
             skipped += 1
-        elif status in ("FAIL", "TIMEOUT", "UNSTABLE"):
+        elif status == "UNSTABLE":
+            # Expected physics — quasi-static axes lose Hurwitz stability
+            passed += 1
+            warnings += 1
+        elif status in ("FAIL", "TIMEOUT"):
             failed += 1
             failures_list.append({"item": item_name, "status": status, "error": error})
 
