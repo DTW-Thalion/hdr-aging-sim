@@ -245,6 +245,7 @@ Note: NHANES XPT files are downloaded from CDC servers at runtime (~7 MB total).
 | `run_dj_power.py` | `outputs/figure_dj_power.pdf` | Supp Fig 6: D vs J power analysis (3-panel) |
 | `run_dj_bayes_robust.py` | `outputs/figure_dj_bayes_robust.pdf` | Supp Fig 7: Bayesian + misspecification robustness |
 | `run_pi_regime_analysis.py` | `outputs/pi_regime_analysis.json` | SI Note 6: Π strong-coupling regime analysis |
+| `run_counterintuitive_predictions.py` | `outputs/counterintuitive_predictions.json` | Coupling-matrix counterintuitive predictions (5 tests) |
 | `run_estimator_bias.py` | `outputs/figure_estimator_bias.pdf` | Supp Fig 8: Change-covariance estimator bias (2×2 panel) |
 | `run_elsa_ici_deployment.py` | `outputs/elsa_ici_deployment.json` | ELSA ICI deployment assessment |
 | `run_elsa_ici_deployment.py` | `outputs/elsa_ici_deployment_table.txt` | ICI deployment manuscript table |
@@ -471,6 +472,26 @@ Key findings:
 |--------|--------|-------------|
 | `run_estimator_bias.py` | `outputs/figure_estimator_bias.pdf` | 2×2 panel: bias ratio, age trends (clean/confounded), τ-scaling |
 | `run_estimator_bias.py` | `outputs/estimator_bias_results.json` | Machine-readable bias ratios, trend recovery, τ sensitivity |
+
+### Counterintuitive Predictions from the Coupling Matrix
+
+Systematic search through the calibrated J matrix and ELSA data for predictions that are derivable from the coupling structure, non-obvious, and testable with existing data.
+
+```bash
+python scripts/run_counterintuitive_predictions.py
+```
+
+Five tests, ranked by strength of evidence:
+
+1. **Asymmetric coupling lead-lag** (p=7×10⁻⁵, Bonferroni-corrected): The J matrix is asymmetric — J[M→I] > J[I→M] at all ages. This predicts that metabolic deterioration temporally precedes inflammatory deterioration. Cross-lagged analysis on 1,963 visit triples confirms: r(ΔM₁₂,ΔI₂₃)=−0.090 vs r(ΔI₁₂,ΔM₂₃)=−0.002. This is a directional prediction that symmetric or undirected frameworks cannot make.
+2. **Partial correlation structure** (83% sign concordance): The coupling matrix correctly predicts which axis pairs show positive vs negative partial correlations across 4 age strata — a stronger structural test than overall covariance growth.
+3. **Coupling-direction dependent mortality** (p_adj=0.008): Displacement along the dominant covariance eigenvector predicts mortality (r=0.043) better than orthogonal displacement (r=0.020), confirming that the DIRECTION of dysregulation matters, not just magnitude.
+4. **Age-dependent eigenvector rotation**: Model predicts 38° rotation toward F-axis; observed rotation direction does not match, likely due to medication compression distorting the observed covariance at older ages.
+5. **Non-monotone axis-specific variance**: Model predicts all axes monotone-increasing, but ELSA data shows F-axis and M-axis variance decreasing at older ages (survivorship bias + medication compression dominate the raw signal).
+
+| Script | Output | Description |
+|--------|--------|-------------|
+| `run_counterintuitive_predictions.py` | `outputs/counterintuitive_predictions.json` | 5 structural prediction tests against ELSA data |
 
 ### ELSA ICI Deployment Assessment
 

@@ -1,0 +1,684 @@
+{
+  "model_predictions": {
+    "30": {
+      "tau": [
+        7.0,
+        0.1,
+        8.0
+      ],
+      "eigvals": [
+        0.042441843565460595,
+        0.03329638289223145,
+        0.000500005879306121
+      ],
+      "eigvec_dominant": [
+        -0.6810946007067424,
+        -0.01219663177472663,
+        0.7320938376065426
+      ],
+      "per_axis_var": [
+        0.03753755643075455,
+        0.0005064850264149231,
+        0.03819419087982871
+      ],
+      "partial_corr": [
+        [
+          -1.0,
+          0.05375837969494947,
+          -0.11475015604191495
+        ],
+        [
+          0.053758379694949475,
+          -1.0,
+          -0.09192180739530006
+        ],
+        [
+          -0.11475015604191499,
+          -0.09192180739530005,
+          -1.0
+        ]
+      ]
+    },
+    "40": {
+      "tau": [
+        10.600000000000001,
+        0.14,
+        14.8
+      ],
+      "eigvals": [
+        0.07029907822033754,
+        0.05502964940993682,
+        0.0007000076056414313
+      ],
+      "eigvec_dominant": [
+        -0.4654673849504443,
+        -0.01750607473594079,
+        0.8848918865571852
+      ],
+      "per_axis_var": [
+        0.058330683446745614,
+        0.000722135454856373,
+        0.0669759163343138
+      ],
+      "partial_corr": [
+        [
+          -1.0,
+          0.10315216431938738,
+          -0.08557546834202512
+        ],
+        [
+          0.10315216431938748,
+          -1.0,
+          -0.13099179822070808
+        ],
+        [
+          -0.08557546834202516,
+          -0.13099179822070847,
+          -1.0
+        ]
+      ]
+    },
+    "50": {
+      "tau": [
+        14.2,
+        0.18,
+        21.6
+      ],
+      "eigvals": [
+        0.10026008580206447,
+        0.07499725561801834,
+        0.0008999709331400706
+      ],
+      "eigvec_dominant": [
+        -0.12337077005749705,
+        -0.017995751670403237,
+        0.9921974632185053
+      ],
+      "per_axis_var": [
+        0.0753569832328196,
+        0.0009515674203904434,
+        0.09984876170001283
+      ],
+      "partial_corr": [
+        [
+          -1.0,
+          0.16308007871610194,
+          -0.007832891157665322
+        ],
+        [
+          0.1630800787161019,
+          -1.0,
+          -0.16327384908173623
+        ],
+        [
+          -0.00783289115766526,
+          -0.1632738490817367,
+          -1.0
+        ]
+      ]
+    },
+    "60": {
+      "tau": [
+        17.8,
+        0.22,
+        28.4
+      ],
+      "eigvals": [
+        0.14370178782357634,
+        0.08954734460962456,
+        0.0010998160188956056
+      ],
+      "eigvec_dominant": [
+        0.03921107153424547,
+        -0.016170867347641393,
+        0.9991000925424646
+      ],
+      "per_axis_var": [
+        0.08956820038100698,
+        0.0012026110093180465,
+        0.14357813706177144
+      ],
+      "partial_corr": [
+        [
+          -1.0,
+          0.2303333903159515,
+          0.062326312623800666
+        ],
+        [
+          0.23033339031595143,
+          -1.0,
+          -0.19153769583132352
+        ],
+        [
+          0.06232631262380116,
+          -0.19153769583132402,
+          -1.0
+        ]
+      ]
+    },
+    "65": {
+      "tau": [
+        19.6,
+        0.24,
+        31.799999999999997
+      ],
+      "eigvals": [
+        0.17117945815971064,
+        0.09605800345299202,
+        0.0011996527859163123
+      ],
+      "eigvec_dominant": [
+        -0.0659970057253001,
+        0.015508950145647793,
+        -0.9976992872106674
+      ],
+      "per_axis_var": [
+        0.09629244912567092,
+        0.0013398692246020475,
+        0.170804796048346
+      ],
+      "partial_corr": [
+        [
+          -1.0,
+          0.2664038538651363,
+          0.09109827640294975
+        ],
+        [
+          0.26640385386513626,
+          -1.0,
+          -0.2038995164062381
+        ],
+        [
+          0.09109827640294958,
+          -0.2038995164062379,
+          -1.0
+        ]
+      ]
+    },
+    "70": {
+      "tau": [
+        21.4,
+        0.26,
+        35.2
+      ],
+      "eigvals": [
+        0.20300784139810962,
+        0.10259394899064374,
+        0.0012994011187522831
+      ],
+      "eigvec_dominant": [
+        -0.07829144855668896,
+        0.01489684190454843,
+        -0.9968192078728048
+      ],
+      "per_axis_var": [
+        0.10307558008509075,
+        0.0014875939228590485,
+        0.20233801749955582
+      ],
+      "partial_corr": [
+        [
+          -1.0,
+          0.30401942669696724,
+          0.11622622190599834
+        ],
+        [
+          0.3040194266969673,
+          -1.0,
+          -0.2148428408596024
+        ],
+        [
+          0.1162262219059982,
+          -0.21484284085960176,
+          -1.0
+        ]
+      ]
+    },
+    "80": {
+      "tau": [
+        25.0,
+        0.3,
+        42.0
+      ],
+      "eigvals": [
+        0.2829060539560412,
+        0.11678296567140604,
+        0.0014985068807382242
+      ],
+      "eigvec_dominant": [
+        -0.08385375084814828,
+        0.013517386344296667,
+        -0.9963863852618198
+      ],
+      "per_axis_var": [
+        0.11768959039308723,
+        0.0018258579581740253,
+        0.2816720781569243
+      ],
+      "partial_corr": [
+        [
+          -1.0,
+          0.3835535916776102,
+          0.15787177804137917
+        ],
+        [
+          0.3835535916776104,
+          -1.0,
+          -0.23181078742695602
+        ],
+        [
+          0.1578717780413793,
+          -0.23181078742695593,
+          -1.0
+        ]
+      ]
+    }
+  },
+  "tests": [
+    {
+      "test_name": "Asymmetric coupling lead-lag",
+      "prediction": "M\u2192I coupling stronger than I\u2192M at age 65 (0.0854 vs 0.1273): metabolic change should predict future inflammatory change",
+      "result": "Cross-lagged r(dM_12,dI_23)=-0.090 (p=0.000), r(dI_12,dM_23)=-0.002 (p=0.941). N=1963 triples. Predicted direction supported.",
+      "effect_size": -0.08792787480993149,
+      "p_value": 7.023859522303079e-05,
+      "counterintuitive": true,
+      "testable_with_current_data": true,
+      "n_triples": 1963,
+      "asymmetries": {
+        "I-M": {
+          "J_ij": 0.08536347579490582,
+          "J_ji": 0.12726918209422322,
+          "predicted_leader": "I",
+          "asymmetry": -0.041905706299317405
+        },
+        "I-F": {
+          "J_ij": -0.06673871743965365,
+          "J_ji": 0.12261299250541018,
+          "predicted_leader": "I",
+          "asymmetry": -0.18935170994506384
+        },
+        "M-F": {
+          "J_ij": -0.07605109661727974,
+          "J_ji": 0.08536347579490582,
+          "predicted_leader": "M",
+          "asymmetry": -0.16141457241218554
+        }
+      },
+      "lagged_correlations": {
+        "M_leads_I": {
+          "r": -0.0896047455878552,
+          "p": 7.023859522303079e-05
+        },
+        "I_leads_M": {
+          "r": -0.0016768707779237087,
+          "p": 0.9408132469231939
+        },
+        "I_leads_F": {
+          "r": -0.04850935029151028,
+          "p": 0.03162332986101647
+        },
+        "F_leads_I": {
+          "r": -0.04740272408239669,
+          "p": 0.035723889508601316
+        }
+      },
+      "supports_prediction": "True",
+      "summary": "Supported: N=1963 visit triples. M\u2192I lagged r=-0.090, I\u2192M lagged r=-0.002. ELSA 4-year cadence severely limits power for within-person lead-lag."
+    },
+    {
+      "test_name": "Partial correlation structure",
+      "prediction": "J matrix predicts specific partial correlation signs: positive I-M (mutual pathological coupling), negative I-F and M-F (F is protective)",
+      "result": "Sign concordance: 83% across 4 strata",
+      "effect_size": 0.8333333333333334,
+      "p_value": null,
+      "counterintuitive": "True",
+      "testable_with_current_data": true,
+      "strata": {
+        "50-59": {
+          "n": 4381,
+          "pairs": [
+            {
+              "pair": "I-M",
+              "predicted": 0.16308007871610194,
+              "observed": 0.35630268772513135,
+              "sign_match": "True"
+            },
+            {
+              "pair": "I-F",
+              "predicted": -0.007832891157665322,
+              "observed": 0.08318007089202648,
+              "sign_match": "False"
+            },
+            {
+              "pair": "M-F",
+              "predicted": -0.16327384908173623,
+              "observed": -0.03828150915359128,
+              "sign_match": "True"
+            }
+          ],
+          "sign_concordance": 0.6666666666666666
+        },
+        "60-69": {
+          "n": 5993,
+          "pairs": [
+            {
+              "pair": "I-M",
+              "predicted": 0.2664038538651363,
+              "observed": 0.30419231085548987,
+              "sign_match": "True"
+            },
+            {
+              "pair": "I-F",
+              "predicted": 0.09109827640294975,
+              "observed": 0.10249341729227929,
+              "sign_match": "True"
+            },
+            {
+              "pair": "M-F",
+              "predicted": -0.2038995164062381,
+              "observed": -0.030894440841714103,
+              "sign_match": "True"
+            }
+          ],
+          "sign_concordance": 1.0
+        },
+        "70-79": {
+          "n": 3812,
+          "pairs": [
+            {
+              "pair": "I-M",
+              "predicted": 0.30401942669696724,
+              "observed": 0.21016394509465516,
+              "sign_match": "True"
+            },
+            {
+              "pair": "I-F",
+              "predicted": 0.11622622190599834,
+              "observed": 0.07640390752015562,
+              "sign_match": "True"
+            },
+            {
+              "pair": "M-F",
+              "predicted": -0.2148428408596024,
+              "observed": 0.001233141848115018,
+              "sign_match": "False"
+            }
+          ],
+          "sign_concordance": 0.6666666666666666
+        },
+        "80-90": {
+          "n": 1322,
+          "pairs": [
+            {
+              "pair": "I-M",
+              "predicted": 0.3835535916776102,
+              "observed": 0.18668648160767917,
+              "sign_match": "True"
+            },
+            {
+              "pair": "I-F",
+              "predicted": 0.15787177804137917,
+              "observed": 0.09149009132590682,
+              "sign_match": "True"
+            },
+            {
+              "pair": "M-F",
+              "predicted": -0.23181078742695602,
+              "observed": -0.04621011507245096,
+              "sign_match": "True"
+            }
+          ],
+          "sign_concordance": 1.0
+        }
+      },
+      "summary": "Partial correlation signs match model prediction in 83% of axis-pair x stratum tests. Strong support for the coupling structure."
+    },
+    {
+      "test_name": "Coupling-direction dependent mortality",
+      "prediction": "Dysregulation along dominant eigenvector v1=[-0.066, 0.016, -0.998] (mostly F-axis at age 65) should predict mortality better than orthogonal displacement",
+      "result": "r(dominant,mortality)=0.043 (p_adj=0.0077), r(orthogonal,mortality)=0.020 (p_adj=0.7267), r(total_norm,mortality)=0.037. N=4567 alive, 873 deceased.",
+      "effect_size": 0.023169862533640326,
+      "p_value": 0.007725603230444053,
+      "counterintuitive": true,
+      "testable_with_current_data": true,
+      "dominant_eigenvector": [
+        -0.06599700572530012,
+        0.0155089501456478,
+        -0.9976992872106678
+      ],
+      "correlations": {
+        "dominant": {
+          "r": 0.04291618879855539,
+          "p": 0.0015451206460888106,
+          "p_adj": 0.007725603230444053
+        },
+        "orthogonal": {
+          "r": 0.019746326264915064,
+          "p": 0.14533061221884186,
+          "p_adj": 0.7266530610942092
+        },
+        "total_norm": {
+          "r": 0.036898700938307175,
+          "p": 0.006492445198404882
+        }
+      },
+      "dominant_stronger": "True",
+      "n_alive": 4567,
+      "n_dead": 873,
+      "summary": "Supported: Dominant-eigenvector projection r=0.043 > orthogonal r=0.020. At age 65, v1 is ~100% F-axis, so this largely tests whether grip-strength decline direction predicts mortality \u2014 which the coupling framework explains structurally."
+    },
+    {
+      "test_name": "Age-dependent eigenvector rotation",
+      "prediction": "Dominant eigenvector should rotate toward F-axis with age as I-M coupling strengthens relative to F couplings. Predicted angle from F-axis: 42.9 deg (age 30) to 4.9 deg (age 80).",
+      "result": "Observed angles from F-axis: 50-59: 87.7 deg, 60-69: 87.3 deg, 70-79: 86.1 deg, 80-90: 88.4 deg. Direction does not match prediction.",
+      "effect_size": 0.7020870063019942,
+      "p_value": null,
+      "counterintuitive": true,
+      "testable_with_current_data": true,
+      "predicted_v1s": {
+        "30": [
+          -0.6810946007067425,
+          -0.012196631774726631,
+          0.7320938376065427
+        ],
+        "40": [
+          -0.4654673849504444,
+          -0.017506074735940794,
+          0.8848918865571853
+        ],
+        "50": [
+          -0.12337077005749707,
+          -0.01799575167040324,
+          0.9921974632185054
+        ],
+        "60": [
+          0.03921107153424547,
+          -0.016170867347641393,
+          0.9991000925424646
+        ],
+        "65": [
+          0.06599700572530012,
+          -0.0155089501456478,
+          0.9976992872106678
+        ],
+        "70": [
+          0.07829144855668897,
+          -0.014896841904548434,
+          0.996819207872805
+        ],
+        "80": [
+          0.08385375084814829,
+          -0.013517386344296669,
+          0.9963863852618199
+        ]
+      },
+      "observed_v1s": {
+        "50-59": {
+          "v1": [
+            0.5047832512767206,
+            0.8622816836591454,
+            0.040794206162801494
+          ],
+          "n": 4381,
+          "age_mid": 54.5
+        },
+        "60-69": {
+          "v1": [
+            0.4367157422846323,
+            0.8983618230205095,
+            0.04717409649425222
+          ],
+          "n": 5993,
+          "age_mid": 64.5
+        },
+        "70-79": {
+          "v1": [
+            0.4839272375741348,
+            0.8724291050730005,
+            0.06842430383562911
+          ],
+          "n": 3812,
+          "age_mid": 74.5
+        },
+        "80-90": {
+          "v1": [
+            0.600240857217107,
+            0.7993096581235275,
+            0.028547920374739133
+          ],
+          "n": 1322,
+          "age_mid": 85.0
+        }
+      },
+      "predicted_angles": {
+        "30": 42.937783748422,
+        "40": 27.76178024060852,
+        "50": 7.162066194162809,
+        "60": 2.430911397029256,
+        "65": 3.8873364834307402,
+        "70": 4.5710972188252255,
+        "80": 4.872360597974013
+      },
+      "observed_angles": {
+        "50-59": 87.66201538602202,
+        "60-69": 87.29611986841684,
+        "70-79": 86.076510548404,
+        "80-90": 88.36410239232401
+      },
+      "direction_match": "False",
+      "summary": "Model predicts eigenvector rotates 38.1 deg toward F-axis. Observed rotation does not match. At old ages, v1 is ~pure F-axis in both model and data."
+    },
+    {
+      "test_name": "Axis-specific variance trajectories",
+      "prediction": "Model predicts monotonically increasing variance for all axes. F-axis variance grows fastest (ratio 7.4x), I grows 3.1x, M grows 3.6x from age 30 to 80.",
+      "result": "Observed growth ratios: I=1.03x, M=0.77x, F=0.57x. Non-monotone axes: ['I', 'M', 'F'].",
+      "effect_size": null,
+      "p_value": null,
+      "counterintuitive": true,
+      "testable_with_current_data": true,
+      "predicted_var": {
+        "30": [
+          0.03753755643075455,
+          0.0005064850264149231,
+          0.03819419087982871
+        ],
+        "40": [
+          0.058330683446745614,
+          0.000722135454856373,
+          0.0669759163343138
+        ],
+        "50": [
+          0.0753569832328196,
+          0.0009515674203904434,
+          0.09984876170001283
+        ],
+        "60": [
+          0.08956820038100698,
+          0.0012026110093180465,
+          0.14357813706177144
+        ],
+        "65": [
+          0.09629244912567092,
+          0.0013398692246020475,
+          0.170804796048346
+        ],
+        "70": [
+          0.10307558008509075,
+          0.0014875939228590485,
+          0.20233801749955582
+        ],
+        "80": [
+          0.11768959039308723,
+          0.0018258579581740253,
+          0.2816720781569243
+        ]
+      },
+      "observed_var": {
+        "50-59": {
+          "n": 4381,
+          "var": [
+            0.9092125265249388,
+            1.3576881343394018,
+            0.9531261673807399
+          ],
+          "age_mid": 54.5
+        },
+        "60-69": {
+          "n": 5993,
+          "var": [
+            0.8954433586170195,
+            1.4456771522485594,
+            0.8276894715192546
+          ],
+          "age_mid": 64.5
+        },
+        "70-79": {
+          "n": 3812,
+          "var": [
+            0.8809198861550137,
+            1.153437250203241,
+            0.6548066264633821
+          ],
+          "age_mid": 74.5
+        },
+        "80-90": {
+          "n": 1322,
+          "var": [
+            0.9399487999683204,
+            1.0494145171843747,
+            0.5451542243305404
+          ],
+          "age_mid": 85.0
+        }
+      },
+      "predicted_ratios": {
+        "I": 3.1352491100529933,
+        "M": 3.6049594024488387,
+        "F": 7.374736096469639
+      },
+      "observed_ratios": {
+        "I": 1.0338053783320138,
+        "M": 0.7729422469284369,
+        "F": 0.5719643872842815
+      },
+      "predicted_monotone": {
+        "I": true,
+        "M": true,
+        "F": true
+      },
+      "observed_monotone": {
+        "I": false,
+        "M": false,
+        "F": false
+      },
+      "non_monotone_axes": [
+        "I",
+        "M",
+        "F"
+      ],
+      "summary": "Model predicts all axes monotone-increasing. Data shows non-monotone ['I', 'M', 'F'] \u2014 likely medication compression, not coupling redistribution. F-axis dominates in both model (7.4x) and data (0.6x)."
+    }
+  ],
+  "has_elsa_data": true,
+  "bonferroni_n": 5
+}

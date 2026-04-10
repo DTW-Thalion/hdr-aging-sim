@@ -60,6 +60,10 @@ echo "--- R6 Pi Strong-Coupling Regime Analysis ---"
 python3 scripts/run_pi_regime_analysis.py
 
 echo ""
+echo "--- R6 Counterintuitive Predictions ---"
+python3 scripts/run_counterintuitive_predictions.py
+
+echo ""
 echo "--- R6 Change-Covariance Estimator Bias ---"
 python3 scripts/run_estimator_bias.py
 
