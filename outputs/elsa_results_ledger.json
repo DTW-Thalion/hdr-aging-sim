@@ -57,7 +57,7 @@
     },
     "within_person_lambda_max": {
       "note": "Within-person residual covariance \u03bb_max by baseline age stratum (3-axis)",
-      "50-59": 0.2450,
+      "50-59": 0.245,
       "60-69": 0.2432,
       "70-79": 0.2818,
       "80+": 0.2121
@@ -79,9 +79,9 @@
       "events": 1122,
       "M1": 0.6019,
       "M2": 0.6145,
-      "M3": 0.6030,
+      "M3": 0.603,
       "M4": 0.6093,
-      "M5": 0.6180,
+      "M5": 0.618,
       "delta_C_M5_M4": 0.0087,
       "c_index_method": "CoxPHFitter.concordance_index_ (Harrell's C)",
       "c_index_reconciliation": "model.concordance_index_ and lifelines.utils.concordance_index() produce identical values to 6 decimal places. Pipeline values are authoritative. Manuscript Table 1 absolute C-indices (0.710-0.750) originate from a different analysis specification; DeltaC values are consistent across both."
@@ -90,10 +90,10 @@
       "description": "3-axis Cox on medication-naive subsample",
       "N": 3233,
       "events": 618,
-      "M1": 0.5860,
-      "M2": 0.6050,
+      "M1": 0.586,
+      "M2": 0.605,
       "M3": 0.5861,
-      "M4": 0.6000,
+      "M4": 0.6,
       "M5": 0.6131,
       "delta_C_M5_M4": 0.0131,
       "c_index_method": "CoxPHFitter.concordance_index_ (Harrell's C)"
@@ -171,13 +171,13 @@
   "r6_figures": {
     "run_figure_coupling_tightening.py": {
       "path": "scripts/run_figure_coupling_tightening.py",
-      "sha256": "893d337068869bca1e5068f9ff0310beb3916fe215d141f8620208765da34678",
-      "size_bytes": 13373
+      "sha256": "65205293741e07618671e10fef8d46f080c77920c10a5930e7acec2332c5436f",
+      "size_bytes": 13811
     },
     "run_figure_mortality_prediction.py": {
       "path": "scripts/run_figure_mortality_prediction.py",
-      "sha256": "3f94bfba0089751cc2681d1f0fc9a9cdcc092a999fb1ceb66b9655ab2defe343",
-      "size_bytes": 21123
+      "sha256": "37677aea3dae7f6dc95037e9e0bc9231ccdb19ad2485007a5c2d8c4254760e10",
+      "size_bytes": 21661
     },
     "run_figure_medication_compression.py": {
       "path": "scripts/run_figure_medication_compression.py",
@@ -186,17 +186,17 @@
     },
     "figure_coupling_tightening.pdf": {
       "path": "outputs/figure_coupling_tightening.pdf",
-      "sha256": "55a736ca976ed932f3cd6624e76baffd7282cab74d9916a39ef74f95b61797e2",
+      "sha256": "bb737c135790e2292ae5ef076eaf2d957c4f643a12ffa8f8e7989669f6c8ffa2",
       "size_bytes": 44091
     },
     "figure_mortality_prediction.pdf": {
       "path": "outputs/figure_mortality_prediction.pdf",
-      "sha256": "0874ca9f4b6e3e475b6e31af60418b5c37d67b2143f1e23f1a3883b67c2b0bf2",
+      "sha256": "d258531d29bd5c03fa43d5971bf08a85c23858942773c5ba2a1b9b71c0c6541c",
       "size_bytes": 31029
     },
     "figure_medication_compression.pdf": {
       "path": "outputs/figure_medication_compression.pdf",
-      "sha256": "b2c218c59e3af456884d9da5cdeab18c4f7e6a644ad19efd6ac577ed3b8320b6",
+      "sha256": "f49bc4b48f3582e08434f730b0779fbf187f51fbad9ad565fc8deb95f9fdb3e4",
       "size_bytes": 141831
     }
   },
@@ -313,7 +313,7 @@
       "K3_bic": 168313.3,
       "K4_bic": 167772.8
     },
-    "interpretation": "Data-driven basin recovery produces d_min 63-104x larger than age-based assignment. GMM (d_min=1.32) and HMM (d_min=2.19) both confirm clusters reflect physiological state, not age per se. HMM reveals an absorbing disease state (H→D=0.029, D→H≈0), consistent with irreversible multi-system dysregulation. Daily wearable deployment threshold met in ~2 months (GMM) or ~1 week (HMM)."
+    "interpretation": "Data-driven basin recovery produces d_min 63-104x larger than age-based assignment. GMM (d_min=1.32) and HMM (d_min=2.19) both confirm clusters reflect physiological state, not age per se. HMM reveals an absorbing disease state (H\u00e2\u2020\u2019D=0.029, D\u00e2\u2020\u2019H\u00e2\u2030\u02c60), consistent with irreversible multi-system dysregulation. Daily wearable deployment threshold met in ~2 months (GMM) or ~1 week (HMM)."
   },
-  "r6_notes": "R6 restructures ELSA validation figures into 3 separate 3-panel figures (coupling tightening, mortality prediction, medication compression) to support the revised Results narrative where medication compression is the central finding. The D vs J primacy decomposition tests whether aging is driven by D-degradation (capacity loss) or J-degradation (coupling strengthening). The ICI deployment assessment evaluates whether existing cohort data density is sufficient for safe closed-loop deployment. The basin recovery analysis demonstrates that latent basins are recoverable from the data via GMM and HMM, addressing the TCST adversarial review. HMM additionally reveals an absorbing disease state with near-zero back-transition probability."
+  "r6_notes": "R6 restructures ELSA validation figures into 3 separate 3-panel figures (coupling tightening, mortality prediction, medication compression) to support the revised Results narrative where medication compression is the central finding."
 }

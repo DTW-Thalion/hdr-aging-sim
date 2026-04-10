@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-04-10T00:47:32Z",
+  "timestamp": "2026-04-10T00:51:06Z",
   "j_matrix": {
     "csv_path": "C:\\Users\\toddw\\OneDrive\\Documents\\GitHub\\hdr-aging-sim\\data\\provenance\\J_R6_ontology_v1.6.csv",
     "version": "J_R6_ontology_v1.6",
@@ -119,12 +119,12 @@
       }
     ],
     "5_sensitivity": {
-      "elapsed_s": 0.9,
+      "elapsed_s": 1.0,
       "monotone_fraction": 1.0,
       "stable_80": 1.0
     },
     "6_cohort": {
-      "elapsed_s": 4.5,
+      "elapsed_s": 4.6,
       "n_persons": 2000
     },
     "7_tier1": {
@@ -152,7 +152,7 @@
       "any_synergy": true
     },
     "10_abc": {
-      "elapsed_s": 1.0,
+      "elapsed_s": 1.2,
       "n_accepted": 25,
       "acceptance_rate": 0.05,
       "mean_std_ratio": 0.7160459974544262,
@@ -160,5 +160,5 @@
       "sign_concordance_p": 0.029
     }
   },
-  "total_elapsed_s": 6.6
+  "total_elapsed_s": 7.0
 }

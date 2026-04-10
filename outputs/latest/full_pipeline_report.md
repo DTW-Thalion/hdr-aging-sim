@@ -1,6 +1,6 @@
 # Full Pipeline Report
 
-Generated: 2026-04-10T00:47:32Z
+Generated: 2026-04-10T00:51:14Z
 
 ## Step 1: Load mechanistic evidence
 - All axes: ['I', 'M', 'E', 'mito', 'P', 'C', 'N', 'F', 'B']
@@ -30,14 +30,14 @@ Generated: 2026-04-10T00:47:32Z
 | 80 | -0.010035 | 99.6 | 1.0000 | 0.131673 | True |
 
 ## Step 5: Sensitivity analysis (N=1000, prior_scale=0.12)
-- Elapsed: 0.9s
+- Elapsed: 1.1s
 - Monotone fraction: 1.0000
 - Age 30: stable=100.0%, alpha_mean=-0.120016
 - Age 50: stable=100.0%, alpha_mean=-0.039475
 - Age 80: stable=100.0%, alpha_mean=-0.010138
 
 ## Step 6: Synthetic ELSA-like cohort (N=2000)
-- Generated in 4.5s
+- Generated in 4.6s
 - Persons: 2000, Visits: 4
 - Biomarkers: ['log_CRP', 'HbA1c_BMI', 'grip_strength']
 
@@ -91,7 +91,7 @@ Generated: 2026-04-10T00:47:32Z
 - Proposals: 500
 - Accepted: 25 (5.0%)
 - Tolerance: 0.9226
-- Elapsed: 1.0s
+- Elapsed: 1.1s
 - Entries tightened: 23/26
 - Entries shifted: 4/26
 - Mean posterior/prior std ratio: 0.716
@@ -99,7 +99,7 @@ Generated: 2026-04-10T00:47:32Z
 
 ## Summary
 
-Total elapsed: 6.6s
+Total elapsed: 7.0s
 
 | Step | Status |
 |------|--------|
@@ -107,7 +107,7 @@ Total elapsed: 6.6s
 | 2-3. Stability | alpha=-0.021218 |
 | 4. Age trajectory | 6 ages, all stable |
 | 5. Sensitivity | monotone=1.000 |
-| 6. Synthetic cohort | N=2000 in 4.5s |
+| 6. Synthetic cohort | N=2000 in 4.6s |
 | 7. Tier-1 | Gamma_change increases: True |
 | 8. Interventions | top: exercise_resistance |
 | 9. Factorial | 8 arms, synergy: True |

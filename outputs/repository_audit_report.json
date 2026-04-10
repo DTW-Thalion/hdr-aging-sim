@@ -1,0 +1,628 @@
+{
+  "timestamp": "2026-04-10T00:51:22.482243+00:00",
+  "python_version": "3.14.3 (tags/v3.14.3:323c59a, Feb  3 2026, 16:04:56) [MSC v.1944 64 bit (AMD64)]",
+  "phases": {
+    "phase1": {
+      "python_version": "3.14.3 (tags/v3.14.3:323c59a, Feb  3 2026, 16:04:56) [MSC v.1944 64 bit (AMD64)]",
+      "python_ok": true,
+      "modules_ok": 17,
+      "modules_failed": [],
+      "data_files": {
+        "J_matrix_compiled_9x9.csv": true,
+        "J_matrix_compiled.csv": true,
+        "J_R6_ontology_v1.6.csv": true,
+        "provenance/README.md": true,
+        "mechanistic_evidence/": true,
+        "elsa/gh_elsa_h_hdr_subset.tab": true,
+        "sync_log.json": false
+      },
+      "elsa_present": true
+    },
+    "phase2": {
+      "exit_code": 0,
+      "total": 108,
+      "passed": 108,
+      "failed": 0,
+      "errors": 0,
+      "warnings": 0,
+      "failures": [],
+      "output": "============================= 108 passed in 1.50s ============================="
+    },
+    "phase3": {
+      "combinations": [
+        {
+          "csv": "9x9",
+          "axes": [
+            "I",
+            "M"
+          ],
+          "n_axes": 2,
+          "alpha_30": -0.13400000000000034,
+          "alpha_50": -0.03643423602263596,
+          "alpha_80": 0.07948898269658367,
+          "status": "UNSTABLE"
+        },
+        {
+          "csv": "9x9",
+          "axes": [
+            "I",
+            "M",
+            "F"
+          ],
+          "n_axes": 3,
+          "alpha_30": -0.13392856370181228,
+          "alpha_50": -0.0515519982899123,
+          "alpha_80": -0.03188390811482711,
+          "status": "PASS"
+        },
+        {
+          "csv": "9x9",
+          "axes": [
+            "I",
+            "M",
+            "N",
+            "F"
+          ],
+          "n_axes": 4,
+          "alpha_30": -0.1339285903243616,
+          "alpha_50": -0.058343185350177275,
+          "alpha_80": -0.03180761339581631,
+          "status": "PASS"
+        },
+        {
+          "csv": "9x9",
+          "axes": [
+            "I",
+            "M",
+            "E",
+            "mito",
+            "F"
+          ],
+          "n_axes": 5,
+          "alpha_30": -0.055883352391198404,
+          "alpha_50": 0.13098821916340697,
+          "alpha_80": 0.3743001551993974,
+          "status": "UNSTABLE"
+        },
+        {
+          "csv": "9x9",
+          "axes": [
+            "I",
+            "M",
+            "mito",
+            "P",
+            "C",
+            "N",
+            "F"
+          ],
+          "n_axes": 7,
+          "alpha_30": -0.1339216886867994,
+          "alpha_50": -0.05173306569964514,
+          "alpha_80": -0.03163168328231711,
+          "status": "PASS"
+        },
+        {
+          "csv": "9x9",
+          "axes": [
+            "I",
+            "M",
+            "E",
+            "mito",
+            "P",
+            "C",
+            "N",
+            "F",
+            "B"
+          ],
+          "n_axes": 9,
+          "alpha_30": -0.004279209079760614,
+          "alpha_50": 0.06721024357886812,
+          "alpha_80": 0.23587962908652382,
+          "status": "UNSTABLE"
+        },
+        {
+          "csv": "provenance",
+          "axes": [
+            "I",
+            "M"
+          ],
+          "n_axes": 2,
+          "alpha_30": -0.13400000000000034,
+          "alpha_50": -0.03643423602263596,
+          "alpha_80": 0.07948898269658367,
+          "status": "UNSTABLE"
+        },
+        {
+          "csv": "provenance",
+          "axes": [
+            "I",
+            "M",
+            "F"
+          ],
+          "n_axes": 3,
+          "alpha_30": -0.13392856370181228,
+          "alpha_50": -0.0515519982899123,
+          "alpha_80": -0.03188390811482711,
+          "status": "PASS"
+        },
+        {
+          "csv": "provenance",
+          "axes": [
+            "I",
+            "M",
+            "N",
+            "F"
+          ],
+          "n_axes": 4,
+          "alpha_30": -0.1339285903243616,
+          "alpha_50": -0.058343185350177275,
+          "alpha_80": -0.03180761339581631,
+          "status": "PASS"
+        },
+        {
+          "csv": "provenance",
+          "axes": [
+            "I",
+            "M",
+            "E",
+            "mito",
+            "F"
+          ],
+          "n_axes": 5,
+          "alpha_30": -0.055883352391198404,
+          "alpha_50": 0.13098821916340697,
+          "alpha_80": 0.3743001551993974,
+          "status": "UNSTABLE"
+        },
+        {
+          "csv": "provenance",
+          "axes": [
+            "I",
+            "M",
+            "mito",
+            "P",
+            "C",
+            "N",
+            "F"
+          ],
+          "n_axes": 7,
+          "alpha_30": -0.1339216886867994,
+          "alpha_50": -0.05173306569964514,
+          "alpha_80": -0.03163168328231711,
+          "status": "PASS"
+        },
+        {
+          "csv": "provenance",
+          "axes": [
+            "I",
+            "M",
+            "E",
+            "mito",
+            "P",
+            "C",
+            "N",
+            "F",
+            "B"
+          ],
+          "n_axes": 9,
+          "alpha_30": -0.004279209079760614,
+          "alpha_50": 0.06721024357886812,
+          "alpha_80": 0.23587962908652382,
+          "status": "UNSTABLE"
+        },
+        {
+          "csv": "legacy_8x8",
+          "axes": [
+            "I",
+            "M"
+          ],
+          "n_axes": 2,
+          "alpha_30": -0.13400000000003232,
+          "alpha_50": -0.01990800622822242,
+          "alpha_80": 0.17777054362182954,
+          "status": "UNSTABLE"
+        },
+        {
+          "csv": "legacy_8x8",
+          "axes": [
+            "I",
+            "M",
+            "F"
+          ],
+          "n_axes": 3,
+          "alpha_30": -0.1339999999999999,
+          "alpha_50": -0.05828889301679351,
+          "alpha_80": -0.030270829467065295,
+          "status": "PASS"
+        },
+        {
+          "csv": "legacy_8x8",
+          "axes": [
+            "I",
+            "M",
+            "N",
+            "F"
+          ],
+          "n_axes": 4,
+          "alpha_30": -0.13400000000000073,
+          "alpha_50": -0.058284078043780135,
+          "alpha_80": -0.030210677147191486,
+          "status": "PASS"
+        },
+        {
+          "csv": "legacy_8x8",
+          "axes": [
+            "I",
+            "M",
+            "E",
+            "mito",
+            "F"
+          ],
+          "n_axes": 5,
+          "alpha_30": -0.04902122106960495,
+          "alpha_50": 0.42425786835309065,
+          "alpha_80": 1.1276522187421754,
+          "status": "UNSTABLE"
+        },
+        {
+          "csv": "legacy_8x8",
+          "axes": [
+            "I",
+            "M",
+            "mito",
+            "P",
+            "C",
+            "N",
+            "F"
+          ],
+          "n_axes": 7,
+          "alpha_30": -0.1340000000000151,
+          "alpha_50": -0.05838394716087626,
+          "alpha_80": -0.03114340864587576,
+          "status": "PASS"
+        },
+        {
+          "csv": "legacy_8x8",
+          "axes": [
+            "I",
+            "M",
+            "E",
+            "mito",
+            "P",
+            "C",
+            "N",
+            "F",
+            "B"
+          ],
+          "n_axes": 9,
+          "alpha_30": -0.011111111111111112,
+          "alpha_50": 0.3309361225712948,
+          "alpha_80": 1.3515056132858607,
+          "status": "UNSTABLE"
+        }
+      ],
+      "stable_count": 9,
+      "unstable_count": 9,
+      "fail_count": 0,
+      "all_stable": false
+    },
+    "phase4": {
+      "results": [
+        {
+          "script": "run_figure2b.py",
+          "exit_code": 0,
+          "duration": 2.3,
+          "status": "PASS",
+          "warnings": [],
+          "stderr_tail": ""
+        },
+        {
+          "script": "run_figure_frailty.py",
+          "exit_code": 0,
+          "duration": 2.0,
+          "status": "PASS",
+          "warnings": [],
+          "stderr_tail": ""
+        },
+        {
+          "script": "run_figure_t2d.py",
+          "exit_code": 0,
+          "duration": 88.4,
+          "status": "PASS",
+          "warnings": [],
+          "stderr_tail": ""
+        },
+        {
+          "script": "run_figure_recoverability.py",
+          "exit_code": 0,
+          "duration": 3.4,
+          "status": "PASS",
+          "warnings": [],
+          "stderr_tail": ""
+        },
+        {
+          "script": "run_figure_uncertainty.py",
+          "exit_code": 0,
+          "duration": 3.6,
+          "status": "PASS",
+          "warnings": [],
+          "stderr_tail": ""
+        },
+        {
+          "script": "run_figure_Q_sensitivity.py",
+          "exit_code": 0,
+          "duration": 2.4,
+          "status": "PASS",
+          "warnings": [],
+          "stderr_tail": ""
+        },
+        {
+          "script": "run_figure_gamma_equivalence.py",
+          "exit_code": 0,
+          "duration": 4.5,
+          "status": "PASS",
+          "warnings": [],
+          "stderr_tail": ""
+        },
+        {
+          "script": "run_figure_prior_stress.py",
+          "exit_code": 0,
+          "duration": 2.5,
+          "status": "PASS",
+          "warnings": [],
+          "stderr_tail": ""
+        },
+        {
+          "script": "run_figure_individual_proxy.py",
+          "exit_code": 0,
+          "duration": 5.6,
+          "status": "PASS",
+          "warnings": [],
+          "stderr_tail": ""
+        },
+        {
+          "script": "run_figure_network_schematic.py",
+          "exit_code": 0,
+          "duration": 2.1,
+          "status": "PASS",
+          "warnings": [],
+          "stderr_tail": ""
+        },
+        {
+          "script": "run_figure_J_heatmap.py",
+          "exit_code": 0,
+          "duration": 3.1,
+          "status": "PASS",
+          "warnings": [],
+          "stderr_tail": ""
+        },
+        {
+          "script": "run_figure_disease_demos.py",
+          "exit_code": 0,
+          "duration": 45.1,
+          "status": "PASS",
+          "warnings": [],
+          "stderr_tail": ""
+        },
+        {
+          "script": "run_dj_validation.py",
+          "exit_code": 0,
+          "duration": 83.0,
+          "status": "PASS",
+          "warnings": [],
+          "stderr_tail": ""
+        },
+        {
+          "script": "run_dj_power.py",
+          "exit_code": 0,
+          "duration": 96.5,
+          "status": "PASS",
+          "warnings": [],
+          "stderr_tail": ""
+        },
+        {
+          "script": "run_dj_bayes_robust.py",
+          "exit_code": 0,
+          "duration": 399.8,
+          "status": "PASS",
+          "warnings": [],
+          "stderr_tail": "C:\\Users\\toddw\\OneDrive\\Documents\\GitHub\\hdr-aging-sim\\scripts\\run_dj_bayes_robust.py:572: UserWarning: This figure includes Axes that are not compatible with tight_layout, so results might be incorrect.\r\n  fig.tight_layout()\r\n"
+        },
+        {
+          "script": "run_full_pipeline.py",
+          "exit_code": 0,
+          "duration": 8.2,
+          "status": "PASS",
+          "warnings": [],
+          "stderr_tail": ""
+        },
+        {
+          "script": "run_dj_primacy_mechanistic.py",
+          "exit_code": 0,
+          "duration": 108.3,
+          "status": "PASS",
+          "warnings": [],
+          "stderr_tail": ""
+        }
+      ],
+      "parameterised_runs": [
+        {
+          "script": "run_figure_uncertainty.py",
+          "args": "--j-matrix C:\\Users\\toddw\\OneDrive\\Documents\\GitHub\\hdr-aging-sim\\data\\provenance\\J_R6_ontology_v1.6.csv --axes I M",
+          "exit_code": 0,
+          "duration": 3.5,
+          "status": "PASS"
+        },
+        {
+          "script": "run_figure_uncertainty.py",
+          "args": "--j-matrix C:\\Users\\toddw\\OneDrive\\Documents\\GitHub\\hdr-aging-sim\\data\\provenance\\J_R6_ontology_v1.6.csv --axes I M E mito P C N F B",
+          "exit_code": 0,
+          "duration": 6.3,
+          "status": "PASS"
+        },
+        {
+          "script": "run_figure_J_heatmap.py",
+          "args": "--j-matrix C:\\Users\\toddw\\OneDrive\\Documents\\GitHub\\hdr-aging-sim\\data\\provenance\\J_R6_ontology_v1.6.csv",
+          "exit_code": 0,
+          "duration": 3.2,
+          "status": "PASS"
+        },
+        {
+          "script": "run_figure_network_schematic.py",
+          "args": "--j-matrix C:\\Users\\toddw\\OneDrive\\Documents\\GitHub\\hdr-aging-sim\\data\\provenance\\J_R6_ontology_v1.6.csv",
+          "exit_code": 0,
+          "duration": 2.1,
+          "status": "PASS"
+        },
+        {
+          "script": "run_full_pipeline.py",
+          "args": "--j-matrix C:\\Users\\toddw\\OneDrive\\Documents\\GitHub\\hdr-aging-sim\\data\\provenance\\J_R6_ontology_v1.6.csv",
+          "exit_code": 0,
+          "duration": 7.7,
+          "status": "PASS"
+        }
+      ]
+    },
+    "phase5": {
+      "skipped": false,
+      "results": [
+        {
+          "script": "run_elsa_validation.py",
+          "exit_code": 0,
+          "duration": 32.0,
+          "status": "PASS",
+          "stderr_tail": ""
+        },
+        {
+          "script": "run_medication_sensitivity.py",
+          "exit_code": 0,
+          "duration": 15.8,
+          "status": "PASS",
+          "stderr_tail": ""
+        },
+        {
+          "script": "run_figure_coupling_tightening.py",
+          "exit_code": 0,
+          "duration": 73.3,
+          "status": "PASS",
+          "stderr_tail": ""
+        },
+        {
+          "script": "run_figure_mortality_prediction.py",
+          "exit_code": 0,
+          "duration": 17.6,
+          "status": "PASS",
+          "stderr_tail": ""
+        },
+        {
+          "script": "run_figure_medication_compression.py",
+          "exit_code": 0,
+          "duration": 27.2,
+          "status": "PASS",
+          "stderr_tail": ""
+        },
+        {
+          "script": "run_elsa_ici_deployment.py",
+          "exit_code": 0,
+          "duration": 5.7,
+          "status": "PASS",
+          "stderr_tail": ""
+        },
+        {
+          "script": "run_dj_primacy.py",
+          "exit_code": 0,
+          "duration": 7.4,
+          "status": "PASS",
+          "stderr_tail": ""
+        },
+        {
+          "script": "run_figure_dj_pairwise.py",
+          "exit_code": 0,
+          "duration": 6.5,
+          "status": "PASS",
+          "stderr_tail": ""
+        },
+        {
+          "script": "diagnose_delta_c.py",
+          "exit_code": 0,
+          "duration": 9.1,
+          "status": "PASS",
+          "stderr_tail": ""
+        }
+      ]
+    },
+    "phase6": {
+      "results": [
+        {
+          "script": "verify_J_counts.py",
+          "exit_code": 0,
+          "duration": 1.7,
+          "status": "PASS",
+          "stderr_tail": ""
+        },
+        {
+          "script": "verify_J_counts.py --csv C:\\Users\\toddw\\OneDrive\\Documents\\GitHub\\hdr-aging-sim\\data\\J_matrix_compiled.csv",
+          "exit_code": 0,
+          "duration": 1.5,
+          "status": "PASS",
+          "stderr_tail": ""
+        },
+        {
+          "script": "verify_J_counts.py --csv C:\\Users\\toddw\\OneDrive\\Documents\\GitHub\\hdr-aging-sim\\data\\provenance\\J_R6_ontology_v1.6.csv",
+          "exit_code": 0,
+          "duration": 1.5,
+          "status": "PASS",
+          "stderr_tail": ""
+        },
+        {
+          "script": "sync_j_from_companion.py C:\\Users\\toddw\\OneDrive\\Documents\\GitHub\\hdr-aging-sim\\data\\J_matrix_compiled_9x9.csv --dry-run",
+          "exit_code": 0,
+          "duration": 1.2,
+          "status": "PASS",
+          "stderr_tail": ""
+        },
+        {
+          "script": "populate_pmids.py",
+          "exit_code": 0,
+          "duration": 0.1,
+          "status": "PASS",
+          "stderr_tail": ""
+        },
+        {
+          "script": "update_ledger_r6.py",
+          "exit_code": 0,
+          "duration": 0.1,
+          "status": "PASS",
+          "stderr_tail": ""
+        }
+      ]
+    },
+    "phase7": {
+      "status": "PASS",
+      "exit_code": 0,
+      "duration": 3.9,
+      "stderr_tail": ""
+    },
+    "phase8": {
+      "j_comparison": {
+        "status": "PASS",
+        "exit_code": 0,
+        "sha_match": true,
+        "duration": 18.0
+      },
+      "error_handling": {
+        "status": "PASS",
+        "has_traceback": false,
+        "exit_code": 1
+      }
+    }
+  },
+  "summary": {
+    "total_checks": 60,
+    "passed": 60,
+    "failed": 0,
+    "skipped": 0,
+    "warnings": 9,
+    "failures_list": []
+  }
+}

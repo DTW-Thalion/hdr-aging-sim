@@ -1,0 +1,53 @@
+{
+  "timestamp": "2026-04-10T00:51:22Z",
+  "baseline_file": "C:\\Users\\toddw\\OneDrive\\Documents\\GitHub\\hdr-aging-sim\\outputs\\R6_provenance\\full_pipeline.json",
+  "candidate_file": "C:\\Users\\toddw\\OneDrive\\Documents\\GitHub\\hdr-aging-sim\\outputs\\latest\\full_pipeline.json",
+  "baseline_j": {
+    "sha256": "b153e38716e98ee851d1a15988a81efad8c09671878d12722ee7e3f28a58c9e5",
+    "n_axes": 9,
+    "sign_counts": {
+      "positive": 57,
+      "negative": 11,
+      "unknown": 4
+    },
+    "axes": [
+      "B",
+      "C",
+      "E",
+      "F",
+      "I",
+      "M",
+      "N",
+      "P",
+      "mito"
+    ],
+    "version": "J_R6_ontology_v1.6"
+  },
+  "candidate_j": {
+    "sha256": "b153e38716e98ee851d1a15988a81efad8c09671878d12722ee7e3f28a58c9e5",
+    "n_axes": 9,
+    "sign_counts": {
+      "positive": 57,
+      "negative": 11,
+      "unknown": 4
+    },
+    "axes": [
+      "B",
+      "C",
+      "E",
+      "F",
+      "I",
+      "M",
+      "N",
+      "P",
+      "mito"
+    ],
+    "version": "J_matrix_compiled_9x9"
+  },
+  "j_metadata_diffs": [
+    "version"
+  ],
+  "numerical_diffs": [],
+  "test_outcome_diffs": [],
+  "summary": "J-matrix metadata has 1 difference(s). no numerical metrics changed. no test outcomes changed."
+}
