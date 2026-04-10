@@ -7,12 +7,21 @@ sensitivity analysis, synthetic cohort generation, intervention
 framework, and Bayesian prior updating scaffold.
 
 Key entry points:
-    configure(axes=('I','M','F'))   — set up aging model for an axis subset
-    tau_of_age(age), J_of_age(age)  — age-interpolated parameters
-    JMatrixSpec.from_csv(path)      — provenance tracking for J-matrix CSVs
+    configure(axes=('I','M','F'))      — legacy setup (ages 30-80, linear interp)
+    configure_v2(axes=('I','M','F'))   — V2 lit-calibrated (ages 25-120, Gompertz)
+    tau_of_age(age), J_of_age(age)     — age-interpolated parameters
+    tau_at_age(axis, age)              — V2 single-axis tau at any age
+    tau_vector(axes, age)              — V2 multi-axis tau vector
+    JMatrixSpec.from_csv(path)         — provenance tracking for J-matrix CSVs
 """
-from .csv_loader import load_J_csv, build_J_basin, get_J_anchors, TAU_REGISTRY
-from .aging_params import configure, tau_of_age, J_of_age, get_axis_names, get_axis_colors
+from .csv_loader import (
+    load_J_csv, build_J_basin, build_J_basin_imputed,
+    get_J_anchors, get_J_anchors_v2,
+    TAU_REGISTRY, TAU_REGISTRY_LEGACY, TAU_REGISTRY_V2,
+    tau_at_age, tau_vector, J_at_age,
+    calibrate_three_point,
+)
+from .aging_params import configure, configure_v2, tau_of_age, J_of_age, get_axis_names, get_axis_colors
 from .j_matrix_spec import JMatrixSpec
 from .estimation import (
     get_params,

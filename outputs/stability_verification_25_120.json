@@ -1,0 +1,401 @@
+{
+  "timestamp": "2026-04-10T21:59:57Z",
+  "script": "run_stability_verification.py",
+  "tau_registry": "V2 (literature-calibrated)",
+  "pyrkov_target": "alpha(a) = -0.134 * exp(-0.038 * (a - 25))",
+  "results": [
+    {
+      "label": "9x9 imputed (68/72)",
+      "axes": [
+        "I",
+        "M",
+        "E",
+        "mito",
+        "P",
+        "C",
+        "N",
+        "F",
+        "B"
+      ],
+      "n_axes": 9,
+      "calibration_scalar": 6.02141664773203e-06,
+      "alpha_at_25": -0.001999999992001971,
+      "max_stable_age": 120,
+      "all_stable": true,
+      "age_sweep": [
+        {
+          "age": 25,
+          "alpha": -0.001999999992001971,
+          "alpha_target": -0.134,
+          "stable": true,
+          "recovery_timescale_days": 500.0000019995072
+        },
+        {
+          "age": 30,
+          "alpha": -0.00157142856164187,
+          "alpha_target": -0.11081252394841055,
+          "stable": true,
+          "recovery_timescale_days": 636.363640326846
+        },
+        {
+          "age": 40,
+          "alpha": -0.001099999986284554,
+          "alpha_target": -0.07578040878573797,
+          "stable": true,
+          "recovery_timescale_days": 909.0909204259885
+        },
+        {
+          "age": 50,
+          "alpha": -0.0008461538272076664,
+          "alpha_target": -0.051823297142903166,
+          "stable": true,
+          "recovery_timescale_days": 1181.818208280202
+        },
+        {
+          "age": 60,
+          "alpha": -0.0006874999729775424,
+          "alpha_target": -0.03543995301417641,
+          "stable": true,
+          "recovery_timescale_days": 1454.5455117169372
+        },
+        {
+          "age": 70,
+          "alpha": -0.0005789473277272464,
+          "alpha_target": -0.024236016210694364,
+          "stable": true,
+          "recovery_timescale_days": 1727.2728486815297
+        },
+        {
+          "age": 80,
+          "alpha": -0.0004999999343698863,
+          "alpha_target": -0.016574076199538948,
+          "stable": true,
+          "recovery_timescale_days": 2000.0002625204895
+        },
+        {
+          "age": 90,
+          "alpha": -0.0003636362495719167,
+          "alpha_target": -0.011334371106209674,
+          "stable": true,
+          "recovery_timescale_days": 2750.0008626126505
+        },
+        {
+          "age": 100,
+          "alpha": -0.00028571407231250934,
+          "alpha_target": -0.007751138997228354,
+          "stable": true,
+          "recovery_timescale_days": 3500.002614173713
+        },
+        {
+          "age": 110,
+          "alpha": -0.00023529369133897226,
+          "alpha_target": -0.005300704837645429,
+          "stable": true,
+          "recovery_timescale_days": 4250.007700203765
+        },
+        {
+          "age": 120,
+          "alpha": -0.00019999909890041186,
+          "alpha_target": -0.003624947480090956,
+          "stable": true,
+          "recovery_timescale_days": 5000.022527591202
+        }
+      ],
+      "nonzero_entries": 68,
+      "total_off_diag": 72
+    },
+    {
+      "label": "9x9 original (42/72)",
+      "axes": [
+        "I",
+        "M",
+        "E",
+        "mito",
+        "P",
+        "C",
+        "N",
+        "F",
+        "B"
+      ],
+      "n_axes": 9,
+      "calibration_scalar": 0.6260101113252465,
+      "alpha_at_25": -0.014482860114734566,
+      "max_stable_age": 40,
+      "all_stable": false,
+      "age_sweep": [
+        {
+          "age": 25,
+          "alpha": -0.014482860114734566,
+          "alpha_target": -0.134,
+          "stable": true,
+          "recovery_timescale_days": 69.04713517067118
+        },
+        {
+          "age": 30,
+          "alpha": -0.00875463896177833,
+          "alpha_target": -0.11081252394841055,
+          "stable": true,
+          "recovery_timescale_days": 114.22515587060487
+        },
+        {
+          "age": 40,
+          "alpha": -0.001872253815725485,
+          "alpha_target": -0.07578040878573797,
+          "stable": true,
+          "recovery_timescale_days": 534.1156159494898
+        },
+        {
+          "age": 50,
+          "alpha": 0.005439101547867815,
+          "alpha_target": -0.051823297142903166,
+          "stable": false,
+          "recovery_timescale_days": 183.8538941035235
+        },
+        {
+          "age": 60,
+          "alpha": 0.030974542329462847,
+          "alpha_target": -0.03543995301417641,
+          "stable": false,
+          "recovery_timescale_days": 32.28457710087953
+        },
+        {
+          "age": 70,
+          "alpha": 0.07217725010579845,
+          "alpha_target": -0.024236016210694364,
+          "stable": false,
+          "recovery_timescale_days": 13.854781091468373
+        },
+        {
+          "age": 80,
+          "alpha": 0.1576192495044001,
+          "alpha_target": -0.016574076199538948,
+          "stable": false,
+          "recovery_timescale_days": 6.3444027499451074
+        },
+        {
+          "age": 90,
+          "alpha": 0.31769837855733585,
+          "alpha_target": -0.011334371106209674,
+          "stable": false,
+          "recovery_timescale_days": 3.147639608804385
+        },
+        {
+          "age": 100,
+          "alpha": 0.5884555056488159,
+          "alpha_target": -0.007751138997228354,
+          "stable": false,
+          "recovery_timescale_days": 1.6993638268324565
+        },
+        {
+          "age": 110,
+          "alpha": 1.0054389419002527,
+          "alpha_target": -0.005300704837645429,
+          "stable": false,
+          "recovery_timescale_days": 0.9945904801638443
+        },
+        {
+          "age": 120,
+          "alpha": 1.6406128280958774,
+          "alpha_target": -0.003624947480090956,
+          "stable": false,
+          "recovery_timescale_days": 0.6095283316543469
+        }
+      ],
+      "nonzero_entries": 42,
+      "total_off_diag": 72
+    },
+    {
+      "label": "7-axis fast (excl. E,B)",
+      "axes": [
+        "I",
+        "M",
+        "mito",
+        "P",
+        "C",
+        "N",
+        "F"
+      ],
+      "n_axes": 7,
+      "calibration_scalar": 1.57540368863607,
+      "alpha_at_25": -0.13400000000005005,
+      "max_stable_age": 50,
+      "all_stable": false,
+      "age_sweep": [
+        {
+          "age": 25,
+          "alpha": -0.13400000000005005,
+          "alpha_target": -0.134,
+          "stable": true,
+          "recovery_timescale_days": 7.462686567161391
+        },
+        {
+          "age": 30,
+          "alpha": -0.14661263490237264,
+          "alpha_target": -0.11081252394841055,
+          "stable": true,
+          "recovery_timescale_days": 6.820694551092997
+        },
+        {
+          "age": 40,
+          "alpha": -0.09918767402138551,
+          "alpha_target": -0.07578040878573797,
+          "stable": true,
+          "recovery_timescale_days": 10.081897875580724
+        },
+        {
+          "age": 50,
+          "alpha": -0.014558259887791915,
+          "alpha_target": -0.051823297142903166,
+          "stable": true,
+          "recovery_timescale_days": 68.68952798669075
+        },
+        {
+          "age": 60,
+          "alpha": 0.07651916458739996,
+          "alpha_target": -0.03543995301417641,
+          "stable": false,
+          "recovery_timescale_days": 13.06862150667893
+        },
+        {
+          "age": 70,
+          "alpha": 0.18981555997235677,
+          "alpha_target": -0.024236016210694364,
+          "stable": false,
+          "recovery_timescale_days": 5.2682720012291515
+        },
+        {
+          "age": 80,
+          "alpha": 0.531819545689458,
+          "alpha_target": -0.016574076199538948,
+          "stable": false,
+          "recovery_timescale_days": 1.8803370581342334
+        },
+        {
+          "age": 90,
+          "alpha": 1.1165344280974072,
+          "alpha_target": -0.011334371106209674,
+          "stable": false,
+          "recovery_timescale_days": 0.8956284507088744
+        },
+        {
+          "age": 100,
+          "alpha": 1.8873005247541104,
+          "alpha_target": -0.007751138997228354,
+          "stable": false,
+          "recovery_timescale_days": 0.5298573210168986
+        },
+        {
+          "age": 110,
+          "alpha": 2.9996917862049464,
+          "alpha_target": -0.005300704837645429,
+          "stable": false,
+          "recovery_timescale_days": 0.3333675828292839
+        },
+        {
+          "age": 120,
+          "alpha": 4.629975619861459,
+          "alpha_target": -0.003624947480090956,
+          "stable": false,
+          "recovery_timescale_days": 0.21598385868604694
+        }
+      ],
+      "nonzero_entries": 42,
+      "total_off_diag": 42
+    },
+    {
+      "label": "4-axis classic (I,M,N,F)",
+      "axes": [
+        "I",
+        "M",
+        "N",
+        "F"
+      ],
+      "n_axes": 4,
+      "calibration_scalar": 14.591632708055236,
+      "alpha_at_25": -0.1340000000000111,
+      "max_stable_age": 30,
+      "all_stable": false,
+      "age_sweep": [
+        {
+          "age": 25,
+          "alpha": -0.1340000000000111,
+          "alpha_target": -0.134,
+          "stable": true,
+          "recovery_timescale_days": 7.46268656716356
+        },
+        {
+          "age": 30,
+          "alpha": -0.01214319335885794,
+          "alpha_target": -0.11081252394841055,
+          "stable": true,
+          "recovery_timescale_days": 82.35066102036025
+        },
+        {
+          "age": 40,
+          "alpha": 0.26320487135610404,
+          "alpha_target": -0.07578040878573797,
+          "stable": false,
+          "recovery_timescale_days": 3.799321778687926
+        },
+        {
+          "age": 50,
+          "alpha": 0.5928368299904818,
+          "alpha_target": -0.051823297142903166,
+          "stable": false,
+          "recovery_timescale_days": 1.6868047823817818
+        },
+        {
+          "age": 60,
+          "alpha": 1.0041541544420032,
+          "alpha_target": -0.03543995301417641,
+          "stable": false,
+          "recovery_timescale_days": 0.9958630311654573
+        },
+        {
+          "age": 70,
+          "alpha": 1.543420118714434,
+          "alpha_target": -0.024236016210694364,
+          "stable": false,
+          "recovery_timescale_days": 0.6479117304969001
+        },
+        {
+          "age": 80,
+          "alpha": 2.282782002005934,
+          "alpha_target": -0.016574076199538948,
+          "stable": false,
+          "recovery_timescale_days": 0.4380619783760677
+        },
+        {
+          "age": 90,
+          "alpha": 3.3903199077708592,
+          "alpha_target": -0.011334371106209674,
+          "stable": false,
+          "recovery_timescale_days": 0.2949574161741868
+        },
+        {
+          "age": 100,
+          "alpha": 4.978241019895516,
+          "alpha_target": -0.007751138997228354,
+          "stable": false,
+          "recovery_timescale_days": 0.20087416338491945
+        },
+        {
+          "age": 110,
+          "alpha": 15.439339824222833,
+          "alpha_target": -0.005300704837645429,
+          "stable": false,
+          "recovery_timescale_days": 0.06476960876468932
+        },
+        {
+          "age": 120,
+          "alpha": 26.073680873375444,
+          "alpha_target": -0.003624947480090956,
+          "stable": false,
+          "recovery_timescale_days": 0.03835285109365313
+        }
+      ],
+      "nonzero_entries": 12,
+      "total_off_diag": 12
+    }
+  ]
+}

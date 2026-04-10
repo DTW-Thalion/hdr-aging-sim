@@ -22,6 +22,12 @@
       "mito"
     ]
   },
-  "script": "run_figure2b.py",
-  "timestamp": "2026-04-10T22:01:41Z"
+  "script": "run_figure2b_v2.py",
+  "tau_registry": "V2 (literature-calibrated)",
+  "age_range": [
+    25,
+    120
+  ],
+  "max_stable_age": 30,
+  "timestamp": "2026-04-10T22:01:04Z"
 }
