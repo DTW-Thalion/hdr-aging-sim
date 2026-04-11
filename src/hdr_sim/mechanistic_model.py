@@ -7,11 +7,12 @@ forcing, but do not participate in perturbation-recovery eigenvalue
 computation.
 
 This class uses a **7-axis fast subsystem** (I, M, mito, P, C, N, F)
-with legacy tau values.  With the V2 literature-calibrated tau registry,
-mito's intermediate timescale (tau=36-65d) constrains the 7-axis coupling
-budget to c~0.01.  The csv_loader module provides a 6-axis fast subsystem
-(I, M, P, C, N, F) via ``calibrate_stable_system()`` that achieves
-c=1.57 with full 25-120 stability.  See csv_loader.py for details.
+with legacy tau values.  The V2.2 literature-calibrated tau registry
+corrects mito tau from 36d (protein half-life) to 1d (bioenergetic
+functional recovery via PGC-1a signaling cycle), placing mito squarely
+in the fast cluster.  The csv_loader module provides
+``calibrate_stable_system()`` for 7+2 calibration with c=0.89 and full
+25-120 stability.  See csv_loader.py for details.
 
 The full 9x9 system is available via A_full for reference.
 
@@ -96,10 +97,9 @@ class HDRMechanisticModel:
     Calibration: a single scalar c is applied to all J entries so that
     alpha(A_fast) at age 30 matches the R6 target (approx -0.134).
 
-    Note: with V2 literature-calibrated tau values, the 7-axis fast
-    subsystem (including mito, tau=36-65d) is constrained to c~0.01.
-    The csv_loader module provides a 6-axis alternative via
-    ``calibrate_stable_system()`` with c=1.57 and full 25-120 stability.
+    With V2.2 corrected tau values (mito tau=1-5d, bioenergetic recovery),
+    the 7-axis fast subsystem achieves c=0.89 with full 25-120 stability
+    via ``calibrate_stable_system()`` in csv_loader.
     """
 
     AXES = ["I", "M", "E", "mito", "P", "C", "N", "F", "B"]

@@ -33,7 +33,7 @@ from scipy import linalg
 from hdr_sim.csv_loader import (
     load_J_csv, build_J_basin_imputed,
     calibrate_stable_system, build_system_at_age,
-    _ALL_9_AXES, _FAST_6_AXES,
+    _ALL_9_AXES, _FAST_7_AXES,
 )
 from hdr_sim.dynamics import simulate, spectral_abscissa, damping_ratio
 from hdr_sim.plotting import setup_style, add_panel_label, save_figure
@@ -52,11 +52,11 @@ rows = load_J_csv()
 J_h = build_J_basin_imputed(rows, 'healthy', _ALL_9_AXES)
 J_d = build_J_basin_imputed(rows, 'disease', _ALL_9_AXES)
 
-cal = calibrate_stable_system(J_h, J_d, axes_fast=_FAST_6_AXES)
+cal = calibrate_stable_system(J_h, J_d, axes_fast=_FAST_7_AXES)
 c = cal['c']
 amp = cal['amplitude']
 
-axes_fast = _FAST_6_AXES
+axes_fast = _FAST_7_AXES
 axis_names = [_AXIS_FULL_NAMES.get(a, a) for a in axes_fast]
 axis_colors = [_AXIS_COLORS_MAP.get(a, '#7f8c8d') for a in axes_fast]
 n_fast = len(axes_fast)
@@ -108,7 +108,7 @@ ax_a.fill_between(ages, 0, max(0.02, np.max(alphas_full) + 0.02),
                   color='#e74c3c', alpha=0.05)
 ax_a.set_xlabel('Age (years)')
 ax_a.set_ylabel(r'Spectral abscissa $\alpha(A)$')
-ax_a.set_title('6-axis fast subsystem')
+ax_a.set_title('7-axis fast subsystem')
 ax_a.legend(frameon=False, fontsize=7, loc='upper left')
 
 # Panel B: Recovery timescale
@@ -164,7 +164,7 @@ ax_e.set_ylabel(r'$\Delta x_i(t)$')
 ax_e.legend(frameon=False, loc='upper right', fontsize=7)
 ax_e.set_title('Age 80')
 
-save_figure(fig, 'figure_2b_v3', output_dir=_OUTPUT_DIR)
+save_figure(fig, 'figure_2b_v4', output_dir=_OUTPUT_DIR)
 plt.close()
 
 # Provenance sidecar
@@ -174,11 +174,11 @@ _meta = {
     'j_matrix': _j_spec.to_dict(),
     'script': 'run_figure2b_v3.py',
     'tau_registry': 'V2 (literature-calibrated)',
-    'architecture': 'Two-timescale: 6-axis fast + 3-axis slow',
+    'architecture': 'Two-timescale: 7-axis fast + 2-axis slow',
     'calibration': cal,
     'timestamp': datetime.now(timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ'),
 }
-with open(os.path.join(_OUTPUT_DIR, 'figure_2b_v3_meta.json'), 'w') as f:
+with open(os.path.join(_OUTPUT_DIR, 'figure_2b_v4_meta.json'), 'w') as f:
     json.dump(_meta, f, indent=2, default=float)
 
-print(f"\nFigure saved to {os.path.join(_OUTPUT_DIR, 'figure_2b_v3.pdf')}")
+print(f"\nFigure saved to {os.path.join(_OUTPUT_DIR, 'figure_2b_v4.pdf')}")

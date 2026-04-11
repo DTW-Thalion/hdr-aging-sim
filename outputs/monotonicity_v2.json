@@ -1,27 +1,29 @@
 {
-  "timestamp": "2026-04-10T23:12:53Z",
+  "timestamp": "2026-04-11T02:06:28Z",
   "script": "run_monotonicity_v2.py",
   "calibration": {
-    "c": 1.5721225199249507,
-    "amplitude": 0.0012395058781081885,
+    "c": 0.8902181729868631,
+    "amplitude": 0.0023601660626291847,
     "gamma": 0.038,
     "axes_fast": [
       "I",
       "M",
+      "mito",
       "P",
       "C",
       "N",
       "F"
     ],
-    "alpha_fast_25": -0.2419341458493274,
+    "alpha_fast_25": -0.18795929736834255,
     "alpha_fast_120": -0.004
   },
   "results": [
     {
-      "label": "6-axis fast (standard)",
+      "label": "7-axis fast (standard)",
       "axes_fast": [
         "I",
         "M",
+        "mito",
         "P",
         "C",
         "N",
@@ -30,12 +32,12 @@
       "use_metzler": false,
       "n_age_points": 7000,
       "alpha_range": [
-        -0.2419341458493274,
-        -0.004000000000986381
+        -0.18795929736834255,
+        -0.004000000000891506
       ],
       "rec_time_range": [
-        4.133356192816137,
-        249.99999993835118
+        5.320300799168805,
+        249.9999999442809
       ],
       "all_stable": true,
       "monotonicity_checks": [
@@ -54,10 +56,11 @@
       ]
     },
     {
-      "label": "6-axis fast (Metzler)",
+      "label": "7-axis fast (Metzler)",
       "axes_fast": [
         "I",
         "M",
+        "mito",
         "P",
         "C",
         "N",
@@ -66,12 +69,12 @@
       "use_metzler": true,
       "n_age_points": 7000,
       "alpha_range": [
-        0.00805680821944438,
-        0.2399690589060376
+        -0.0710452639519466,
+        0.18631811478766092
       ],
       "rec_time_range": [
-        124.11863020229156,
-        4.167203907698619
+        14.075533601738424,
+        5.367164653526356
       ],
       "all_stable": false,
       "monotonicity_checks": [
@@ -84,7 +87,7 @@
         {
           "quantity": "recovery_timescale_increasing",
           "monotone": false,
-          "n_violations": 6999,
+          "n_violations": 5740,
           "n_points": 7000
         }
       ]

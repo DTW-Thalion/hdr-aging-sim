@@ -29,7 +29,7 @@ from hdr_sim.csv_loader import (
     calibrate_stable_system, _extract_submatrix,
     _spectral_abscissa, _build_A, tau_vector,
     j_blend_fraction,
-    _ALL_9_AXES, _FAST_6_AXES,
+    _ALL_9_AXES, _FAST_7_AXES,
 )
 
 _SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -115,13 +115,13 @@ def main():
     J_h = build_J_basin_imputed(rows, 'healthy', _ALL_9_AXES)
     J_d = build_J_basin_imputed(rows, 'disease', _ALL_9_AXES)
 
-    cal = calibrate_stable_system(J_h, J_d, axes_fast=_FAST_6_AXES)
+    cal = calibrate_stable_system(J_h, J_d, axes_fast=_FAST_7_AXES)
 
     all_results = []
 
     configs = [
-        ("6-axis fast (standard)", False),
-        ("6-axis fast (Metzler)", True),
+        ("7-axis fast (standard)", False),
+        ("7-axis fast (Metzler)", True),
     ]
 
     for label, metzler in configs:

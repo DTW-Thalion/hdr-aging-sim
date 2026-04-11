@@ -87,63 +87,61 @@ def main():
 
     all_results = {}
 
-    # === 6-axis fast subsystem (primary) ===
+    # === 7-axis fast subsystem (primary: corrected mito tau) ===
     print("=" * 60)
-    print("  6-axis fast subsystem (I, M, P, C, N, F)")
+    print("  7-axis fast subsystem (I, M, mito, P, C, N, F)")
+    print("  mito tau corrected: bioenergetic recovery (1-5d)")
     print("=" * 60)
 
-    cal6 = calibrate_stable_system(J_h, J_d, axes_fast=_FAST_6_AXES)
-    print(f"  c = {cal6['c']:.6f}")
-    print(f"  amplitude = {cal6['amplitude']:.6f}")
-    print(f"  alpha_fast(25) = {cal6['alpha_fast_25']:.4f}")
-    print(f"  alpha_fast(120) = {cal6['alpha_fast_120']:.4f}")
+    cal7 = calibrate_stable_system(J_h, J_d, axes_fast=_FAST_7_AXES)
+    print(f"  c = {cal7['c']:.6f}")
+    print(f"  amplitude = {cal7['amplitude']:.6f}")
+    print(f"  alpha_fast(25) = {cal7['alpha_fast_25']:.4f}")
+    print(f"  alpha_fast(120) = {cal7['alpha_fast_120']:.4f}")
 
-    result6 = run_sweep(J_h, J_d, cal6, "6-axis fast (I,M,P,C,N,F)")
-    all_results['fast_6axis'] = result6
+    result7 = run_sweep(J_h, J_d, cal7, "7-axis fast (I,M,mito,P,C,N,F)")
+    all_results['fast_7axis'] = result7
 
     print(f"\n  {'Age':>5} | {'alpha_fast':>10} | {'alpha_full':>10} | "
           f"{'t_rec_fast':>10} | {'pyrkov':>8} | {'stable':>6}")
     print(f"  {'-'*5}-+-{'-'*10}-+-{'-'*10}-+-{'-'*10}-+-{'-'*8}-+-{'-'*6}")
-    for r in result6['age_sweep']:
+    for r in result7['age_sweep']:
         trec = f"{r['recovery_fast_days']:.1f}" if r['recovery_fast_days'] < 1e6 else "inf"
         print(f"  {r['age']:5d} | {r['alpha_fast']:10.4f} | {r['alpha_full']:10.4f} | "
               f"{trec:>10} | {r['pyrkov_target']:8.4f} | "
               f"{'YES' if r['stable_fast'] else 'NO':>6}")
 
-    ss = result6['stability_summary']
+    ss = result7['stability_summary']
     print(f"\n  Fast stable to: {ss['fast_subsystem_stable_to']}")
     print(f"  alpha_fast monotone: {ss['alpha_fast_monotone']}")
 
-    # === 7-axis fast subsystem (for comparison) ===
+    # === 6-axis fast subsystem (for comparison) ===
     print("\n" + "=" * 60)
-    print("  7-axis fast subsystem (I, M, mito, P, C, N, F)")
+    print("  6-axis fast subsystem (I, M, P, C, N, F) — for comparison")
     print("=" * 60)
 
     try:
-        cal7 = calibrate_stable_system(J_h, J_d, axes_fast=_FAST_7_AXES)
-        result7 = run_sweep(J_h, J_d, cal7, "7-axis fast (I,M,mito,P,C,N,F)")
-        all_results['fast_7axis'] = result7
-        print(f"  c = {cal7['c']:.6f}, amplitude = {cal7['amplitude']:.4f}")
-        print(f"  alpha_fast(25) = {cal7['alpha_fast_25']:.4f}")
-        ss7 = result7['stability_summary']
-        print(f"  Fast stable to: {ss7['fast_subsystem_stable_to']}")
-        print(f"  NOTE: mito (tau=36-65d) constrains c to ~0.01, "
-              f"yielding weak alpha_fast(25)")
+        cal6 = calibrate_stable_system(J_h, J_d, axes_fast=_FAST_6_AXES)
+        result6 = run_sweep(J_h, J_d, cal6, "6-axis fast (I,M,P,C,N,F)")
+        all_results['fast_6axis'] = result6
+        print(f"  c = {cal6['c']:.6f}, amplitude = {cal6['amplitude']:.6f}")
+        print(f"  alpha_fast(25) = {cal6['alpha_fast_25']:.4f}")
+        ss6 = result6['stability_summary']
+        print(f"  Fast stable to: {ss6['fast_subsystem_stable_to']}")
     except RuntimeError as e:
         print(f"  FAILED: {e}")
-        all_results['fast_7axis'] = {'label': '7-axis', 'error': str(e)}
+        all_results['fast_6axis'] = {'label': '6-axis', 'error': str(e)}
 
     # Save
     output = {
         'timestamp': datetime.now(timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ'),
         'script': 'run_stability_verification_v2.py',
         'tau_registry': 'V2 (literature-calibrated)',
-        'architecture': 'Two-timescale: fast (6-axis) + slow (E, mito, B)',
-        'note': ('The 6-axis fast subsystem excludes mito (tau=36-65d) which '
-                 'is intermediate between fast and slow timescales. Including '
-                 'mito constrains c to ~0.01, yielding alpha_fast(25)=-0.028. '
-                 'The 6-axis system achieves alpha_fast(25)=-0.24 with full '
-                 'stability through age 120.'),
+        'architecture': 'Two-timescale: fast (7-axis) + slow (E, B)',
+        'note': ('With corrected mito tau (bioenergetic recovery 1-5d instead '
+                 'of protein half-life 36-65d), the 7-axis fast subsystem '
+                 '(I,M,mito,P,C,N,F) achieves full 25-120 stability. '
+                 'The 6-axis variant (excluding mito) is shown for comparison.'),
         'results': all_results,
     }
 

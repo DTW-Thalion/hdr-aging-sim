@@ -7,7 +7,7 @@
 | I    |       7.000 |      25.000 |   4.000 |  17.000 |   45.000 | gompertz   | 27467771 |
 | M    |       0.100 |       0.300 |   0.080 |   0.210 |    0.350 | piecewise-linear | 18268070 |
 | E    |    1000.000 |    1500.000 | 500.000 | 2000.000 | 5000.000 | piecewise-exp | 15509558 |
-| mito |       1.000 |       3.000 |  36.000 |  57.000 |   65.000 | saturating-exp | 8986817 |
+| mito |       1.000 |       3.000 |   1.000 |   2.000 |    5.000 | piecewise-linear | 12563009 |
 | P    |       0.500 |       2.000 |   1.500 |   3.000 |    4.000 | piecewise-linear | 24437518 |
 | C    |       1.000 |       3.000 |   6.000 |  10.000 |   18.000 | piecewise-linear | 1557592 |
 | N    |       0.010 |       0.040 |   0.003 |   0.005 |    0.008 | piecewise-linear | 29581219 |
@@ -21,7 +21,7 @@
 | I    |                     0.57 | 0.57× change |
 | M    |                     0.80 | ~0.80× (minor adjustment) |
 | E    |                     0.50 | 0.50× change |
-| mito |                    36.00 | **36× increase** — order-of-magnitude correction |
+| mito |                     1.00 | ~1.00× (minor adjustment) |
 | P    |                     3.00 | 3.00× change |
 | C    |                     6.00 | **6× increase** — order-of-magnitude correction |
 | N    |                     0.30 | 0.30× change |

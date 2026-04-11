@@ -263,11 +263,20 @@ TAU_REGISTRY_V2 = {
         'pmid': '15509558',
         'trajectory_fn': _piecewise_linear_tau(500, 2000, 5000),
     },
+    # Structural turnover constants (NOT used in D matrix):
+    # MITO_PROTEIN_HALFLIFE_YOUNG = 36  # days, Rooyackers 1996 PMID 8986817
+    # MITO_PROTEIN_HALFLIFE_OLD = 57    # days, same study, age 73
+    # These measure hardware replacement time, not functional recovery time.
     'mito': {
-        'tau_25': 36, 'tau_80': 57, 'tau_120': 65,
-        'trajectory': 'saturating-exp',
-        'pmid': '8986817',
-        'trajectory_fn': _saturating_exp_tau(tau_young=36, tau_max=68, k=0.04),
+        'tau_25': 1.0, 'tau_80': 2.0, 'tau_120': 5.0,
+        'trajectory': 'piecewise-linear',
+        'pmid': '12563009',  # Pilegaard 2003 (PGC-1a signaling cycle)
+        'pmid_supporting': ['18653753', '23187721', '10878112', '10481231'],
+        'trajectory_fn': _piecewise_linear_tau(1.0, 2.0, 5.0),
+        'note': ('Bioenergetic functional recovery (PGC-1a mRNA->protein->baseline), '
+                 'NOT mitochondrial protein pool half-life (36d, Rooyackers 1996). '
+                 'tauPCr = 22-33s (Conley 2000) confirms immediate bioenergetic '
+                 'recovery; full signaling cycle ~1 day young, ~2 days old.'),
     },
     'P': {
         'tau_25': 1.5, 'tau_80': 3.0, 'tau_120': 4.0,

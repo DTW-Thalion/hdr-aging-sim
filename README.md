@@ -29,20 +29,20 @@ Nat Commun).
 The 9-axis mechanistic model (`HDRMechanisticModel`) uses a two-timescale
 decomposition based on singular perturbation theory:
 
-- **Fast subsystem** (6 axes: I, M, P, C, N, F): perturbation-recovery
-  dynamics with tau ranging from 0.003d (N) to 6d (C/F at age 25) in the V2
+- **Fast subsystem** (7 axes: I, M, mito, P, C, N, F): perturbation-recovery
+  dynamics with tau ranging from 0.003d (N) to 6d (C at age 25) in the V2
   registry. These determine the spectral abscissa, recovery time, and damping
-  ratio. Calibrated to alpha_fast(25) = -0.24, stable through age 120.
-- **Intermediate/quasi-static axes** (mito, E, B): mito tau = 36-65d
-  (mitochondrial protein turnover), tau_E = 500-5000d (epigenetic drift),
+  ratio. Calibrated to alpha_fast(25) = -0.188, stable through age 120.
+- **Quasi-static axes** (E, B): tau_E = 500-5000d (epigenetic drift),
   tau_B = 135-500d (bone remodelling). These drift secularly with age and
-  enter the fast subsystem as constant forcing.
+  enter the fast subsystem as constant forcing, shifting its equilibrium
+  without changing eigenvalues.
 
-The original `HDRMechanisticModel` uses a 7-axis fast subsystem (including
-mito). With the V2 literature-calibrated tau values, mito's intermediate
-timescale (36-65d) constrains the coupling budget and limits the 7-axis
-system to c~0.01. The 6-axis decomposition (excluding mito) achieves
-c=1.57 with full 25-120 stability. See the V2 section below for details.
+Note: the V2 mito tau (1-5d) measures bioenergetic functional recovery
+(PGC-1a signaling cycle), not mitochondrial protein pool half-life (36d,
+Rooyackers 1996). This correction places mito squarely in the fast
+cluster with a clean 22x timescale gap to the slow axes (max fast: 6d C,
+min slow: 135d B).
 
 All stability metrics (alpha, zeta, recovery time) refer to the fast subsystem.
 The full 9x9 system is available via `model.A_full` for validation.
@@ -133,14 +133,14 @@ The machine-readable coupling matrix is provided in `data/J_matrix_compiled_9x9.
 | I | Inflammatory resolution capacity | 7–25 | 4 / 17 / 45 | Gompertz | 27467771 |
 | M | Metabolic regulatory gain | 0.1–0.3 | 0.08 / 0.21 / 0.35 | Piecewise-linear | 18268070 |
 | E | Epigenetic maintenance fidelity | ~1000 | 500 / 2000 / 5000 | Piecewise-exp | 15509558 |
-| mito | Mitochondrial bioenergetic capacity | 1–3 | 36 / 57 / 65 | Saturating-exp | 8986817 |
+| mito | Mitochondrial bioenergetic capacity | 1–3 | 1.0 / 2.0 / 5.0 | Piecewise-linear | 12563009 |
 | P | Proteostatic clearance capacity | 0.5–2 | 1.5 / 3.0 / 4.0 | Piecewise-linear | 24437518 |
 | C | Circadian oscillator amplitude | 1–3 | 6.0 / 10 / 18 | Piecewise-linear | 1557592 |
 | N | Neuroendocrine feedback gain | 0.5–2 | 0.003 / 0.005 / 0.008 | Piecewise-linear | 29581219 |
 | F | Functional reserve (musculoskeletal) | 8–42 | 2.0 / 3.5 / 6.0 | Piecewise-Gompertz | 9252485 |
 | B | Bone remodelling regulatory balance | 90–120 | 135 / 250 / 500 | Piecewise-linear | 3213608 |
 
-The **V2 (literature-calibrated) tau registry** (`TAU_REGISTRY_V2`) provides PMID-cited recovery time constants at three age anchors (25, 80, 120) with axis-specific trajectory shapes. Key corrections from the legacy values: mito (1->36 days, mitochondrial protein half-life), C (1->6 days, jet-lag re-entrainment), F (8->2 days, MPS return to baseline). The legacy registry (`TAU_REGISTRY_LEGACY`, aliased as `TAU_REGISTRY`) is retained for reproducibility of prior analyses.
+The **V2 (literature-calibrated) tau registry** (`TAU_REGISTRY_V2`) provides PMID-cited recovery time constants at three age anchors (25, 80, 120) with axis-specific trajectory shapes. Key corrections from the legacy values: mito (1->1d, bioenergetic functional recovery via PGC-1a signaling cycle, not protein half-life), C (1->6d, jet-lag re-entrainment), F (8->2d, MPS return to baseline). The legacy registry (`TAU_REGISTRY_LEGACY`, aliased as `TAU_REGISTRY`) is retained for reproducibility of prior analyses.
 
 CSV columns include:
 
@@ -280,7 +280,7 @@ Note: NHANES XPT files are downloaded from CDC servers at runtime (~7 MB total).
 | `run_elsa_basin_recovery.py` | `outputs/elsa_basin_recovery_table.txt` | Basin recovery comparison table |
 | `run_figure_disease_demos.py` | `outputs/figure_disease_demos.pdf` | ED Fig 2: disease demo panels (T2D, frailty, AD, osteoporosis) |
 | `run_figure2b_v2.py` | `outputs/figure_2b_v2.pdf` | V2: Spectral-abscissa drift with lit-calibrated tau (4-axis) |
-| `run_figure2b_v3.py` | `outputs/figure_2b_v3.pdf` | V2: Spectral drift with fast-subsystem calibration (6-axis, 25-120) |
+| `run_figure2b_v3.py` | `outputs/figure_2b_v4.pdf` | V2.2: Spectral drift with 7+2 fast-subsystem calibration (25-120) |
 | `run_stability_verification.py` | `outputs/stability_verification_25_120.json` | V2: Stability sweep across 25-120, 4 axis configs |
 | `run_stability_verification_v2.py` | `outputs/stability_verification_v2.json` | V2: Fast-subsystem calibration (6-axis + 7-axis) |
 | `run_monotonicity_25_120.py` | `outputs/monotonicity_25_120.json` | V2: Monotonicity re-verification with V2 tau |
@@ -633,37 +633,38 @@ Replaces the ad-hoc tau registry with PMID-cited recovery time constants at thre
 
 ### Two-timescale calibration architecture
 
-The single-scalar calibration fails for the full 9x9 system because the E axis (tau_E=500d) constrains alpha to -0.002. It also fails for the 7-axis system (excl. E, B) because mito (tau=36-65d) limits c to ~0.01. The correct decomposition is:
+The single-scalar calibration fails for the full 9x9 system because the E axis (tau_E=500d) constrains alpha to -0.002. The correct approach calibrates on the **7-axis fast subsystem** (I, M, mito, P, C, N, F) explicitly:
 
-| Cluster | Axes | tau range | Role |
-|---------|------|-----------|------|
-| Fast | I, M, P, C, N, F | 0.003-18d | Perturbation-recovery dynamics; alpha, SWDS-Gamma, Lambda_max |
-| Intermediate | mito | 36-65d | Mitochondrial turnover; too slow for fast cluster |
-| Quasi-static | E, B | 135-5000d | Secular drift; constant forcing on fast subsystem |
+| Cluster | Axes | tau range (age 25) | Role |
+|---------|------|-------------------|------|
+| Fast | I, M, mito, P, C, N, F | 0.003-6d | Perturbation-recovery dynamics; alpha, SWDS-Gamma, Lambda_max |
+| Quasi-static | E, B | 135-500d | Secular drift; constant forcing on fast subsystem |
 
-The calibration targets the **6-axis fast subsystem** explicitly:
+The timescale separation is 22x (max fast: 6d C, min slow: 135d B), providing clean singular perturbation decomposition.
+
+The calibration procedure:
 1. Find (c, amplitude) such that alpha_fast(120) = -0.004 with stability at all ages
 2. Apply the same c to the full 9x9 J matrix
-3. Report alpha_fast (empirically testable) and alpha_full (E-dominated, ~+0.10)
+3. Report alpha_fast (empirically testable) and alpha_full (E-dominated)
 
-The full 9x9 alpha is positive because the cross-coupling from fast to slow axes (scaled by c=1.57) overwhelms the weak E-axis diagonal (-1/500 = -0.002). This confirms the two-timescale decomposition is necessary — the ELSA empirical analyses (SWDS-Gamma, Lambda_max, Pi statistic) all measure the fast-subsystem covariance structure, not the full 9x9 eigenvalues.
+Note on mito tau: the V2.2 registry uses bioenergetic functional recovery (PGC-1a signaling cycle, 1-5d) rather than the mitochondrial protein pool half-life (36d, Rooyackers 1996). This is the same conceptual distinction applied to the I axis (CRP half-life vs inflammatory resolution programme duration).
 
 ### Stability findings
 
 | Configuration | Max stable age | alpha(25) | Recovery at 120 | Notes |
 |--------------|---------------|-----------|-----------------|-------|
-| **6-axis fast (I,M,P,C,N,F)** | **120** | **-0.242** | **250d** | Primary: fast-subsystem calibration |
-| 7-axis fast (incl. mito) | 120 | -0.028 | 75d | mito constrains c to 0.01 |
-| 9x9 full system | 120 | -0.002 | 5000d | E-dominated; trivially stable |
+| **7-axis fast (I,M,mito,P,C,N,F)** | **120** | **-0.188** | **250d** | Primary: 7+2 fast-subsystem calibration |
+| 6-axis fast (I,M,P,C,N,F) | 120 | -0.242 | 250d | Alternative (excludes mito) |
+| 9x9 full system | -- | -0.018 | -- | alpha_full goes positive at ~48 (expected) |
 | 4-axis classic (I,M,N,F) | ~30 | -0.134 | -- | Unstable beyond 30 |
 
 ### V2 scripts
 
 ```bash
-# Fast-subsystem calibration (primary)
-python scripts/run_stability_verification_v2.py # 6-axis + 7-axis stability sweep
+# Fast-subsystem calibration (primary, corrected mito tau)
+python scripts/run_stability_verification_v2.py # 7-axis + 6-axis stability sweep
 python scripts/run_monotonicity_v2.py           # Monotonicity verification
-python scripts/run_figure2b_v3.py               # Spectral drift figure (25-120)
+python scripts/run_figure2b_v3.py               # Spectral drift figure (v4, 25-120)
 
 # Initial V2 exploration (full 9x9 and subsystem comparison)
 python scripts/run_stability_verification.py    # All configurations comparison
