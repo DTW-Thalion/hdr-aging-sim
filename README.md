@@ -887,13 +887,15 @@ python scripts/inchianti_manuscript_summary.py
 
 ### Limitations and divergences
 
-1. **RMSSD unavailable**: The N-axis uses resting HR instead of RMSSD. This is mechanistically inferior — resting HR captures only tonic sympathovagal balance, not beat-to-beat parasympathetic modulation. InCHIANTI published HRV papers (Stein et al., 2005) suggest 24h Holter data may exist in ancillary files not included in the standard data release.
+1. **Lead-lag sign convention correction**: The original 4-axis lead-lag reported 9/12 concordance, but this used manually specified J-signs that did not account for the F-axis sign flip in the standardisation convention (positive delta_F = SPPB decline). After correcting to read signs directly from the compiled J-matrix CSV with proper sign-flip adjustment for axes where positive delta = raw decline (F, B), concordance drops to 6/12 (50%). The 5-axis model achieves 11/20 (55%).
 
-2. **Pi divergence**: The D-dominated Pi trajectory (−0.019/yr) opposes the ELSA result (+0.001/yr proportional). This is likely driven by the resting HR proxy inflating diagonal variance (noisy single-measurement HR) relative to off-diagonal covariance, biasing toward apparent D-dominance.
+2. **RMSSD unavailable**: The N-axis uses cortisol/DHEAS ratio (primary) or resting HR (secondary). Neither captures beat-to-beat parasympathetic modulation. Cortisol/DHEAS performs comparably to resting HR in lambda_max and concordance (both 6/12). Cystatin C and CTX-1 are baseline-only (no longitudinal P or B-resorption axes).
 
-3. **HOMA-IR temporal coverage**: Insulin was only measured at baseline, FU1, and FU2. FU3 has IL-6 but no insulin; FU4–5 have neither. Full 4-axis longitudinal coverage is limited to waves 0–2 (~6 years).
+3. **Pi divergence**: All configurations show D-dominated Pi trajectories (slopes -0.010 to -0.019/yr), opposing the ELSA result (+0.001/yr). This is consistent across N-axis choices, suggesting a systematic difference rather than proxy noise alone.
 
-4. **SPPB ceiling effect**: All healthy 20–30 year-olds scored 12/12 on SPPB (SD = 0). Reference SD was computed from healthy adults < 60 instead.
+4. **Temporal coverage**: HOMA-IR and cortisol/DHEAS available waves 0-2 only (~6 years). PTH extends to wave 3. Full 5-axis coverage is limited to waves 0-2.
+
+5. **SPPB ceiling effect**: All healthy 20-30 year-olds scored 12/12 (SD = 0). Reference SD computed from healthy adults < 60.
 
 ### Scripts and outputs
 
