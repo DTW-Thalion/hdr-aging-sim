@@ -1,19 +1,19 @@
 """HDR Aging Dynamics Simulation and Estimation Library.
 
-Part 1 (R1-R6): 4-axis toy simulation and ELSA validation.
+Part 1: Multi-axis simulation (7-axis fast subsystem, stable 25-120)
+and cohort validation (ELSA 3-axis, InCHIANTI 5-axis).
 Part 2: 9-axis mechanistic-evidence-informed model with two-timescale
 decomposition (7-axis fast subsystem + quasi-static E/B forcing),
 sensitivity analysis, synthetic cohort generation, intervention
 framework, and Bayesian prior updating scaffold.
 
 Key entry points:
-    configure(axes=('I','M','F'))      — legacy setup (ages 30-80, linear interp)
-    configure_v2(axes=('I','M','F'))   — V2 lit-calibrated (ages 25-120, Gompertz)
+    configure(axes=('I','M','F'))      — calibrated setup (any subset, stable 25-120)
     tau_of_age(age), J_of_age(age)     — age-interpolated parameters
-    tau_at_age(axis, age)              — V2 single-axis tau at any age
-    tau_vector(axes, age)              — V2 multi-axis tau vector
-    calibrate_stable_system(...)       — 6-axis fast-subsystem calibration (25-120)
-    build_system_at_age(age, ...)      — two-timescale A_full + A_fast at any age
+    get_fast_system(age)               — full 7-axis (A_full, A_fast, alpha, alpha_full)
+    tau_at_age(axis, age)              — single-axis tau at any age (PMID-cited)
+    calibrate_stable_system(...)       — 7-axis fast-subsystem calibration
+    build_system_at_age(age, ...)      — two-timescale A_full + A_fast
     JMatrixSpec.from_csv(path)         — provenance tracking for J-matrix CSVs
 """
 from .csv_loader import (

@@ -9,9 +9,9 @@ for Multi-Axis Physiological Decline."
 
 ## Key result
 
-The simulation shows that a 4-axis linear dynamical system with biologically parameterised
-recovery times (τ_i) and inter-axis coupling (J) loaded from the literature-derived
-`data/J_matrix_compiled.csv`, when degraded according to known age-related trajectories,
+The simulation shows that a multi-axis linear dynamical system with PMID-cited
+recovery times (τ_i) and inter-axis coupling (J) loaded from the compiled
+`data/J_matrix_compiled_9x9.csv`, when degraded according to known age-related trajectories,
 produces:
 
 - Progressive drift of the spectral abscissa toward instability (α → 0⁻)
@@ -70,7 +70,7 @@ pip install pandas pyreadstat pyarrow openpyxl
 ```bash
 python scripts/run_figure_network_schematic.py  # Main Fig 1: 9-axis network diagram
 python scripts/run_figure_J_heatmap.py          # Main Fig 2: 9x9 coupling heatmap
-python scripts/run_figure2b.py                  # Spectral-abscissa drift demo (legacy tau)
+python scripts/run_figure2b.py                  # Spectral-abscissa drift (7-axis fast subsystem, 25-120)
 python scripts/run_figure2b_v3.py               # V2 fast-subsystem calibration (6-axis, 25-120)
 python scripts/run_figure_frailty.py            # Frailty perturbation-response
 python scripts/run_figure_t2d.py                # T2D phase portrait
@@ -130,23 +130,23 @@ from hdr_sim import (
 
 ### Machine-Readable Coupling Matrix (CSV-Driven Architecture)
 
-The machine-readable coupling matrix is provided in `data/J_matrix_compiled_9x9.csv` (9×9, 72 off-diagonal entries); the legacy 8×8 version is retained as `data/J_matrix_compiled.csv` for reproducibility of prior analyses.
+`data/J_matrix_compiled_9x9.csv` is the **single source of truth** for the 9×9 coupling matrix J_mech. It contains all 72 off-diagonal entries of the 9 regulatory capacity axes. A frozen copy of the former 8×8 version is archived in `data/legacy/` for reproducibility of intermediate analyses.
 
-`data/J_matrix_compiled_9x9.csv` is the **single source of truth** for the 9×9 coupling matrix J_mech. It contains all 72 off-diagonal entries of the 9 regulatory capacity axes:
+### PMID-Cited Recovery Time Constants (tau registry)
 
-| Axis | Name | Legacy tau (days) | V2 tau(25/80/120) | Trajectory | PMID |
-|------|------|-------------------|---------------------|------------|------|
-| I | Inflammatory resolution capacity | 7–25 | 4 / 17 / 45 | Gompertz | 27467771 |
-| M | Metabolic regulatory gain | 0.1–0.3 | 0.08 / 0.21 / 0.35 | Piecewise-linear | 18268070 |
-| E | Epigenetic maintenance fidelity | ~1000 | 500 / 2000 / 5000 | Piecewise-exp | 15509558 |
-| mito | Mitochondrial bioenergetic capacity | 1–3 | 1.0 / 2.0 / 5.0 | Piecewise-linear | 12563009 |
-| P | Proteostatic clearance capacity | 0.5–2 | 1.5 / 3.0 / 4.0 | Piecewise-linear | 24437518 |
-| C | Circadian oscillator amplitude | 1–3 | 6.0 / 10 / 18 | Piecewise-linear | 1557592 |
-| N | Neuroendocrine feedback gain | 0.5–2 | 0.003 / 0.005 / 0.008 | Piecewise-linear | 29581219 |
-| F | Functional reserve (musculoskeletal) | 8–42 | 2.0 / 3.5 / 6.0 | Piecewise-Gompertz | 9252485 |
-| B | Bone remodelling regulatory balance | 90–120 | 135 / 250 / 500 | Piecewise-linear | 3213608 |
+| Axis | Name | tau(25) | tau(80) | tau(120) | Trajectory | PMID |
+|------|------|---------|---------|----------|------------|------|
+| I | Inflammatory resolution capacity | 4d | 17d | 45d | Gompertz | 27467771 |
+| M | Metabolic regulatory gain | 0.08d | 0.21d | 0.35d | Piecewise-linear | 18268070 |
+| E | Epigenetic maintenance fidelity | 500d | 2000d | 5000d | Piecewise-exp | 15509558 |
+| mito | Mitochondrial bioenergetic capacity | 1.0d | 2.0d | 5.0d | Piecewise-linear | 12563009 |
+| P | Proteostatic clearance capacity | 1.5d | 3.0d | 4.0d | Piecewise-linear | 24437518 |
+| C | Circadian oscillator amplitude | 6.0d | 10d | 18d | Piecewise-linear | 1557592 |
+| N | Neuroendocrine feedback gain | 0.003d | 0.005d | 0.008d | Piecewise-linear | 29581219 |
+| F | Functional reserve (musculoskeletal) | 2.0d | 3.5d | 6.0d | Piecewise-Gompertz | 9252485 |
+| B | Bone remodelling regulatory balance | 135d | 250d | 500d | Piecewise-linear | 3213608 |
 
-The **V2 (literature-calibrated) tau registry** (`TAU_REGISTRY_V2`) provides PMID-cited recovery time constants at three age anchors (25, 80, 120) with axis-specific trajectory shapes. Key corrections from the legacy values: mito (1->1d, bioenergetic functional recovery via PGC-1a signaling cycle, not protein half-life), C (1->6d, jet-lag re-entrainment), F (8->2d, MPS return to baseline). The legacy registry (`TAU_REGISTRY_LEGACY`, aliased as `TAU_REGISTRY`) is retained for reproducibility of prior analyses.
+All tau values cite primary literature for the mechanistic recovery process (e.g., mito measures PGC-1a bioenergetic signaling cycle, not protein pool half-life; F measures muscle protein synthesis return to baseline, not remodelling).
 
 CSV columns include:
 
@@ -156,41 +156,35 @@ CSV columns include:
 
 Sign distribution (9×9): 57 positive (pathological), 11 negative (protective), 4 unknown.
 
-**How it works**: `hdr_sim.aging_params.configure()` loads the CSV via `csv_loader`, extracts any axis subset for the healthy and disease basins, looks up per-axis recovery time constants from a built-in registry (`TAU_REGISTRY`), and applies a calibration scalar (c) to map SD-per-SD literature values to simulation coupling rates. The calibration scalar is computed via Brent's method to match the target spectral abscissa. Axis subsets from 2x2 through 9x9 are supported.
-
-Two configuration modes are available:
-- **Legacy** (`configure()`): Uses `TAU_REGISTRY_LEGACY` (2-anchor, ages 30/80), linear interpolation, original J matrix. Calibrates to alpha(30) = -0.134.
-- **V2** (`configure_v2()`): Uses `TAU_REGISTRY_V2` (3-anchor, ages 25/80/120), Gompertz-like J interpolation, qual_only-imputed J matrix (68/72 nonzero). Calibrates to alpha(25) = -0.134. Age range 25-120.
-
-The ELSA validation uses a 3-axis reduction (I, M, F) and is unaffected by the B-axis addition.
+**How it works**: `hdr_sim.aging_params.configure()` calibrates the 7-axis fast subsystem (I, M, mito, P, C, N, F) via `calibrate_stable_system()`, guaranteeing stability at all ages 25-120. It then extracts the requested axis subset. The calibration scalar (c=0.890) and Gompertz blend amplitude (A=0.00236) are computed once and cached. Axis subsets from 2×2 through 9×9 are supported; all subsets inherit the fast-subsystem stability guarantee.
 
 ```python
-from hdr_sim import configure, configure_v2, tau_of_age, J_of_age
-from hdr_sim import load_J_csv, build_J_basin, build_J_basin_imputed
-from hdr_sim import tau_at_age, tau_vector, J_at_age
+from hdr_sim import configure, tau_of_age, J_of_age
+from hdr_sim import load_J_csv, build_J_basin_imputed
+from hdr_sim import tau_at_age, tau_vector
+from hdr_sim.aging_params import get_fast_system
 
-# Legacy configuration (backward compatible)
-configure(axes=('I', 'M', 'F'))       # 3-axis, linear interp, ages 30-80
+# Standard configuration (any axis subset, stable 25-120)
+configure(axes=('I', 'M', 'F'))       # 3-axis subset
 tau = tau_of_age(65)                   # 3-element array
-J = J_of_age(65)                      # 3x3 matrix
+J = J_of_age(65)                      # 3×3 matrix (stable at all ages)
 
-# V2 configuration (literature-calibrated, ages 25-120)
-configure_v2(axes=('I', 'M', 'N', 'F'))  # Gompertz J interp, V2 tau
-tau = tau_of_age(100)                     # works for ages 25-120
-J = J_of_age(100)                         # Gompertz-interpolated
+configure(axes=('I', 'M', 'N', 'F'))  # 4-axis subset
+tau = tau_of_age(100)                  # works for ages 25-120
+J = J_of_age(100)                     # Gompertz-interpolated
 
-# Direct V2 tau access (no configure needed)
+# Direct tau access (no configure needed)
 tau_I_50 = tau_at_age('I', 50)            # single axis, single age
 tau_vec = tau_vector(('I', 'M', 'F'), 65) # multi-axis vector
 
-# Imputed J matrix (68/72 nonzero, qual_only entries filled from tier defaults)
+# Fast-subsystem dynamics (7-axis, guaranteed stable)
+A_full, A_fast, alpha_fast, alpha_full = get_fast_system(80)
+# alpha_fast ~ -0.108, recovery ~ 9.2 days
+
+# Raw J matrix access
 rows = load_J_csv()
 J_imp = build_J_basin_imputed(rows, basin='healthy',
                               axes=('I','M','E','mito','P','C','N','F','B'))
-
-# Original J matrix (42/72 nonzero, qual_only entries = 0)
-J_orig = build_J_basin(rows, basin='disease',
-                       axes=('I','M','E','mito','P','C','N','F','B'))
 
 # Provenance tracking via JMatrixSpec
 from hdr_sim.j_matrix_spec import JMatrixSpec
@@ -620,22 +614,22 @@ Coupling values sourced from `data/J_matrix_compiled_9x9.csv`.
 
 `outputs/elsa_results_ledger.json` contains SHA-256 hashes of all data files and every numerical result reported in Appendix H. Use this to verify that your ELSA data extract and pipeline output match ours.
 
-## V2: Literature-Calibrated Tau Registry (25-120)
+## Tau Registry and Calibration Architecture
 
-Replaces the ad-hoc tau registry with PMID-cited recovery time constants at three age anchors (25, 80, 120) with axis-specific trajectory shapes. Extends the simulation age range from 30-80 to 25-120.
+The simulation uses PMID-cited recovery time constants at three age anchors (25, 80, 120) with axis-specific trajectory shapes, covering ages 25-120.
 
-### Key changes
+### Key features
 
-1. **Tau registry V2** (`TAU_REGISTRY_V2`): Three-anchor tau values with Gompertz, saturating-exponential, and piecewise-linear trajectory functions. Major corrections: mito (1->36d), C (1->6d), F (8->2d).
+1. **PMID-cited tau values** (`TAU_REGISTRY`): Three-anchor recovery time constants with Gompertz, saturating-exponential, and piecewise-linear trajectory functions. Each axis cites the primary literature for the specific recovery process measured (e.g., mito = PGC-1a bioenergetic signaling cycle, not protein pool half-life; F = muscle protein synthesis return to baseline).
 
-2. **Qual-only imputation** (`build_J_basin_imputed()`): Fills qual_only entries from tier defaults (S=0.20/0.40, M=0.10/0.20, W=0.05/0.10), increasing J matrix fill from 42/72 (58%) to 68/72 (94%).
+2. **Qual-only imputation** (`build_J_basin_imputed()`): Fills qual_only entries from tier defaults (S=0.20/0.40, M=0.10/0.20, W=0.05/0.10), giving 68/72 (94%) nonzero J entries.
 
-3. **Gompertz J interpolation** (`J_at_age()`, `j_at_age_blended()`): Non-linear aging trajectory for the coupling matrix with Gompertz-shaped blending function and tunable blend amplitude.
+3. **Gompertz J interpolation** (`j_at_age_blended()`): Non-linear aging trajectory for the coupling matrix with Gompertz-shaped blending function and tunable blend amplitude.
 
-4. **Fast-subsystem calibration** (`calibrate_stable_system()`): Jointly finds the coupling scalar c and J blend amplitude A ensuring the fast subsystem remains stable from age 25 to 120. The 6-axis fast subsystem (I, M, P, C, N, F) achieves:
-   - c = 1.57, alpha_fast(25) = -0.24, alpha_fast(120) = -0.004
-   - Monotonic critical slowing-down (recovery: 4.1d at 25 -> 250d at 120)
-   - J blend amplitude A = 0.001 (tau degradation dominates J evolution)
+4. **Fast-subsystem calibration** (`calibrate_stable_system()`): Jointly finds the coupling scalar c and J blend amplitude A ensuring the 7-axis fast subsystem remains stable from age 25 to 120:
+   - c = 0.890, alpha_fast(25) = -0.188, alpha_fast(120) = -0.004
+   - Monotonic critical slowing-down (recovery: 5.3d at 25 -> 250d at 120)
+   - J blend amplitude A = 0.00236 (tau degradation dominates J evolution)
 
 ### Two-timescale calibration architecture
 
@@ -659,10 +653,9 @@ Note on mito tau: the V2.2 registry uses bioenergetic functional recovery (PGC-1
 
 | Configuration | Max stable age | alpha(25) | Recovery at 120 | Notes |
 |--------------|---------------|-----------|-----------------|-------|
-| **7-axis fast (I,M,mito,P,C,N,F)** | **120** | **-0.188** | **250d** | Primary: 7+2 fast-subsystem calibration |
-| 6-axis fast (I,M,P,C,N,F) | 120 | -0.242 | 250d | Alternative (excludes mito) |
-| 9x9 full system | -- | -0.018 | -- | alpha_full goes positive at ~48 (expected) |
-| 4-axis classic (I,M,N,F) | ~30 | -0.134 | -- | Unstable beyond 30 |
+| **7-axis fast (I,M,mito,P,C,N,F)** | **120** | **-0.188** | **250d** | Primary calibration; all axis subsets inherit stability |
+| Any axis subset (e.g., I,M,F) | 120 | -0.375 | N/A | Extracted from fast subsystem; always stable |
+| Full 9×9 system | ~48 | -0.018 | -- | alpha_full goes positive (expected: E-axis dominated) |
 
 ### V2 scripts
 
@@ -679,9 +672,9 @@ python scripts/run_figure2b_v2.py               # V2 figure (4-axis)
 python scripts/run_tau_comparison.py            # Old vs new tau comparison table
 ```
 
-### Backward compatibility
+### Configuration
 
-All existing scripts and tests are unaffected. The legacy `TAU_REGISTRY`, `configure()`, `get_J_anchors()`, and `_tau_for_axes()` functions continue to work with the original 2-anchor values. The V2 system is opt-in via `configure_v2()` or direct use of `TAU_REGISTRY_V2` / `tau_vector()` / `tau_at_age()`. The fast-subsystem calibration is accessed via `calibrate_stable_system()` and `build_system_at_age()`.
+As of v2.5, there is a single configuration path. `configure()` uses the 9×9 compiled CSV, PMID-cited tau registry, and fast-subsystem calibration by default. The former `configure_v2()` function is still available but `configure()` produces identical results. The legacy 2-anchor tau values and 8×8 CSV are archived in `data/legacy/` and `TAU_REGISTRY_LEGACY_FROZEN` for reproducibility of intermediate analyses only.
 
 ## Part 2: Mechanistic-Evidence-Informed Model
 

@@ -1,33 +1,25 @@
 """Load J coupling matrix from CSV and provide age-dependent tau/J functions.
 
-The default CSV (data/J_matrix_compiled_9x9.csv) contains all 72
+The compiled CSV (data/J_matrix_compiled_9x9.csv) contains all 72
 off-diagonal entries of the 9-axis mechanistic coupling matrix J_mech,
 with basin-stratified values (healthy, pre-disease, disease) in SD-per-SD
-units derived from systematic literature review.  The legacy 8-axis
-version (data/J_matrix_compiled.csv, 56 entries) is retained for
-reproducibility of prior analyses.
+units derived from systematic literature review.
 
 This module extracts any axis subset and applies a calibration scalar
 to map SD-per-SD literature values to simulation coupling rates (day^-1).
 
-Two tau registries are available:
-  - TAU_REGISTRY_LEGACY (aliased as TAU_REGISTRY): 2-anchor (ages 30/80),
-    linear interpolation.  Original ad-hoc values.
-  - TAU_REGISTRY_V2: 3-anchor (ages 25/80/120) with PMID-cited values and
-    axis-specific trajectory shapes (Gompertz, saturating-exp, piecewise-linear).
+Tau registry (TAU_REGISTRY = TAU_REGISTRY_V2):
+  - 3-anchor (ages 25/80/120) with PMID-cited values
+  - Axis-specific trajectory shapes (Gompertz, saturating-exp, piecewise-linear)
+  - TAU_REGISTRY_LEGACY_FROZEN: archived 2-anchor ad-hoc values for reproducibility
 
-Additional V2 features:
+Key functions:
   - build_J_basin_imputed(): fills qual_only entries from tier defaults (68/72 fill)
-  - J_at_age(): Gompertz-like J interpolation for ages 25-120
-  - calibrate_three_point(): three-point calibration with Pyrkov targets
-
-Fast-subsystem calibration (two-timescale architecture):
+  - j_at_age_blended(): Gompertz-like J interpolation for ages 25-120
   - calibrate_stable_system(): joint (c, amplitude) optimization for 25-120
-    stability on the 6-axis fast subsystem (I, M, P, C, N, F)
-  - calibrate_fast_subsystem(): single-point c calibration at age 25
-  - j_blend_fraction(), find_j_blend_amplitude(): Gompertz J trajectory
-  - j_at_age_blended(), build_system_at_age(): two-timescale system builder
-  - Axis constants: _ALL_9_AXES, _FAST_7_AXES, _FAST_6_AXES, _SLOW_3_AXES
+    stability on the 7-axis fast subsystem (I, M, mito, P, C, N, F)
+  - build_system_at_age(): two-timescale system builder
+  - Axis constants: _ALL_9_AXES, _FAST_7_AXES, _FAST_6_AXES, _SLOW_2_AXES
 """
 
 import os

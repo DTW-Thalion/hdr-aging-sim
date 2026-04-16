@@ -7,12 +7,11 @@ forcing, but do not participate in perturbation-recovery eigenvalue
 computation.
 
 This class uses a **7-axis fast subsystem** (I, M, mito, P, C, N, F)
-with legacy tau values.  The V2.2 literature-calibrated tau registry
-corrects mito tau from 36d (protein half-life) to 1d (bioenergetic
-functional recovery via PGC-1a signaling cycle), placing mito squarely
-in the fast cluster.  The csv_loader module provides
-``calibrate_stable_system()`` for 7+2 calibration with c=0.89 and full
-25-120 stability.  See csv_loader.py for details.
+with PMID-cited tau values.  The tau registry uses bioenergetic
+functional recovery timescales (e.g., mito tau = 1d via PGC-1a
+signaling cycle, not 36d protein half-life).  The csv_loader module
+provides ``calibrate_stable_system()`` for 7+2 calibration with c=0.89
+and full 25-120 stability.
 
 The full 9x9 system is available via A_full for reference.
 

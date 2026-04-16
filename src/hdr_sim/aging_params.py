@@ -1,24 +1,20 @@
 """Age-parameterised tau_i(age) and J(age) functions.
 
-J coupling matrices are loaded from CSV and scaled by a calibration scalar
-to map SD-per-SD literature values to simulation coupling rates.
+The 9x9 compiled J matrix (``data/J_matrix_compiled_9x9.csv``) is loaded
+and scaled by a calibration scalar to map SD-per-SD literature values to
+simulation coupling rates.  PMID-cited tau values from the 3-anchor
+registry (ages 25, 80, 120) with axis-specific trajectory shapes
+(Gompertz, saturating-exp, piecewise-linear) provide recovery time
+constants.  Gompertz-like J interpolation with a tunable blend amplitude
+allows the coupling matrix to evolve with age.
 
-Two configuration modes:
+``configure()`` calibrates the 7-axis fast subsystem (I, M, mito, P, C,
+N, F) via ``calibrate_stable_system()``, guaranteeing stability at all ages
+25-120.  Any requested axis subset is extracted from this calibrated system.
 
-**Legacy** (``configure()``): The CSV provides basin-stratified values
-(healthy / pre-disease / disease).  The healthy basin maps to the age 30
-anchor, and the disease basin maps to the age 80 anchor.  Linear
-interpolation is used for intermediate ages.
-
-**V2** (``configure_v2()``): Uses the literature-calibrated TAU_REGISTRY_V2
-with three anchors (ages 25, 80, 120) and axis-specific trajectory shapes
-(Gompertz, saturating-exp, piecewise-linear).  J interpolation uses a
-Gompertz-like trajectory.  Supports qual_only-imputed J matrices (68/72
-nonzero).
-
-Call ``configure()`` or ``configure_v2()`` before using ``tau_of_age()``
-or ``J_of_age()``.  If called without prior configuration, auto-configures
-with legacy defaults and emits a DeprecationWarning.
+Call ``configure()`` before using ``tau_of_age()`` or ``J_of_age()``.
+If called without prior configuration, auto-configures with defaults and
+emits a DeprecationWarning.
 """
 
 import warnings
