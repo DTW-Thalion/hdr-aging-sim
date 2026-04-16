@@ -16,8 +16,9 @@ produces:
 
 - Progressive drift of the spectral abscissa toward instability (α → 0⁻)
 - Critical slowing-down: recovery timescale diverges as α → 0
-- Identical perturbations produce age-dependent responses (fast recovery at 30,
-  near-catastrophic excursion at 80)
+- Identical perturbations produce age-dependent responses: fast recovery at 30
+  (≈5d); large, slower, bounded recovery at 80 (≈9d recovery timescale,
+  ~30d to baseline)
 - Cross-axis propagation of perturbations through the coupling matrix
 
 These are the dynamical signatures of aging predicted by the HDR formalism and
@@ -648,6 +649,22 @@ The calibration procedure:
 3. Report alpha_fast (empirically testable) and alpha_full (E-dominated)
 
 Note on mito tau: the V2.2 registry uses bioenergetic functional recovery (PGC-1a signaling cycle, 1-5d) rather than the mitochondrial protein pool half-life (36d, Rooyackers 1996). This is the same conceptual distinction applied to the I axis (CRP half-life vs inflammatory resolution programme duration).
+
+### Numerical integration
+
+Perturbation-response panels in `run_figure2b.py`, `run_figure2b_v2.py`,
+`run_figure2b_v3.py`, `run_figure_frailty.py`, and `run_figure_disease_demos.py`
+use a **matrix-exponential propagator** (`hdr_sim.dynamics.simulate_expm`):
+`x[i+1] = expm(A·dt) @ x[i] + σ·√dt·ξ`. This is exact for the deterministic
+flow and unconditionally stable regardless of eigenvalue magnitude. It
+replaces an earlier Euler–Maruyama scheme that was conditionally stable
+(requires `|λ_max(A)|·dt < 2`); the fast subsystem reaches `|λ_max| ≈ 333`
+at young ages, which exceeded the Euler limit at the `dt = 0.01` used by the
+demonstration panels and produced numerical overflow rather than the
+intended dynamics. `simulate()` (Euler–Maruyama) remains available and is
+still used by the SDE-specific analyses in `run_dj_bayes_robust.py`, where
+the SDE structure is central and `|λ_max|·dt` stays within the stability
+region.
 
 ### Stability findings
 
