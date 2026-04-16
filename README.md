@@ -59,6 +59,12 @@ For the NHANES feasibility script, additional dependencies are needed:
 pip install pandas pyreadstat
 ```
 
+For the InCHIANTI replication analysis:
+
+```bash
+pip install pandas pyreadstat pyarrow openpyxl
+```
+
 ## Usage
 
 ```bash
@@ -808,8 +814,91 @@ bash run_all_with_results.sh --compare-j
 
 The `data/mechanistic_evidence/` directory contains exports from the [HDR-mechanistic](https://github.com/DTW-Thalion/HDR-mechanistic) repository (pipeline v3.5). That repository performs the mechanistic decomposition of each J entry into molecular pathway steps, validates against ChEMBL, and produces the enriched evidence base consumed here. This repository (hdr-aging-sim) is the simulation consumer — it does not modify the mechanistic evidence.
 
+## InCHIANTI Replication: 4-Axis HDR Validation
+
+Independent replication of the ELSA coupling-tightening finding using the InCHIANTI cohort (Chianti region, Tuscany, Italy). InCHIANTI provides three advantages over ELSA: (1) younger age range (20–102 vs 50–90+), (2) IL-6 + HOMA-IR biomarkers (vs CRP + HbA1c), and (3) ATC-coded medication records (vs diagnosis-only proxies).
+
+### Data access
+
+InCHIANTI data is access-restricted. Request access via the InCHIANTI study group. Place the data files at `~/Downloads/inCHIANTI/InCHIANTI_CD_Share/` (or pass `--data-root` to scripts). The `.gitignore` excludes all InCHIANTI data files from the repository.
+
+### 4-Axis panel
+
+| Axis | Biomarker | Variable | InCHIANTI advantage over ELSA |
+|------|-----------|----------|-------------------------------|
+| I (Inflammatory) | IL-6 (pg/mL) | `X_IL6` | Direct regulatory cytokine (vs CRP acute-phase proxy) |
+| M (Metabolic) | HOMA-IR (computed) | `X_GLU × X_INSULN / 405` | Direct insulin resistance (vs HbA1c glycaemic control) |
+| N (Neuroautonomic) | Resting HR (bpm) | `X_FC` | Not pharmacologically confounded like BP; RMSSD not in standard release |
+| F (Functional) | SPPB (0–12) | `PXSPS` | Validated composite (vs grip strength alone) |
+
+### Running the analysis
+
+```bash
+pip install pyreadstat pyarrow openpyxl
+
+# Extract harmonised panel from raw SAS files (saves to data/inchianti_panel.parquet)
+python scripts/inchianti_extract_panel.py
+
+# Individual analyses
+python scripts/inchianti_qc.py                         # Cohort description
+python scripts/inchianti_lambda_max_trajectory.py       # Lambda_max by age stratum
+python scripts/inchianti_lead_lag.py                    # 6-pair cross-lagged regression
+python scripts/inchianti_medication_dose_response.py    # Medication compression test (raw)
+python scripts/inchianti_medication_refined.py          # Refined: age-stratified, SWDS-Gamma, HTN matched
+python scripts/inchianti_pi_trajectory.py               # Pi = C_norm / V_norm trajectory
+
+# Generate publication figures
+python scripts/inchianti_figures.py
+
+# Consolidate results for manuscript
+python scripts/inchianti_manuscript_summary.py
+```
+
+### Key results (v2.3-inchianti-replication)
+
+| Analysis | Result | Interpretation |
+|----------|--------|----------------|
+| **Lambda_max trajectory** | 1.17 (20–49) → 8.04 (60–69) → 22.1 (80+), monotonically increasing | ✅ Replicates ELSA coupling-tightening |
+| **Lead-lag concordance** | 9/12 ordered pairs match compiled J-matrix signs (p = 0.073) | ✅ Meets ≥ 8/12 threshold |
+| **Medication dose-response** | Within-decade CIs overlap; SWDS-Gamma regression n_meds p = 0.35; HTN matched: treated > untreated | Confounding by indication, not genuine compression |
+| **Pi trajectory** | Slope = −0.019/yr (D-dominated) | ⚠️ Divergent from ELSA (+0.001/yr); likely N-axis proxy noise |
+
+### Cohort summary
+
+- **N = 1,453** at baseline (ages 20–102), 6 waves over 18 years
+- **176 young adults (20–49)** — key advantage, ELSA lacks this age range
+- **2,858 four-axis complete observations** from 1,276 subjects
+- **957 subjects with ≥ 2 waves** of 4-axis data (for change-covariance)
+- HOMA-IR available waves 0–2 only (insulin not measured FU3+)
+- RMSSD/HRV not in standard data release; resting HR used as N-axis proxy
+
+### Limitations and divergences
+
+1. **RMSSD unavailable**: The N-axis uses resting HR instead of RMSSD. This is mechanistically inferior — resting HR captures only tonic sympathovagal balance, not beat-to-beat parasympathetic modulation. InCHIANTI published HRV papers (Stein et al., 2005) suggest 24h Holter data may exist in ancillary files not included in the standard data release.
+
+2. **Pi divergence**: The D-dominated Pi trajectory (−0.019/yr) opposes the ELSA result (+0.001/yr proportional). This is likely driven by the resting HR proxy inflating diagonal variance (noisy single-measurement HR) relative to off-diagonal covariance, biasing toward apparent D-dominance.
+
+3. **HOMA-IR temporal coverage**: Insulin was only measured at baseline, FU1, and FU2. FU3 has IL-6 but no insulin; FU4–5 have neither. Full 4-axis longitudinal coverage is limited to waves 0–2 (~6 years).
+
+4. **SPPB ceiling effect**: All healthy 20–30 year-olds scored 12/12 on SPPB (SD = 0). Reference SD was computed from healthy adults < 60 instead.
+
+### Scripts and outputs
+
+| Script | Output | Description |
+|--------|--------|-------------|
+| `inchianti_extract_panel.py` | `data/inchianti_panel.parquet` | Harmonised 6-wave panel (`.gitignored`) |
+| `inchianti_qc.py` | `results/inchianti_qc_report.md` | Cohort description and data availability |
+| `inchianti_lambda_max_trajectory.py` | `results/inchianti_lambda_max_by_age.csv` | Lambda_max by age stratum with bootstrap CIs |
+| `inchianti_lead_lag.py` | `results/inchianti_lead_lag_matrix.csv` | 12 cross-lagged regression coefficients |
+| `inchianti_medication_dose_response.py` | `results/inchianti_med_dose_response.csv` | Medication stratification + regression (raw) |
+| `inchianti_medication_refined.py` | `results/inchianti_med_refined_results.json` | Age-stratified, SWDS-Gamma, HTN matched, off-diag |
+| `inchianti_figures.py` | `outputs/figure_inchianti_*.pdf` | 5 publication figures (A-E) |
+| `inchianti_pi_trajectory.py` | `results/inchianti_pi_trajectory.csv` | Pi = C_norm / V_norm by age stratum |
+| `inchianti_manuscript_summary.py` | `results/inchianti_summary_for_manuscript.md` | Consolidated manuscript-ready results |
+
 ### Dependencies
 
 Core (in `pyproject.toml`): numpy, scipy, matplotlib.
 Part 2 additions (in `requirements_part2.txt`): pytest, lifelines (for Cox models).
+InCHIANTI analysis: pyreadstat, pyarrow, openpyxl (for SAS file reading and parquet output).
 Optional: SALib (for Sobol indices).
