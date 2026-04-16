@@ -1,0 +1,133 @@
+{
+  "description": "InCHIANTI 4-axis lambda_max trajectory",
+  "axes": [
+    "I (log IL-6)",
+    "M (log HOMA-IR)",
+    "N (resting HR)",
+    "F (SPPB, sign-flipped)"
+  ],
+  "n_change_pairs_total": 1523,
+  "n_change_pairs_naive": 688,
+  "results": [
+    {
+      "age_stratum": "20-49",
+      "type": "change_covariance",
+      "n_pairs": 229,
+      "lambda_max": 1.1718834008756625,
+      "ci_lower": 0.8607621011914002,
+      "ci_upper": 2.333853356442248
+    },
+    {
+      "age_stratum": "50-59",
+      "type": "change_covariance",
+      "n_pairs": 97,
+      "lambda_max": 1.2186634062351023,
+      "ci_lower": 0.870449443589493,
+      "ci_upper": 2.128984077344788
+    },
+    {
+      "age_stratum": "60-69",
+      "type": "change_covariance",
+      "n_pairs": 227,
+      "lambda_max": 8.044252140891265,
+      "ci_lower": 4.772285959996271,
+      "ci_upper": 12.119356904274937
+    },
+    {
+      "age_stratum": "70-79",
+      "type": "change_covariance",
+      "n_pairs": 683,
+      "lambda_max": 11.255230017847488,
+      "ci_lower": 9.359435511843131,
+      "ci_upper": 13.389056732650042
+    },
+    {
+      "age_stratum": "80+",
+      "type": "change_covariance",
+      "n_pairs": 181,
+      "lambda_max": 22.055547281029526,
+      "ci_lower": 17.282859142227657,
+      "ci_upper": 27.056431129471907
+    },
+    {
+      "age_stratum": "20-49",
+      "type": "cross_sectional",
+      "n_pairs": 409,
+      "lambda_max": 1.1308143668604707,
+      "ci_lower": 0.9726813109961087,
+      "ci_upper": 1.783012381158229
+    },
+    {
+      "age_stratum": "50-59",
+      "type": "cross_sectional",
+      "n_pairs": 166,
+      "lambda_max": 2.644434008553129,
+      "ci_lower": 1.4485117991201997,
+      "ci_upper": 4.262037373837594
+    },
+    {
+      "age_stratum": "60-69",
+      "type": "cross_sectional",
+      "n_pairs": 523,
+      "lambda_max": 10.355432739394953,
+      "ci_lower": 6.886022006665932,
+      "ci_upper": 14.302119864955616
+    },
+    {
+      "age_stratum": "70-79",
+      "type": "cross_sectional",
+      "n_pairs": 1245,
+      "lambda_max": 23.472508617615702,
+      "ci_lower": 19.83639856815465,
+      "ci_upper": 27.17744803826449
+    },
+    {
+      "age_stratum": "80+",
+      "type": "cross_sectional",
+      "n_pairs": 515,
+      "lambda_max": 49.173492229433236,
+      "ci_lower": 43.815499370506465,
+      "ci_upper": 54.38725181399614
+    },
+    {
+      "age_stratum": "20-49",
+      "type": "change_naive",
+      "n_pairs": 189,
+      "lambda_max": 1.3174030325190356,
+      "ci_lower": 0.8563984555831771,
+      "ci_upper": 2.724010573708922
+    },
+    {
+      "age_stratum": "50-59",
+      "type": "change_naive",
+      "n_pairs": 59,
+      "lambda_max": 0.9418631595810807,
+      "ci_lower": 0.7409328122563118,
+      "ci_upper": 1.5392749622872237
+    },
+    {
+      "age_stratum": "60-69",
+      "type": "change_naive",
+      "n_pairs": 97,
+      "lambda_max": 8.4988575715923,
+      "ci_lower": 3.247851466035972,
+      "ci_upper": 16.0407756977808
+    },
+    {
+      "age_stratum": "70-79",
+      "type": "change_naive",
+      "n_pairs": 251,
+      "lambda_max": 9.400653689884575,
+      "ci_lower": 7.016605947791232,
+      "ci_upper": 11.997096209298377
+    },
+    {
+      "age_stratum": "80+",
+      "type": "change_naive",
+      "n_pairs": 43,
+      "lambda_max": 27.27562399829093,
+      "ci_lower": 13.494740049361154,
+      "ci_upper": 41.84976153485081
+    }
+  ]
+}

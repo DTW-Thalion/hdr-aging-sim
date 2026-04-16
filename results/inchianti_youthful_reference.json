@@ -1,0 +1,35 @@
+{
+  "I": {
+    "var": "log_il6",
+    "mean_ref": -0.46810995805278854,
+    "sd_ref": 0.7027328184925563,
+    "n_ref": 55,
+    "log_transformed": true
+  },
+  "M": {
+    "var": "homa_ir",
+    "mean_ref": 0.42721598094937174,
+    "sd_ref": 0.5294928591962135,
+    "n_ref": 54,
+    "log_transformed": true
+  },
+  "N": {
+    "var": "resting_hr",
+    "mean_ref": 71.5,
+    "sd_ref": 13.211565181516328,
+    "n_ref": 56,
+    "log_transformed": false
+  },
+  "F": {
+    "var": "sppb",
+    "mean_ref": 12.0,
+    "sd_ref": 0.48707627707242995,
+    "n_ref": 53,
+    "log_transformed": false,
+    "sd_source": "healthy <60 (N=170)"
+  },
+  "_meta": {
+    "age_range": "20-30",
+    "n_healthy_young": 56
+  }
+}
