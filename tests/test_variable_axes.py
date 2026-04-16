@@ -138,14 +138,15 @@ class TestGetJAnchors:
 
 class TestTauForAxes:
     def test_2_axes(self):
-        t30, t80 = _tau_for_axes(('I', 'M'))
-        assert len(t30) == 2
+        t25, t80 = _tau_for_axes(('I', 'M'))
+        assert len(t25) == 2
         assert len(t80) == 2
-        assert t30[0] == TAU_REGISTRY['I'][0]
-        assert t80[1] == TAU_REGISTRY['M'][1]
+        # TAU_REGISTRY now points to V2 (dict format)
+        assert t25[0] == TAU_REGISTRY['I']['tau_25']
+        assert t80[1] == TAU_REGISTRY['M']['tau_80']
 
     def test_unknown_axis_raises(self):
-        with pytest.raises(ValueError, match="No τ entry"):
+        with pytest.raises(ValueError, match="No tau entry"):
             _tau_for_axes(('I', 'UNKNOWN'))
 
 

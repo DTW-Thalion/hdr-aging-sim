@@ -27,6 +27,8 @@ from .csv_loader import (
     load_J_csv, build_J_basin, build_J_basin_imputed,
     get_calibration_scalar, TAU_REGISTRY, TAU_REGISTRY_V2,
     tau_vector as _tau_vector_v2, J_at_age as _J_at_age_v2,
+    calibrate_stable_system, build_system_at_age,
+    _ALL_9_AXES, _FAST_7_AXES,
 )
 
 # ---------------------------------------------------------------------------
@@ -71,74 +73,32 @@ _config = None
 
 def configure(j_matrix_path=None, axes=None, target_alpha=-0.134,
               tau_30=None, tau_80=None):
-    """Initialise the aging parameters module with a specific J-matrix.
+    """Initialise the aging parameters module.
+
+    As of v2.5, delegates to configure_v2() using the 9x9 compiled CSV and
+    V2 tau registry. The legacy 8x8 CSV is archived in data/legacy/.
 
     Must be called before any calls to tau_of_age() or J_of_age().
-    Can be called multiple times to reconfigure (e.g., switching J versions).
+    Can be called multiple times to reconfigure.
 
     Parameters
     ----------
     j_matrix_path : str or None
-        Path to J matrix CSV. If None, uses the legacy 8-axis CSV
-        (data/J_matrix_compiled.csv) for backward compatibility with
-        the original 4-axis calibration.
+        Path to J matrix CSV. If None, uses the 9-axis compiled CSV.
     axes : tuple[str] or None
         Axis subset. If None, uses ('I', 'M', 'N', 'F').
     target_alpha : float
-        Target spectral abscissa at age 30 for calibration.
+        Target spectral abscissa at age 25 for calibration.
     tau_30, tau_80 : np.ndarray or None
-        Recovery time constants. If None, looks up from the τ registry.
+        If provided, overrides the V2 registry lookup (for testing).
     """
-    global _config
-    from .j_matrix_spec import JMatrixSpec
-
-    if axes is None:
-        axes = ('I', 'M', 'N', 'F')
-
-    # Resolve CSV path
-    if j_matrix_path is None:
-        import os
-        pkg_dir = os.path.dirname(os.path.abspath(__file__))
-        repo_root = os.path.dirname(os.path.dirname(pkg_dir))
-        j_matrix_path = os.path.join(repo_root, 'data', 'J_matrix_compiled.csv')
-
-    # Build J-matrix spec for provenance
-    j_spec = JMatrixSpec.from_csv(j_matrix_path)
-
-    # Load CSV and build basin matrices
-    rows = load_J_csv(j_matrix_path)
-    J_healthy = build_J_basin(rows, basin='healthy', axes=axes)
-    J_disease = build_J_basin(rows, basin='disease', axes=axes)
-
-    # Resolve tau vectors
-    if tau_30 is None or tau_80 is None:
-        t30_list, t80_list = [], []
-        for ax in axes:
-            if ax not in TAU_REGISTRY:
-                raise ValueError(
-                    f"No τ entry for axis {ax!r}. "
-                    f"Known axes: {sorted(TAU_REGISTRY.keys())}"
-                )
-            t30_val, t80_val = TAU_REGISTRY[ax]
-            t30_list.append(t30_val)
-            t80_list.append(t80_val)
-        if tau_30 is None:
-            tau_30 = np.array(t30_list)
-        if tau_80 is None:
-            tau_80 = np.array(t80_list)
-
-    # Calibrate
-    calibration_scalar = get_calibration_scalar(J_healthy, tau_30, target_alpha)
-
-    _config = {
-        'J_30': calibration_scalar * J_healthy,
-        'J_80': calibration_scalar * J_disease,
-        'calibration_scalar': calibration_scalar,
-        'axes': axes,
-        'tau_30': tau_30,
-        'tau_80': tau_80,
-        'j_spec': j_spec,
-    }
+    # Delegate to V2 with backward-compatible defaults
+    configure_v2(
+        j_matrix_path=j_matrix_path,
+        axes=axes,
+        target_alpha=target_alpha,
+        impute_qual=True,
+    )
 
 
 def configure_v2(j_matrix_path=None, axes=None, target_alpha=-0.134,
@@ -281,3 +241,52 @@ def J_of_age(age: float) -> np.ndarray:
     J = (1.0 - f) * _config['J_30'] + f * _config['J_80']
     np.fill_diagonal(J, 0.0)
     return J
+
+
+# ---------------------------------------------------------------------------
+# Fast-subsystem convenience (V2)
+# ---------------------------------------------------------------------------
+
+_fast_cal = None  # cached calibration result
+
+
+def get_fast_system(age, axes_fast=None):
+    """Return (A_full, A_fast, alpha_fast, alpha_full) at a given age.
+
+    Uses the 7-axis fast subsystem (I,M,mito,P,C,N,F) calibrated via
+    calibrate_stable_system() for guaranteed stability ages 25-120.
+    The calibration result is cached after the first call.
+
+    Parameters
+    ----------
+    age : float
+        Chronological age (25-120).
+    axes_fast : tuple[str] or None
+        Fast-subsystem axes. Default: _FAST_7_AXES.
+
+    Returns
+    -------
+    A_full : ndarray (9x9)
+    A_fast : ndarray (7x7 or len(axes_fast) x len(axes_fast))
+    alpha_fast : float
+    alpha_full : float
+    """
+    global _fast_cal
+    if axes_fast is None:
+        axes_fast = _FAST_7_AXES
+
+    if _fast_cal is None:
+        rows = load_J_csv()
+        J_h = build_J_basin_imputed(rows, 'healthy', _ALL_9_AXES)
+        J_d = build_J_basin_imputed(rows, 'disease', _ALL_9_AXES)
+        _fast_cal = calibrate_stable_system(J_h, J_d,
+                                            axes_all=_ALL_9_AXES,
+                                            axes_fast=axes_fast)
+        _fast_cal['J_h'] = J_h
+        _fast_cal['J_d'] = J_d
+
+    return build_system_at_age(
+        age, _fast_cal['J_h'], _fast_cal['J_d'],
+        _fast_cal['c'], _fast_cal['amplitude'],
+        axes_all=_ALL_9_AXES, axes_fast=axes_fast,
+    )

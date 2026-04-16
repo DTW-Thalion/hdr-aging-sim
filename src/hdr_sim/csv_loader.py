@@ -202,8 +202,9 @@ TAU_REGISTRY_LEGACY = {
     'B':    (90.0,   120.0),   # bone/body composition ~months
 }
 
-# Backward-compatible alias
-TAU_REGISTRY = TAU_REGISTRY_LEGACY
+# FROZEN: legacy alias retained for reproducibility of pre-v2.4 analyses.
+# As of v2.5, the default TAU_REGISTRY points to TAU_REGISTRY_V2.
+TAU_REGISTRY_LEGACY_FROZEN = TAU_REGISTRY_LEGACY
 
 
 # ---------------------------------------------------------------------------
@@ -310,6 +311,10 @@ TAU_REGISTRY_V2 = {
     },
 }
 
+# Default TAU_REGISTRY now points to V2 (literature-calibrated, PMID-cited).
+# As of v2.5, all new code should use TAU_REGISTRY (= V2).
+TAU_REGISTRY = TAU_REGISTRY_V2
+
 
 def tau_at_age(axis, age):
     """Return τ for a single axis at a given age using the V2 registry.
@@ -355,20 +360,27 @@ def tau_vector(axes, age):
 def _tau_for_axes(axes):
     """Return (tau_25, tau_80) arrays for the given axis labels.
 
-    Backward-compatible: uses LEGACY registry (tau_30, tau_80) semantics.
+    Uses the V2 registry (3-anchor dict format). Returns tau at ages
+    25 and 80 for backward compatibility with code expecting 2-anchor tuples.
     New code should prefer tau_vector(axes, age) for arbitrary ages.
     """
-    t30, t80 = [], []
+    t25, t80 = [], []
     for ax in axes:
-        if ax not in TAU_REGISTRY:
+        if ax in TAU_REGISTRY_V2:
+            entry = TAU_REGISTRY_V2[ax]
+            t25.append(entry['tau_25'])
+            t80.append(entry['tau_80'])
+        elif ax in TAU_REGISTRY_LEGACY:
+            # Fallback for any axis not yet in V2
+            v30, v80 = TAU_REGISTRY_LEGACY[ax]
+            t25.append(v30)
+            t80.append(v80)
+        else:
             raise ValueError(
-                f"No τ entry for axis {ax!r}. "
-                f"Known axes: {sorted(TAU_REGISTRY.keys())}"
+                f"No tau entry for axis {ax!r}. "
+                f"Known V2 axes: {sorted(TAU_REGISTRY_V2.keys())}"
             )
-        v30, v80 = TAU_REGISTRY[ax]
-        t30.append(v30)
-        t80.append(v80)
-    return np.array(t30), np.array(t80)
+    return np.array(t25), np.array(t80)
 
 
 # ---------------------------------------------------------------------------
@@ -407,9 +419,8 @@ def get_J_anchors(axes=_DEFAULT_AXES, target_alpha=_TARGET_ALPHA_30,
     target_alpha : float
         Target spectral abscissa at age 30.
     csv_path : str or None
-        Path to CSV.  If None, uses the legacy 8-axis CSV
-        (``data/J_matrix_compiled.csv``) to preserve existing
-        simulation calibration.
+        Path to CSV.  If None, uses the 9-axis compiled CSV
+        (``data/J_matrix_compiled_9x9.csv``).
 
     Returns
     -------
@@ -420,7 +431,7 @@ def get_J_anchors(axes=_DEFAULT_AXES, target_alpha=_TARGET_ALPHA_30,
     calibration_scalar : float
         The scalar applied: J_sim = c * J_csv.
     """
-    rows = load_J_csv(csv_path or _legacy_csv_path())
+    rows = load_J_csv(csv_path or _default_csv_path())
     J_healthy = build_J_basin(rows, basin='healthy', axes=axes)
     J_disease = build_J_basin(rows, basin='disease', axes=axes)
 
