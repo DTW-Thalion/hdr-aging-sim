@@ -854,23 +854,36 @@ python scripts/inchianti_figures.py
 python scripts/inchianti_manuscript_summary.py
 ```
 
-### Key results (v2.3-inchianti-replication)
+### Key results
 
 | Analysis | Result | Interpretation |
 |----------|--------|----------------|
-| **Lambda_max trajectory** | 1.17 (20–49) → 8.04 (60–69) → 22.1 (80+), monotonically increasing | ✅ Replicates ELSA coupling-tightening |
-| **Lead-lag concordance** | 9/12 ordered pairs match compiled J-matrix signs (p = 0.073) | ✅ Meets ≥ 8/12 threshold |
-| **Medication dose-response** | Within-decade CIs overlap; SWDS-Gamma regression n_meds p = 0.35; HTN matched: treated > untreated | Confounding by indication, not genuine compression |
-| **Pi trajectory** | Slope = −0.019/yr (D-dominated) | ⚠️ Divergent from ELSA (+0.001/yr); likely N-axis proxy noise |
+| **Lambda_max trajectory** | 1.17 (20–49) → 22.1 (80+) [4-axis]; 3.28 → 28.7 [5-axis], monotonically increasing | ✅ Replicates ELSA coupling-tightening |
+| **Lead-lag concordance** | 5-axis: 11/20 (55%, p=0.41); 4-axis: 6/12 (50%, corrected sign convention) | Weaker than expected; see note on sign convention |
+| **Medication dose-response** | Within-decade CIs overlap; SWDS-Gamma n_meds p = 0.35; HTN matched: treated > untreated | Confounding by indication, not genuine compression |
+| **Pi trajectory** | Slope = −0.019/yr (D-dominated) | ⚠️ Divergent from ELSA (+0.001/yr) |
+| **Survival** | deltaC(M5-M4) = +0.014 (age 65+), +0.014 (med-naive) | ✅ Comparable to ELSA (+0.009/+0.013) |
+
+**Sign convention correction:** The original 4-axis lead-lag (9/12) used manually specified J-signs that did not account for the F-axis sign flip in the standardisation convention. After correcting to use the compiled J-matrix directly with proper sign-flip adjustment, concordance is 6/12. The 5-axis model (adding B-axis PTH) achieves 11/20 (55%).
+
+### Axis configurations tested
+
+| Config | Axes | N pairs | Lead-lag concordance | Pi slope |
+|--------|------|---------|---------------------|----------|
+| 5-axis | I (IL-6), M (HOMA-IR), N (cortisol/DHEAS), F (SPPB), B (PTH) | 1,629 | 11/20 (55%) | -0.010/yr |
+| 4-axis cortisol/DHEAS | I, M, N (cortisol/DHEAS ratio), F | 1,660 | 6/12 (50%) | -0.017/yr |
+| 4-axis resting HR | I, M, N (resting HR), F | 1,523 | 6/12 (50%) | -0.019/yr |
+| 4-axis NLR | I (NLR), M, N (cortisol/DHEAS), F | 1,688 | 4/12 (33%) | -0.016/yr |
 
 ### Cohort summary
 
 - **N = 1,453** at baseline (ages 20–102), 6 waves over 18 years
 - **176 young adults (20–49)** — key advantage, ELSA lacks this age range
-- **2,858 four-axis complete observations** from 1,276 subjects
-- **957 subjects with ≥ 2 waves** of 4-axis data (for change-covariance)
-- HOMA-IR available waves 0–2 only (insulin not measured FU3+)
-- RMSSD/HRV not in standard data release; resting HR used as N-axis proxy
+- **950 deaths** (65%) over median 14.7 years follow-up
+- **1,629 five-axis complete change pairs** from 957+ subjects
+- Cortisol/DHEAS ratio available waves 0–2; PTH available waves 0–3
+- Cystatin C and CTX-1 available at baseline only (no longitudinal P or B_resorption)
+- RMSSD/HRV not in standard data release
 
 ### Limitations and divergences
 
@@ -894,6 +907,9 @@ python scripts/inchianti_manuscript_summary.py
 | `inchianti_medication_refined.py` | `results/inchianti_med_refined_results.json` | Age-stratified, SWDS-Gamma, HTN matched, off-diag |
 | `inchianti_figures.py` | `outputs/figure_inchianti_*.pdf` | 5 publication figures (A-E) |
 | `inchianti_pi_trajectory.py` | `results/inchianti_pi_trajectory.csv` | Pi = C_norm / V_norm by age stratum |
+| `inchianti_6axis_analysis.py` | `results/inchianti_6axis_results.json` | 5-axis, 4 config comparison (lambda, lead-lag, Pi) |
+| `inchianti_survival.py` | `results/inchianti_survival_analysis.json` | Cox models: SWDS-Gamma vs mortality |
+| `inchianti_figures_6axis.py` | `outputs/figure_inchianti_*_6axis.pdf` | 6-axis figures (comparison, 5x5 heatmap, N-axis, survival) |
 | `inchianti_manuscript_summary.py` | `results/inchianti_summary_for_manuscript.md` | Consolidated manuscript-ready results |
 
 ### Dependencies
