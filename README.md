@@ -843,8 +843,12 @@ python scripts/inchianti_extract_panel.py
 python scripts/inchianti_qc.py                         # Cohort description
 python scripts/inchianti_lambda_max_trajectory.py       # Lambda_max by age stratum
 python scripts/inchianti_lead_lag.py                    # 6-pair cross-lagged regression
-python scripts/inchianti_medication_dose_response.py    # Medication compression test
+python scripts/inchianti_medication_dose_response.py    # Medication compression test (raw)
+python scripts/inchianti_medication_refined.py          # Refined: age-stratified, SWDS-Gamma, HTN matched
 python scripts/inchianti_pi_trajectory.py               # Pi = C_norm / V_norm trajectory
+
+# Generate publication figures
+python scripts/inchianti_figures.py
 
 # Consolidate results for manuscript
 python scripts/inchianti_manuscript_summary.py
@@ -856,7 +860,7 @@ python scripts/inchianti_manuscript_summary.py
 |----------|--------|----------------|
 | **Lambda_max trajectory** | 1.17 (20–49) → 8.04 (60–69) → 22.1 (80+), monotonically increasing | ✅ Replicates ELSA coupling-tightening |
 | **Lead-lag concordance** | 9/12 ordered pairs match compiled J-matrix signs (p = 0.073) | ✅ Meets ≥ 8/12 threshold |
-| **Medication dose-response** | n_meds β = −0.07, p = 0.48 after comorbidity adjustment | Confounding by indication, not genuine compression |
+| **Medication dose-response** | Within-decade CIs overlap; SWDS-Gamma regression n_meds p = 0.35; HTN matched: treated > untreated | Confounding by indication, not genuine compression |
 | **Pi trajectory** | Slope = −0.019/yr (D-dominated) | ⚠️ Divergent from ELSA (+0.001/yr); likely N-axis proxy noise |
 
 ### Cohort summary
@@ -886,7 +890,9 @@ python scripts/inchianti_manuscript_summary.py
 | `inchianti_qc.py` | `results/inchianti_qc_report.md` | Cohort description and data availability |
 | `inchianti_lambda_max_trajectory.py` | `results/inchianti_lambda_max_by_age.csv` | Lambda_max by age stratum with bootstrap CIs |
 | `inchianti_lead_lag.py` | `results/inchianti_lead_lag_matrix.csv` | 12 cross-lagged regression coefficients |
-| `inchianti_medication_dose_response.py` | `results/inchianti_med_dose_response.csv` | Medication stratification + regression |
+| `inchianti_medication_dose_response.py` | `results/inchianti_med_dose_response.csv` | Medication stratification + regression (raw) |
+| `inchianti_medication_refined.py` | `results/inchianti_med_refined_results.json` | Age-stratified, SWDS-Gamma, HTN matched, off-diag |
+| `inchianti_figures.py` | `outputs/figure_inchianti_*.pdf` | 5 publication figures (A-E) |
 | `inchianti_pi_trajectory.py` | `results/inchianti_pi_trajectory.csv` | Pi = C_norm / V_norm by age stratum |
 | `inchianti_manuscript_summary.py` | `results/inchianti_summary_for_manuscript.md` | Consolidated manuscript-ready results |
 
