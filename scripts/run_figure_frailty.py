@@ -31,19 +31,20 @@ _args = parse_args()
 os.makedirs('outputs', exist_ok=True)
 setup_style()
 configure()
+from hdr_sim.aging_params import get_fast_system
 
-ages = np.arange(25, 91, 1)
+ages = np.arange(25, 121, 1)
 
 fig, axes = plt.subplots(1, 2, figsize=(10, 4))
 
-# --- Panel A: Discrete spectral radius ρ vs. age ---
+# --- Panel A: Discrete spectral radius rho vs. age ---
 ax = axes[0]
 add_panel_label(ax, 'a')
 
 rhos = []
 for age in ages:
-    A = build_A(tau_of_age(age), J_of_age(age))
-    rhos.append(spectral_radius_discrete(A, dt=1.0))
+    _, A_fast, _, _ = get_fast_system(age)
+    rhos.append(spectral_radius_discrete(A_fast, dt=1.0))
 rhos = np.array(rhos)
 
 ax.plot(ages, rhos, color='#2c3e50', linewidth=2)
@@ -69,9 +70,10 @@ dt = 0.01
 T = 100.0
 
 for age, ls in zip(demo_ages, line_styles):
-    A = build_A(tau_of_age(age), J_of_age(age))
-    x0 = np.array([2.0, 0.0, 0.0, 0.0])  # I impulse
-    t, x = simulate(A, x0, dt, T)
+    _, A_fast, _, _ = get_fast_system(age)
+    n_ax = A_fast.shape[0]
+    x0 = np.zeros(n_ax); x0[0] = 2.0  # I impulse
+    t, x = simulate(A_fast, x0, dt, T)
     ax.plot(t, x[:, 0], ls, color=AXIS_COLORS[0], linewidth=1.5,
             label=f'Age {age}')
 

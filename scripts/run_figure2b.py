@@ -18,7 +18,9 @@ import matplotlib.gridspec as gridspec
 
 from hdr_sim.dynamics import (build_A, spectral_abscissa, recovery_timescale,
                                damping_ratio, simulate)
-from hdr_sim.aging_params import tau_of_age, J_of_age, AXIS_NAMES, AXIS_COLORS, configure
+from hdr_sim.aging_params import (tau_of_age, J_of_age, AXIS_NAMES, AXIS_COLORS,
+                                   configure, get_fast_system)
+from hdr_sim.csv_loader import _FAST_7_AXES
 from hdr_sim.plotting import setup_style, add_panel_label, save_figure
 from hdr_sim.j_matrix_spec import JMatrixSpec, load_default_spec
 
@@ -40,17 +42,21 @@ os.makedirs(_OUTPUT_DIR, exist_ok=True)
 setup_style()
 configure()
 
-ages = np.arange(25, 91, 1)
+# Use 7-axis fast subsystem for stable dynamics across full lifespan
+FAST_AXIS_NAMES = [f'{a}' for a in _FAST_7_AXES]
+FAST_AXIS_COLORS = ['#e74c3c', '#e67e22', '#f39c12', '#1abc9c', '#2980b9', '#3498db', '#27ae60']
+
+ages = np.arange(25, 121, 1)
 
 # Compute spectral abscissa, recovery timescale, and damping ratio across ages
 alphas = []
 rec_times = []
 zetas = []
 for age in ages:
-    A = build_A(tau_of_age(age), J_of_age(age))
-    alphas.append(spectral_abscissa(A))
-    rec_times.append(recovery_timescale(A))
-    zetas.append(damping_ratio(A))
+    _, A_fast, alpha_fast, _ = get_fast_system(age)
+    alphas.append(alpha_fast)
+    rec_times.append(recovery_timescale(A_fast))
+    zetas.append(damping_ratio(A_fast))
 
 alphas = np.array(alphas)
 rec_times = np.array(rec_times)
@@ -109,8 +115,9 @@ dt = 0.01
 T = 100.0
 
 for age, ls in zip(demo_ages, line_styles):
-    A = build_A(tau_of_age(age), J_of_age(age))
-    x0 = np.array([2.0, 0.0, 0.0, 0.0])
+    _, A, _, _ = get_fast_system(age)
+    n_ax = A.shape[0]
+    x0 = np.zeros(n_ax); x0[0] = 2.0  # perturbation in I axis
     t, x = simulate(A, x0, dt, T)
     norm = np.linalg.norm(x, axis=1)
     ax_d.plot(t, norm, ls, color='#2c3e50', linewidth=1.5,
@@ -123,14 +130,15 @@ ax_d.legend(frameon=False, loc='upper right')
 # --- Panel E: Per-axis trajectories at age 80 ---
 add_panel_label(ax_e, 'e')
 
-A_80 = build_A(tau_of_age(80), J_of_age(80))
-x0 = np.zeros(4)
+_, A_80, _, _ = get_fast_system(80)
+n_ax = A_80.shape[0]
+x0 = np.zeros(n_ax)
 perturbations = [(5.0, 0, 1.5)]  # perturbation in I at t=5
 t, x = simulate(A_80, x0, dt, T, noise_std=0.05, perturbations=perturbations)
 
-for i in range(4):
-    ax_e.plot(t, x[:, i], color=AXIS_COLORS[i], linewidth=1.5,
-              label=AXIS_NAMES[i])
+for i in range(min(n_ax, len(FAST_AXIS_COLORS))):
+    ax_e.plot(t, x[:, i], color=FAST_AXIS_COLORS[i], linewidth=1.5,
+              label=FAST_AXIS_NAMES[i])
 
 ax_e.set_xlabel('Time (days)')
 ax_e.set_ylabel(r'$\Delta x_i(t)$')
@@ -155,13 +163,15 @@ save_figure(fig, 'figure_2b', output_dir=_OUTPUT_DIR)
 plt.close()
 
 # Print calibration info
-A30 = build_A(tau_of_age(30), J_of_age(30))
-print(f"\nCalibration check:")
-print(f"  α(30) = {spectral_abscissa(A30):.4f}")
-print(f"  α(80) = {spectral_abscissa(A_80):.4f}")
-print(f"  ζ(30) = {damping_ratio(A30):.3f}")
-print(f"  ζ(80) = {damping_ratio(A_80):.3f}")
-print(f"  Recovery timescale ratio (80/30) = {recovery_timescale(A_80) / recovery_timescale(A30):.1f}×")
+_, A25, alpha_25, _ = get_fast_system(25)
+_, A80, alpha_80, _ = get_fast_system(80)
+_, A120, alpha_120, _ = get_fast_system(120)
+print(f"\nCalibration check (7-axis fast subsystem):")
+print(f"  alpha(25) = {alpha_25:.4f}")
+print(f"  alpha(80) = {alpha_80:.4f}")
+print(f"  alpha(120) = {alpha_120:.4f}")
+print(f"  Recovery timescale ratio (80/25) = {recovery_timescale(A80) / recovery_timescale(A25):.1f}x")
+print(f"  Recovery timescale ratio (120/25) = {recovery_timescale(A120) / recovery_timescale(A25):.1f}x")
 
 # Save provenance sidecar
 _root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))

@@ -75,30 +75,58 @@ def configure(j_matrix_path=None, axes=None, target_alpha=-0.134,
               tau_30=None, tau_80=None):
     """Initialise the aging parameters module.
 
-    As of v2.5, delegates to configure_v2() using the 9x9 compiled CSV and
-    V2 tau registry. The legacy 8x8 CSV is archived in data/legacy/.
+    As of v2.5, uses the fast-subsystem calibration (7-axis, stable 25-120)
+    and extracts the requested axis subset. This guarantees stable dynamics
+    at all ages for tau_of_age() / J_of_age() / build_A() workflows.
 
     Must be called before any calls to tau_of_age() or J_of_age().
     Can be called multiple times to reconfigure.
-
-    Parameters
-    ----------
-    j_matrix_path : str or None
-        Path to J matrix CSV. If None, uses the 9-axis compiled CSV.
-    axes : tuple[str] or None
-        Axis subset. If None, uses ('I', 'M', 'N', 'F').
-    target_alpha : float
-        Target spectral abscissa at age 25 for calibration.
-    tau_30, tau_80 : np.ndarray or None
-        If provided, overrides the V2 registry lookup (for testing).
     """
-    # Delegate to V2 with backward-compatible defaults
-    configure_v2(
-        j_matrix_path=j_matrix_path,
-        axes=axes,
-        target_alpha=target_alpha,
-        impute_qual=True,
-    )
+    global _config, _fast_cal
+    from .j_matrix_spec import JMatrixSpec
+    from .csv_loader import (j_at_age_blended, _default_csv_path)
+
+    if axes is None:
+        axes = ('I', 'M', 'N', 'F')
+
+    csv_path = j_matrix_path or _default_csv_path()
+    j_spec = JMatrixSpec.from_csv(csv_path)
+
+    # Ensure fast-subsystem calibration is cached
+    if _fast_cal is None:
+        rows = load_J_csv(csv_path)
+        J_h = build_J_basin_imputed(rows, 'healthy', _ALL_9_AXES)
+        J_d = build_J_basin_imputed(rows, 'disease', _ALL_9_AXES)
+        _fast_cal = calibrate_stable_system(J_h, J_d,
+                                            axes_all=_ALL_9_AXES,
+                                            axes_fast=_FAST_7_AXES)
+        _fast_cal['J_h'] = J_h
+        _fast_cal['J_d'] = J_d
+
+    # Build subset-extraction indices
+    all_axes = list(_ALL_9_AXES)
+    sub_idx = [all_axes.index(a) for a in axes if a in all_axes]
+
+    # Compute J anchors for the subset at ages 25 and 80
+    c = _fast_cal['c']
+    amp = _fast_cal['amplitude']
+    gamma = _fast_cal.get('gamma', 0.038)
+    J_25_full = j_at_age_blended(_fast_cal['J_h'], _fast_cal['J_d'], 25, c, amp, gamma)
+    J_80_full = j_at_age_blended(_fast_cal['J_h'], _fast_cal['J_d'], 80, c, amp, gamma)
+
+    _config = {
+        'J_25': J_25_full[np.ix_(sub_idx, sub_idx)],
+        'J_80': J_80_full[np.ix_(sub_idx, sub_idx)],
+        'J_30': J_25_full[np.ix_(sub_idx, sub_idx)],  # legacy alias
+        'calibration_scalar': c,
+        'axes': axes,
+        'tau_30': _tau_vector_v2(axes, 25),  # legacy alias
+        'tau_80': _tau_vector_v2(axes, 80),
+        'j_spec': j_spec,
+        'v2': True,
+        '_fast_cal': _fast_cal,
+        '_sub_idx': sub_idx,
+    }
 
 
 def configure_v2(j_matrix_path=None, axes=None, target_alpha=-0.134,
@@ -290,3 +318,35 @@ def get_fast_system(age, axes_fast=None):
         _fast_cal['c'], _fast_cal['amplitude'],
         axes_all=_ALL_9_AXES, axes_fast=axes_fast,
     )
+
+
+def get_fast_tau_J(age, axes_fast=None):
+    """Return (tau, J, A) for the fast subsystem at a given age.
+
+    Convenience function for scripts that need the raw components
+    for D/J decomposition analyses.
+    """
+    from .csv_loader import tau_vector as _tv, j_at_age_blended, j_blend_fraction
+    global _fast_cal
+    if axes_fast is None:
+        axes_fast = _FAST_7_AXES
+
+    # Ensure calibration is cached
+    if _fast_cal is None:
+        get_fast_system(age, axes_fast)
+
+    # Tau from V2 registry
+    tau = _tv(axes_fast, age)
+
+    # Calibrated J at age (fast-subsystem submatrix)
+    all_axes = list(_ALL_9_AXES)
+    fast_idx = [all_axes.index(a) for a in axes_fast]
+    c = _fast_cal['c']
+    amp = _fast_cal['amplitude']
+    gamma = _fast_cal.get('gamma', 0.038)
+    J_full = j_at_age_blended(_fast_cal['J_h'], _fast_cal['J_d'],
+                               age, c, amp, gamma)
+    J = J_full[np.ix_(fast_idx, fast_idx)]
+
+    A = -np.diag(1.0 / tau) + J
+    return tau, J, A
