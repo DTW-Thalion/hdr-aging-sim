@@ -9,4 +9,9 @@ outputs/*.png
 # NHANES data files (downloaded at runtime, not committed)
 data/nhanes/*.XPT
 
+# InCHIANTI data files (restricted access, not committed)
+data/inchianti_panel.*
+data/inchianti_*.parquet
+data/inchianti_*.xlsx
+
 # results/RESULTS.md is intentionally tracked — it's the persistent test record

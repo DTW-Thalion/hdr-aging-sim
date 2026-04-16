@@ -1,0 +1,186 @@
+{
+  "_meta": {
+    "created": "2026-04-16",
+    "source": "InCHIANTI codebooks extracted from Box (InCHIANTI_CD_Share)",
+    "notes": "CRITICAL: RMSSD/HRV time-domain variables are NOT in the standard data release. N-axis falls back to resting heart rate (X_FC) from ECG."
+  },
+  "demographics": {
+    "id": {"var": "CODE98", "file": "all", "meaning": "Subject ID"},
+    "site": {"var": "SITE", "file": "all", "meaning": "1=Greve, 2=Bagno a Ripoli"},
+    "sex": {"var": "SEX", "file": "all", "meaning": "1=Male, 2=Female"},
+    "dob": {"var": "DATA_NAS", "file": "all", "meaning": "Date of birth (SAS date)"}
+  },
+  "visit_dates_ages": {
+    "baseline": {
+      "age_blood": {"var": "X_AGEL", "file": "labo_raw", "meaning": "Age at blood draw (years)", "n": 1343},
+      "date_blood": {"var": "X_DATEL", "file": "labo_raw", "meaning": "Date of blood draw"},
+      "age_interview": {"var": "FXAGE", "file": "fmc_ana", "meaning": "Age at interview (years)", "n": 1453},
+      "date_interview": {"var": "FXDATE", "file": "fmc_ana", "meaning": "Date of interview"},
+      "age_perf": {"var": "PXAGE", "file": "per_ana", "meaning": "Age at performance eval (years)", "n": 1308},
+      "date_perf": {"var": "PXDATE", "file": "per_ana", "meaning": "Date of performance eval"},
+      "age_ecg": {"var": "X_AGEM", "file": "mar_raw", "meaning": "Age at ECG (years)", "n": 1289},
+      "date_ecg": {"var": "X_DATEM", "file": "mar_raw", "meaning": "Date of ECG"}
+    }
+  },
+  "axis_I_inflammatory": {
+    "primary": {
+      "il6": {"var": "X_IL6", "file": "labo_raw", "meaning": "IL-6 ELISA ultrasensitive (pg/mL)", "n": 1327, "range": "0.01-90"},
+      "il6_ec": {"var": "X_IL6_EC", "file": "labo_raw", "meaning": "IL-6 high-sensitivity calculated (pg/mL)", "n": 1320}
+    },
+    "secondary": {
+      "crp_hs": {"var": "X_CRP_HS", "file": "labo_raw", "meaning": "CRP high-sensitivity (µg/mL)", "n": 1313},
+      "fibrinogen": {"var": "X_FIBRIN", "file": "labo_raw", "meaning": "Fibrinogen (mg/dL)", "n": 1315},
+      "il1ra": {"var": "X_IL1RA", "file": "labo_raw", "meaning": "IL-1RA (pg/mL)", "n": 1328},
+      "tnfar1": {"var": "X_TNFAR1", "file": "labo_raw", "meaning": "Soluble TNF-a receptor I (pg/mL)", "n": 1278},
+      "tnfar2": {"var": "X_TNFAR2", "file": "labo_raw", "meaning": "Soluble TNF-a receptor II (pg/mL)", "n": 1278},
+      "il10": {"var": "X_IL10", "file": "labo_raw", "meaning": "IL-10 (pg/mL)", "n": 1324}
+    }
+  },
+  "axis_M_metabolic": {
+    "primary": {
+      "glucose": {"var": "X_GLU", "file": "labo_raw", "meaning": "Fasting blood glucose (mg/dL)", "n": 1326, "range": "55-335"},
+      "insulin": {"var": "X_INSULN", "file": "labo_raw", "meaning": "Plasma insulin RIA (mIU/L)", "n": 1290, "range": "1.645-55.63"}
+    },
+    "derived": {
+      "homa_ir": {"formula": "(X_GLU * X_INSULN) / 405", "meaning": "HOMA-IR computed"}
+    },
+    "secondary": {
+      "hdl": {"var": "X_COLHDL", "file": "labo_raw", "meaning": "HDL cholesterol (mg/dL)", "n": 1326},
+      "ldl": {"var": "X_COLLDL", "file": "labo_raw", "meaning": "LDL cholesterol (mg/dL)", "n": 1326},
+      "triglycerides": {"var": "X_TRIGLI", "file": "labo_raw", "meaning": "Triglycerides (mg/dL)", "n": 1326}
+    }
+  },
+  "axis_N_neuroautonomic": {
+    "CRITICAL_NOTE": "RMSSD/SDNN NOT AVAILABLE in standard InCHIANTI data release. mar_raw contains only ECG morphology (rhythm, conduction, repolarization), ENG, Doppler, carotid, and ABI.",
+    "available_proxy": {
+      "resting_hr": {"var": "X_FC", "file": "mar_raw", "meaning": "ECG resting heart rate (beats/min)", "n": 1286, "range": "40-120"},
+      "cardiac_rhythm": {"var": "X_RITMO", "file": "mar_raw", "meaning": "Cardiac rhythm (1=sinus, 2=AF, etc.)", "n": 1286}
+    },
+    "rmssd": "NOT AVAILABLE",
+    "sdnn": "NOT AVAILABLE",
+    "fallback_strategy": "Use resting HR (X_FC, sign-flipped: higher HR = worse autonomic) OR fall back to 3-axis (I,M,F) analysis"
+  },
+  "axis_F_functional": {
+    "primary": {
+      "sppb_total": {"var": "PXSPS", "file": "per_ana", "meaning": "SPPB total score (0-12)", "n": 1278},
+      "sppb_balance": {"var": "PXSPSB", "file": "per_ana", "meaning": "Balance sub-score (0-4)", "n": 1305},
+      "sppb_chair": {"var": "PXSPSC", "file": "per_ana", "meaning": "Chair stands sub-score (0-4)", "n": 1303},
+      "sppb_walk": {"var": "PXSPSW", "file": "per_ana", "meaning": "Walking sub-score (0-4)", "n": 1284}
+    },
+    "secondary": {
+      "grip_max": {"var": "PXHGMAX", "file": "per_ana", "meaning": "Max grip strength both hands (kg)", "n": 1115, "range": "2.0-78.0"},
+      "grip_right": {"var": "PXHGMAXR", "file": "per_ana", "meaning": "Max grip right hand (kg)", "n": 1107},
+      "grip_left": {"var": "PXHGMAXL", "file": "per_ana", "meaning": "Max grip left hand (kg)", "n": 1108},
+      "gait_speed_4m": {"var": "PXWSPD1A", "file": "per_ana", "meaning": "4m usual pace speed (m/s)", "n": 1249, "range": "0.09-2.80"},
+      "gait_speed_4m_fast": {"var": "PXSPD1M", "file": "per_ana", "meaning": "4m fastest speed (m/s)", "n": 1249}
+    }
+  },
+  "proteostasis_proxy": {
+    "cystatin_c": {"var": "X_CYSC", "file": "labo_raw", "meaning": "Cystatin C", "n_approx": 1300},
+    "albumin_pct": {"var": "X_ALB", "file": "labo_raw", "meaning": "Albumin (%)", "n": 1325}
+  },
+  "diagnoses": {
+    "file": "adju_ana",
+    "htn": {"var": "AXIPERT2", "meaning": "Hypertension"},
+    "dm": {"var": "AXDIAB2A", "meaning": "Diabetes (FBG>=126 or other)"},
+    "metsyn": {"var": "AXMETBOL", "meaning": "Metabolic syndrome"},
+    "frailty": {"var": "AXALLFRA", "meaning": "Fried frailty (65+)"},
+    "parkinson": {"var": "AXPARK", "meaning": "Parkinson disease"},
+    "dementia": {"var": "AXDEMENT", "meaning": "Dementia"},
+    "stroke": {"var": "AXSTROKE", "meaning": "Stroke"},
+    "mi": {"var": "AXMI", "meaning": "Myocardial infarction"},
+    "chf": {"var": "AXCHF", "meaning": "Congestive heart failure"},
+    "cancer": {"var": "AXCANCER", "meaning": "Cancer"},
+    "copd": {"var": "AXBPCO", "meaning": "COPD"},
+    "renal": {"var": "AXRENAL", "meaning": "Renal function (Cockcroft-Gault)"}
+  },
+  "medications": {
+    "file": "fmc_ana",
+    "naming": "ATC-based binary flags, FX1_{letter}{number} at baseline",
+    "antihypertensive": {
+      "arb": {"var": "FX1_C2", "meaning": "Angiotensin II antagonists", "n_yes": 23},
+      "diuretics": {"var": "FX1_C3", "meaning": "Diuretics for CHF/HTN", "n_yes": 144},
+      "ace_inhibitors": {"var": "FX1_C4", "meaning": "ACE inhibitors", "n_yes": 286},
+      "ccb": {"var": "FX1_C5", "meaning": "Calcium channel blockers", "n_yes": 174},
+      "beta_blockers": {"var": "FX1_C6", "meaning": "Beta-blocking agents", "n_yes": 50},
+      "alpha_beta": {"var": "FX1_C6A", "meaning": "Alpha+beta blockers", "n_yes": 2},
+      "misc_antihtn": {"var": "FX1_C9", "meaning": "Misc antihypertensives", "n_yes": 31},
+      "aldosterone_antag": {"var": "FX1_C13", "meaning": "Aldosterone antagonists", "n_yes": 4}
+    },
+    "lipid_lowering": {
+      "statins": {"var": "FX1_C1", "meaning": "Serum lipid-reducing agents", "n_yes": 55}
+    },
+    "antidiabetic": {
+      "insulin": {"var": "FX1_A9", "meaning": "Insulins and analogues", "n_yes": 16},
+      "oral_hypoglycemics": {"var": "FX1_A10", "meaning": "Oral hypoglycemics", "n_yes": 80}
+    },
+    "anti_inflammatory": {
+      "nsaids": {"var": "FX1_M1", "meaning": "NSAIDs (excl coxibs)", "n_yes": 99},
+      "glucocorticoids": {"var": "FX1_H1", "meaning": "Glucocorticoids systemic", "n_yes": 26}
+    },
+    "psychotropic": {
+      "anxiolytics": {"var": "FX1_N7", "meaning": "Anxiolytics", "n_yes": 275},
+      "antidepressants": {"var": "FX1_N8", "meaning": "Antidepressants", "n_yes": 60},
+      "hypnotics": {"var": "FX1_N7", "meaning": "Anxiolytics (includes hypnotics)", "n_yes": 275}
+    },
+    "cardiovascular": {
+      "antithrombotics": {"var": "FX1_B2", "meaning": "Antithrombotic agents", "n_yes": 248},
+      "nitrates": {"var": "FX1_C10", "meaning": "Organic nitrates", "n_yes": 80},
+      "digitalis": {"var": "FX1_C11", "meaning": "Digitalis glycosides", "n_yes": 95}
+    }
+  },
+  "blood_pressure": {
+    "file": "mar_raw",
+    "sbp_supine_brachial": {"var": "X_PA_BRA", "meaning": "Supine brachial systolic BP (mmHg)", "n": 1265, "range": "90-240"},
+    "note": "Additional BP variables (VX prefix) in cli_rawe"
+  },
+  "wave_file_mapping": {
+    "baseline": {
+      "assays": {"file": "labo_raw.sas7bdat", "box_id": "1256806867921"},
+      "ecg": {"file": "mar_raw.sas7bdat", "box_id": "1256803467956"},
+      "physical_exam": {"file": "per_ana.sas7bdat", "box_id": "1256790461712"},
+      "drugs": {"file": "fmc_ana.sas7bdat", "box_id": "1256805568105"},
+      "diseases": {"file": "adju_ana.sas7bdat", "box_id": "1256787606107"},
+      "interview": {"file": "int_rawe.sas7bdat", "box_id": "1256804798694"},
+      "clinical": {"file": "cli_rawe.sas7bdat", "box_id": "1256803045980"}
+    },
+    "fu1": {
+      "assays": {"file": "labf1raw.sas7bdat", "box_id": "1256799980781"},
+      "ecg": {"file": "marf1raw.sas7bdat", "box_id": "1256790993066"},
+      "physical_exam": {"file": "pef1_ana.sas7bdat", "box_id": "1256793499195"},
+      "drugs": {"file": "fmcf1ana.sas7bdat", "box_id": "1256808229614"},
+      "diseases": {"file": "adjf1ana.sas7bdat", "box_id": "1256808324529"}
+    },
+    "fu2": {
+      "assays": {"file": "labf2raw.sas7bdat", "box_id": "1256789847846"},
+      "ecg": {"file": "marf2raw.sas7bdat", "box_id": "1256812016078"},
+      "physical_exam": {"file": "pef2_ana.sas7bdat", "box_id": "1256802363806"},
+      "drugs": {"file": "fmcf2ana.sas7bdat", "box_id": "1256804748139"},
+      "diseases": {"file": "adjf2ana.sas7bdat", "box_id": "1256808471978"}
+    },
+    "fu3": {
+      "assays": {"file": "labf3raw.sas7bdat", "box_id": "1256806081054"},
+      "ecg": {"file": "marf3raw.sas7bdat", "box_id": "1256792526818"},
+      "physical_exam": {"file": "pef3_ana.sas7bdat", "box_id": "1256807612649"},
+      "drugs": {"file": "fmcf3ana.sas7bdat", "box_id": "1256802571114"},
+      "diseases": {"file": "adjf3ana.sas7bdat", "box_id": "1256804444113"}
+    },
+    "fu4": {
+      "assays": {"file": "labf4raw.sas7bdat", "box_id": "1256798190118"},
+      "ecg_NOTE": "NO ECG DATA AT FU4",
+      "physical_exam": {"file": "pef4_ana.sas7bdat", "box_id": "1256814958296"},
+      "drugs": {"file": "fmcf4ana.sas7bdat", "box_id": "1256803453328"},
+      "diseases": {"file": "adjf4ana.sas7bdat", "box_id": "1256805711811"}
+    },
+    "fu5": {
+      "assays_NOTE": "NO ASSAY DATA AT FU5",
+      "ecg_NOTE": "NO ECG DATA AT FU5",
+      "physical_exam": {"file": "pef5_ana.sas7bdat", "box_id": "1256815845065"},
+      "drugs_NOTE": "NO DRUG DATA AT FU5"
+    },
+    "vital_status": {
+      "master": {"file": "ana_raw.sas7bdat", "box_id": "1256817580324"},
+      "diseases_thru_fu4": {"file": "mala_ana.sas7bdat", "box_id": "1256817439498"}
+    }
+  }
+}
