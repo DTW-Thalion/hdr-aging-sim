@@ -299,7 +299,9 @@ def make_figure(results):
     cox_benchmarks = results['cox_benchmarks']
     baseline_naive = results['baseline_naive']
 
-    fig, axes = plt.subplots(1, 3, figsize=(14, 4.5))
+    fig, axes = plt.subplots(1, 3, figsize=(14, 4.8))
+    fig.suptitle('ELSA cohort (3-axis I/M/F; N=5,431 full / 3,233 med-naive)',
+                 fontsize=10, y=1.02)
 
     # ================================================================
     # Panel (a): Nested Cox C-indices — full sample AND med-naive
@@ -333,8 +335,8 @@ def make_figure(results):
 
     ax.set_xticks(x)
     ax.set_xticklabels(model_labels, fontsize=9)
-    ax.set_ylabel('C-index')
-    ax.set_title('Nested Cox C-indices')
+    ax.set_ylabel('C-index (Harrell)')
+    ax.set_title('Nested Cox C-indices (ELSA)')
     ax.legend(fontsize=8, loc='lower right')
     ax.set_ylim(0.5, None)
     ax.axhline(0.5, color='grey', linestyle='--', alpha=0.3)
@@ -394,7 +396,7 @@ def make_figure(results):
         ax.set_xticks(range(len(labels)))
         ax.set_xticklabels(labels, fontsize=8)
         ax.set_ylabel(r'$\Delta C$ (M5 $-$ M4)')
-        ax.set_title(r'$\Delta C$ with benchmarks')
+        ax.set_title(r'$\Delta C$ vs benchmarks (ELSA)')
         ax.axhline(0.01, color='darkred', linestyle='--', linewidth=1.2,
                    alpha=0.8, label=r'$\Delta C = 0.01$ threshold', zorder=2)
         ax.axhline(0, color='grey', linestyle='-', alpha=0.3, zorder=1)
@@ -527,7 +529,7 @@ def make_figure(results):
 
             ax.set_xlabel('Years from baseline')
             ax.set_ylabel('Survival probability')
-            ax.set_title(f'KM by SWDS-$\\Gamma$ tertile\n{km_label}')
+            ax.set_title(f'KM by SWDS-$\\Gamma$ tertile (ELSA)\n{km_label}')
             ax.legend(fontsize=8)
         else:
             ax.text(0.5, 0.5, 'Insufficient events', ha='center',

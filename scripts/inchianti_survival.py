@@ -7,6 +7,9 @@ and Fried frailty for mortality prediction.
 """
 
 import os, sys, json
+if sys.stdout.encoding and sys.stdout.encoding.lower().startswith("cp"):
+    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+    sys.stderr.reconfigure(encoding="utf-8", errors="replace")
 import numpy as np
 import pandas as pd
 
@@ -102,9 +105,10 @@ def main():
                                  ("full", pd.Series(True, index=bl_complete.index)),
                                  ("med_naive", bl_complete["n_med_classes"] == 0)]:
         sub = bl_complete[mask].dropna(subset=["time_years", "event", "age", "female"]).copy()
-        print(f"\n--- Subgroup: {subgroup_name} (N={len(sub)}, deaths={int(sub['event'].sum())}) ---")
+        n_events_sub = int(sub["event"].sum())
+        print(f"\n--- Subgroup: {subgroup_name} (N={len(sub)}, deaths={n_events_sub}) ---")
 
-        models = {}
+        models = {"n_events": n_events_sub}
 
         # M1: age + sex
         try:
@@ -141,6 +145,7 @@ def main():
             print(f"  M3 failed: {e}")
 
         # M4: + Fried frailty (65+ only)
+        c4 = np.nan
         if "dx_frailty" in sub.columns and subgroup_name != "full":
             sub_m4 = sub.dropna(subset=["dx_frailty"])
             try:
@@ -153,6 +158,38 @@ def main():
             except Exception as e:
                 print(f"  M4 failed: {e}")
 
+            # M4a: M4 + biomarkers only (no SWDS-Gamma)
+            m4a_cols = ["time_years", "event", "age", "female", "dx_frailty"] + bio_cols
+            sub_m4a = sub.dropna(subset=m4a_cols)
+            c4a = np.nan
+            try:
+                cph = CoxPHFitter()
+                cph.fit(sub_m4a[m4a_cols], "time_years", "event")
+                c4a = cph.concordance_index_
+                models["M4a_frailty_biomarkers"] = {"C": float(c4a), "N": len(sub_m4a)}
+                dc_4a_4 = c4a - c4 if np.isfinite(c4) else np.nan
+                print(f"  M4a (+frailty +biomarkers): C = {c4a:.4f}, "
+                      f"delta_C(M4a-M4) = {dc_4a_4:+.4f}")
+                models["delta_C_M4a_M4"] = float(dc_4a_4) if np.isfinite(dc_4a_4) else None
+            except Exception as e:
+                print(f"  M4a failed: {e}")
+
+            # M4b: M4 + SWDS-Gamma only (no raw biomarkers)
+            m4b_cols = ["time_years", "event", "age", "female", "dx_frailty", "log_swds"]
+            sub_m4b = sub.dropna(subset=m4b_cols)
+            c4b = np.nan
+            try:
+                cph = CoxPHFitter()
+                cph.fit(sub_m4b[m4b_cols], "time_years", "event")
+                c4b = cph.concordance_index_
+                models["M4b_frailty_swds"] = {"C": float(c4b), "N": len(sub_m4b)}
+                dc_4b_4 = c4b - c4 if np.isfinite(c4) else np.nan
+                print(f"  M4b (+frailty +SWDS-Gamma): C = {c4b:.4f}, "
+                      f"delta_C(M4b-M4) = {dc_4b_4:+.4f}")
+                models["delta_C_M4b_M4"] = float(dc_4b_4) if np.isfinite(dc_4b_4) else None
+            except Exception as e:
+                print(f"  M4b failed: {e}")
+
             # M5: Full model
             m5_cols = ["time_years", "event", "age", "female", "dx_frailty"] + bio_cols + ["log_swds"]
             sub_m5 = sub.dropna(subset=m5_cols)
@@ -161,7 +198,7 @@ def main():
                 cph.fit(sub_m5[m5_cols], "time_years", "event")
                 c5 = cph.concordance_index_
                 models["M5_full"] = {"C": float(c5), "N": len(sub_m5)}
-                delta_c = c5 - c4 if "M4_frailty" in models else np.nan
+                delta_c = c5 - c4 if np.isfinite(c4) else np.nan
                 print(f"  M5 (full): C = {c5:.4f}, delta_C(M5-M4) = {delta_c:+.4f}")
                 models["delta_C_M5_M4"] = float(delta_c) if np.isfinite(delta_c) else None
             except Exception as e:
@@ -177,18 +214,24 @@ def main():
 
     # Summary table
     print("\n--- Cox Model C-index Summary ---")
-    print(f"{'Model':<20s} {'age65+':<15s} {'full':<15s} {'med_naive':<15s}")
-    for model in ["M1_age_sex", "M2_biomarkers", "M3_swds", "M4_frailty", "M5_full", "delta_C_M5_M4"]:
+    print(f"{'Model':<25s} {'age65+':<15s} {'full':<15s} {'med_naive':<15s}")
+    summary_keys = ["n_events", "M1_age_sex", "M2_biomarkers", "M3_swds",
+                    "M4_frailty", "M4a_frailty_biomarkers", "M4b_frailty_swds",
+                    "M5_full", "delta_C_M4a_M4", "delta_C_M4b_M4", "delta_C_M5_M4"]
+    for model in summary_keys:
         vals = []
         for sg in ["age65+", "full", "med_naive"]:
             v = results.get(sg, {}).get(model)
             if isinstance(v, dict):
                 vals.append(f"{v['C']:.4f}")
             elif isinstance(v, (int, float)) and np.isfinite(v):
-                vals.append(f"{v:+.4f}")
+                if model.startswith("delta"):
+                    vals.append(f"{v:+.4f}")
+                else:
+                    vals.append(f"{int(v)}" if model == "n_events" else f"{v:.4f}")
             else:
                 vals.append("--")
-        print(f"  {model:<20s} {vals[0]:<15s} {vals[1]:<15s} {vals[2]:<15s}")
+        print(f"  {model:<25s} {vals[0]:<15s} {vals[1]:<15s} {vals[2]:<15s}")
 
 
 if __name__ == "__main__":
