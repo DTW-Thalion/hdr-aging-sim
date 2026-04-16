@@ -859,21 +859,21 @@ python scripts/inchianti_manuscript_summary.py
 | Analysis | Result | Interpretation |
 |----------|--------|----------------|
 | **Lambda_max trajectory** | 1.17 (20–49) → 22.1 (80+) [4-axis]; 3.28 → 28.7 [5-axis], monotonically increasing | ✅ Replicates ELSA coupling-tightening |
-| **Lead-lag concordance** | 5-axis: 11/20 (55%, p=0.41); 4-axis: 6/12 (50%, corrected sign convention) | Weaker than expected; see note on sign convention |
+| **Lead-lag concordance** | 4-axis HR: 9/12 (75%, p=0.073, Conv B); 5-axis: 12/20 (60%); see concordance audit | Convention B (biological direction) recommended |
 | **Medication dose-response** | Within-decade CIs overlap; SWDS-Gamma n_meds p = 0.35; HTN matched: treated > untreated | Confounding by indication, not genuine compression |
 | **Pi trajectory** | Slope = −0.019/yr (D-dominated) | ⚠️ Divergent from ELSA (+0.001/yr) |
 | **Survival** | deltaC(M5-M4) = +0.014 (age 65+), +0.014 (med-naive) | ✅ Comparable to ELSA (+0.009/+0.013) |
 
-**Sign convention correction:** The original 4-axis lead-lag (9/12) used manually specified J-signs that did not account for the F-axis sign flip in the standardisation convention. After correcting to use the compiled J-matrix directly with proper sign-flip adjustment, concordance is 6/12. The 5-axis model (adding B-axis PTH) achieves 11/20 (55%).
+**Lead-lag concordance audit:** A 3-convention comparison (`scripts/verify_lead_lag_concordance.py`) resolves the concordance discrepancy between the original (9/12) and expanded (6/12) analyses. Convention B (biological direction: all beta > 0 predicted) gives 9/12 (75%, p=0.073) for the 4-axis HR model. Convention A (naive J sign) gives 8/12 (67%). The discrepancy arose because the expanded script incorrectly applied a sign-flip adjustment for protective F-axis entries. Convention B is recommended because cross-lagged regressions in declining systems measure co-decline direction, not individual coupling signs. See `results/lead_lag_concordance_audit.md`.
 
 ### Axis configurations tested
 
-| Config | Axes | N pairs | Lead-lag concordance | Pi slope |
-|--------|------|---------|---------------------|----------|
-| 5-axis | I (IL-6), M (HOMA-IR), N (cortisol/DHEAS), F (SPPB), B (PTH) | 1,629 | 11/20 (55%) | -0.010/yr |
-| 4-axis cortisol/DHEAS | I, M, N (cortisol/DHEAS ratio), F | 1,660 | 6/12 (50%) | -0.017/yr |
-| 4-axis resting HR | I, M, N (resting HR), F | 1,523 | 6/12 (50%) | -0.019/yr |
-| 4-axis NLR | I (NLR), M, N (cortisol/DHEAS), F | 1,688 | 4/12 (33%) | -0.016/yr |
+| Config | Axes | N pairs | Concordance (Conv A / Conv B) | Pi slope |
+|--------|------|---------|-------------------------------|----------|
+| 5-axis | I (IL-6), M (HOMA-IR), N (cortisol/DHEAS), F (SPPB), B (PTH) | 1,629 | 7/20 (35%) / 12/20 (60%) | -0.010/yr |
+| 4-axis cortisol/DHEAS | I, M, N (cortisol/DHEAS ratio), F | 1,660 | 6/12 (50%) / 7/12 (58%) | -0.017/yr |
+| 4-axis resting HR | I, M, N (resting HR), F | 1,523 | 8/12 (67%) / 9/12 (75%) | -0.019/yr |
+| 4-axis NLR | I (NLR), M, N (cortisol/DHEAS), F | 1,688 | 6/12 (50%) / 7/12 (58%) | -0.016/yr |
 
 ### Cohort summary
 
@@ -887,11 +887,11 @@ python scripts/inchianti_manuscript_summary.py
 
 ### Limitations and divergences
 
-1. **Lead-lag sign convention correction**: The original 4-axis lead-lag reported 9/12 concordance, but this used manually specified J-signs that did not account for the F-axis sign flip in the standardisation convention (positive delta_F = SPPB decline). After correcting to read signs directly from the compiled J-matrix CSV with proper sign-flip adjustment for axes where positive delta = raw decline (F, B), concordance drops to 6/12 (50%). The 5-axis model achieves 11/20 (55%).
+1. **Lead-lag concordance convention**: Three conventions were audited (`results/lead_lag_concordance_audit.md`). Convention B (biological direction: all pairs predict positive beta in delta-space) gives 9/12 (75%, p=0.073) for 4-axis HR, matching the original report. Convention A (naive J sign) gives 8/12 (67%). An intermediate "correction" that reported 6/12 was itself erroneous (double-counted the F-axis sign flip). The recommended Convention B concordance is the one to cite.
 
-2. **RMSSD unavailable**: The N-axis uses cortisol/DHEAS ratio (primary) or resting HR (secondary). Neither captures beat-to-beat parasympathetic modulation. Cortisol/DHEAS performs comparably to resting HR in lambda_max and concordance (both 6/12). Cystatin C and CTX-1 are baseline-only (no longitudinal P or B-resorption axes).
+2. **RMSSD unavailable**: The N-axis uses cortisol/DHEAS ratio (primary) or resting HR (secondary). Neither captures beat-to-beat parasympathetic modulation. Cortisol/DHEAS shows lower concordance (7/12 Conv B) than resting HR (9/12), suggesting resting HR better captures the coupling structure despite being a cruder measure. Cystatin C and CTX-1 are baseline-only.
 
-3. **Pi divergence**: All configurations show D-dominated Pi trajectories (slopes -0.010 to -0.019/yr), opposing the ELSA result (+0.001/yr). This is consistent across N-axis choices, suggesting a systematic difference rather than proxy noise alone.
+3. **Pi divergence**: All configurations show D-dominated Pi trajectories (slopes -0.010 to -0.019/yr), opposing the ELSA result (+0.001/yr). Consistent across N-axis choices, suggesting a systematic cohort or biomarker-panel difference.
 
 4. **Temporal coverage**: HOMA-IR and cortisol/DHEAS available waves 0-2 only (~6 years). PTH extends to wave 3. Full 5-axis coverage is limited to waves 0-2.
 

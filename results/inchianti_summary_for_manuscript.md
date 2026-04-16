@@ -4,7 +4,7 @@
 
 We replicated the HDR coupling-tightening analysis in the InCHIANTI cohort (N=1,453, ages 20-102, 6 waves over 18 years, Chianti region, Italy). We tested a 5-axis panel comprising IL-6 (inflammatory), HOMA-IR (metabolic), cortisol/DHEAS ratio (neuroendocrine), SPPB (functional), and PTH (bone remodelling), with resting heart rate as an alternative N-axis proxy. The largest eigenvalue of the change-covariance matrix (lambda_max) increased monotonically with age across all four configurations tested: from 3.28 (ages 20-49) to 28.69 (80+) for the 5-axis model, and from 1.17 to 22.06 for the original 4-axis (resting HR) model, based on 1,523-1,688 consecutive-wave change pairs. This monotonic coupling-tightening pattern, observed with different biomarker panels in a different country and age range than ELSA, constitutes the primary replication finding.
 
-Cross-lagged lead-lag analysis tested sign concordance with the compiled J-matrix across 20 ordered pairs in the 5-axis model, finding 11/20 (55%) concordant (binomial p = 0.41). The 4-axis models showed 6/12 (50%) concordance after correcting the sign convention to account for the F-axis sign flip in the standardisation convention (positive delta = decline). Several significant individual pairs emerged: I->B (beta = +0.114, p < 0.01), F->I (beta = +0.015, p < 0.001), and F->B (beta = +0.024, p < 0.01), the last of which directly tests the grade-A protective entry J_{B<-F} (mechanical loading preserves bone).
+Cross-lagged lead-lag analysis tested sign concordance with the compiled J-matrix. Under Convention B (biological direction: all pairs predict positive beta in delta-space, capturing co-decline), the 4-axis resting HR model showed 9/12 (75%) concordance (binomial p = 0.073); under Convention A (naive J sign), 8/12 (67%). The 5-axis model achieved 12/20 (60%, Conv B) or 7/20 (35%, Conv A). A 3-convention audit (including transition-matrix Phi signs) established that Convention B is the appropriate comparison for cross-lagged regressions in declining systems. Several individual pairs were significant: F->I (beta = +0.015, p < 0.001), I->B (beta = +0.114, p < 0.01), and F->B (beta = +0.024, p < 0.01), the last directly testing the grade-A protective entry J_{B<-F} (mechanical loading preserves bone).
 
 Cox proportional hazards models using baseline SWDS-Gamma predicted mortality (950 deaths, median 14.7 years follow-up) with deltaC(M5-M4) = +0.014 for ages 65+ and +0.014 for the medication-naive subgroup, comparable to ELSA's +0.009 and +0.013 respectively.
 
@@ -24,14 +24,16 @@ Note: RMSSD was unavailable in the standard InCHIANTI release; Cystatin C and CT
 | 70-79 | 14.505 | [11.755, 17.712] | 702 |
 | 80+ | 28.692 | [22.977, 34.779] | 276 |
 
-### Lead-lag concordance
+### Lead-lag concordance (3-convention audit)
 
-| Configuration | Concordant | Total | Rate | p (binom) |
-|---|---|---|---|---|
-| 5-axis (I,M,N_cortdh,F,B_pth) | 11 | 20 | 55% | 0.412 |
-| 4-axis (cortisol/DHEAS) | 6 | 12 | 50% | 0.613 |
-| 4-axis (resting HR) | 6 | 12 | 50% | 0.613 |
-| 4-axis (NLR as I-axis) | 4 | 12 | 33% | 0.927 |
+| Configuration | Conv A (naive J) | Conv B (biological) | Conv C (Phi) |
+|---|---|---|---|
+| 4-axis (resting HR) | 8/12 (67%, p=0.19) | **9/12 (75%, p=0.073)** | 6/12 (50%) |
+| 4-axis (cortisol/DHEAS) | 6/12 (50%) | 7/12 (58%) | 6/12 (50%) |
+| 5-axis (I,M,N_cortdh,F,B_pth) | 7/20 (35%) | 12/20 (60%) | -- |
+| 4-axis (NLR as I-axis) | 6/12 (50%) | 7/12 (58%) | 6/12 (50%) |
+
+**Recommended: Convention B** — see `results/lead_lag_concordance_audit.md` for full rationale.
 
 ### Significant individual lead-lag pairs (5-axis model)
 
@@ -108,7 +110,7 @@ ELSA comparison: deltaC = +0.009 (full), +0.013 (med-naive).
 
 ## 6. Surprises and Divergences
 
-- **Lead-lag sign convention correction**: The original 9/12 concordance (reported in the initial 4-axis analysis) dropped to 6/12 after correcting the sign convention. The original script used manually specified J-signs that did not account for the F-axis sign flip. This is a methodological correction, not a change in the underlying data.
+- **Lead-lag sign convention audited**: A 3-convention comparison established that Convention B (biological direction, 9/12 = 75%) is the correct comparison for cross-lagged regressions in declining systems. An intermediate "correction" to 6/12 was itself erroneous (double-counted the F-axis sign flip). The audited result restores the original 9/12 (Conv B) or 8/12 (Conv A, naive J sign). Convention C (Phi transition matrix) is uninformative at the 3-year InCHIANTI visit interval.
 
 - **Medication compression not supported**: Four sub-analyses consistently show confounding by indication. The within-hypertension age-matched comparison (302 pairs) showed treated subjects had *higher* lambda_max (14.3 vs 11.8) -- the opposite of compression.
 

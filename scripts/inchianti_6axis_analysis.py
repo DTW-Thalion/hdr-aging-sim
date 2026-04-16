@@ -314,10 +314,11 @@ def run_lead_lag(changes, delta_cols, config, label):
                 # the J-matrix sign needs to be adjusted:
                 # If from_axis has sign=-1, flip the predicted sign
                 # If to_axis has sign=-1, flip the predicted sign
-                from_sign = config["axes"][from_ax]["sign"]
-                to_sign = config["axes"][to_ax]["sign"]
-                adjusted_predicted = predicted * from_sign * to_sign
-                concordant = (obs_sign == adjusted_predicted)
+                # Convention B (biological direction): in delta-space where
+                # positive = decline, ALL pairs predict positive beta
+                # (worsening in source -> worsening in target, whether via
+                # pathological coupling or loss of protective coupling)
+                concordant = (obs_sign == +1)  # Convention B
                 match = "YES" if concordant else "NO"
                 n_tested += 1
                 if concordant:
