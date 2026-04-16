@@ -1,7 +1,7 @@
 {
   "j_matrix": {
-    "csv_path": "C:\\Users\\toddw\\OneDrive\\Documents\\GitHub\\hdr-aging-sim\\data\\provenance\\J_R6_ontology_v1.6.csv",
-    "version": "J_R6_ontology_v1.6",
+    "csv_path": "C:\\Users\\toddw\\OneDrive\\Documents\\GitHub\\hdr-aging-sim\\data\\J_matrix_compiled_9x9.csv",
+    "version": "J_matrix_compiled_9x9",
     "source_repo": "hdr-aging-sim",
     "sha256": "b153e38716e98ee851d1a15988a81efad8c09671878d12722ee7e3f28a58c9e5",
     "n_axes": 9,
@@ -25,14 +25,9 @@
   "axes": [
     "I",
     "M",
-    "E",
-    "mito",
-    "P",
-    "C",
     "N",
-    "F",
-    "B"
+    "F"
   ],
   "script": "run_figure_uncertainty.py",
-  "timestamp": "2026-04-10T00:47:26Z"
+  "timestamp": "2026-04-16T18:55:59Z"
 }

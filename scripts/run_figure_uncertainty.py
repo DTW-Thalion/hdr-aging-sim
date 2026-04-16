@@ -87,9 +87,9 @@ def main():
     # Build tau at age 55
     tau_30_list, tau_80_list = [], []
     for ax in AXES:
-        v30, v80 = TAU_REGISTRY[ax]
-        tau_30_list.append(v30)
-        tau_80_list.append(v80)
+        entry = TAU_REGISTRY[ax]
+        tau_30_list.append(entry['tau_25'] if isinstance(entry, dict) else entry[0])
+        tau_80_list.append(entry['tau_80'] if isinstance(entry, dict) else entry[1])
     tau_30_arr = np.array(tau_30_list)
     tau_80_arr = np.array(tau_80_list)
     tau_55 = (1 - t) * tau_30_arr + t * tau_80_arr

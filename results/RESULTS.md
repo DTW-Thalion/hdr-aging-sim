@@ -1210,3 +1210,91 @@ Tests robustness of stability trends to age-varying noise
 - ✅ `test_get_axis_names_2axis` (0.001s)
 - ✅ `test_stability_2axis` (0.001s)
 
+
+---
+
+### Prior Stress Tests
+*Run: 2026-04-16 14:51:48 | Python 3.14.3*
+
+Quantifies prior vs data contribution for Tests 3-4 Layer B
+
+
+#### Mean Concordance by Condition
+
+- **Correct prior**: 0.813
+- **Null prior**: 0.542
+- **Adversarial prior**: 0.354
+- **Layer A (Γ̂ signs)**: 0.583
+
+#### Decomposition
+
+- **Prior contribution (correct − null)**: +0.271
+- **Data contribution (null − chance)**: +0.042
+- ✅ **Null prior ≈ chance (confirms Tier-3)**: PASS
+- ✅ **Adversarial < null (prior matters)**: PASS
+
+
+---
+
+### Q-Sensitivity Analysis
+*Run: 2026-04-16 14:52:30 | Python 3.14.3*
+
+Tests robustness of stability trends to age-varying noise
+
+
+#### Trend Survival
+
+| β | Q₈₀/Q₃₀ | α̂ trend | λ_max trend |
+| --- | --- | --- | --- |
+| 0.00 | 1.0× | ✅ | ✅ |
+| 0.25 | 1.2× | ✅ | ✅ |
+| 0.50 | 1.5× | ✅ | ✅ |
+| 0.75 | 1.8× | ✅ | ✅ |
+| 1.00 | 2.0× | ✅ | ✅ |
+| 1.50 | 2.5× | ✅ | ✅ |
+| 2.00 | 3.0× | ✅ | ✅ |
+| 3.00 | 4.0× | ✅ | ✅ |
+| 5.00 | 6.0× | ✅ | ✅ |
+- ✅ **α̂ trend survives all β ≤ 5.0**: PASS
+- ✅ **λ_max trend survives all β ≤ 5.0**: PASS
+
+*Note: λ_max(Γ̂) does not require Q specification — robust by construction.*
+
+
+---
+
+### Γ-Native Equivalence Study
+*Run: 2026-04-16 14:52:58 | Python 3.14.3*
+
+Confirms SWDS-Γ ≈ SWDS and λ_max(Γ̂) tracks stability
+
+
+#### λ_max(Γ̂) Stability Tracking
+
+- ✅ **λ_max monotone increasing with age**: PASS
+- **Spearman(α_true, λ_max)**: 1.0000
+
+#### SWDS-Γ vs SWDS Ranking Equivalence
+
+- **Spearman (age 44)**: 0.8936
+- **Spearman (age 54)**: 0.9055
+- **Spearman (age 64)**: 0.9071
+- **Spearman (age 74)**: 0.9242
+- ❌ **All rank correlations > 0.93**: FAIL
+
+#### C-Index Comparison
+
+| Score | C-index |
+| --- | --- |
+| SWDS-Γ | 0.5219 |
+| SWDS (A-based) | 0.5264 |
+| Mahalanobis | 0.5186 |
+| L2 | 0.5200 |
+| Age | 0.5096 |
+
+#### T* Calibration (Layer A)
+
+- **Bootstrap mean concordance**: 0.533
+- **Bootstrap SD**: 0.287
+- **T* (mean - 2×SD)**: -0.040
+
