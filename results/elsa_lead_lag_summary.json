@@ -1,40 +1,31 @@
 {
   "description": "ELSA 3-axis lead-lag cross-lagged regression, 6 ordered pairs from {I, M, F}",
-  "convention_note": "Convention B predicts beta > 0 for all pairs (see feedback_leadlag_sign_convention memory). Convention A uses raw J sign.",
+  "convention_note": "Convention B: predicted beta > 0 for all pairs (see feedback_leadlag_sign_convention memory).",
   "n_boot": 10000,
   "subgroups": {
     "full": {
       "n_pairs": 10849,
       "n_subjects": 6245,
       "n_tested": 6,
-      "n_conv_b_concordant": 5,
-      "n_conv_a_concordant": 5,
-      "conv_b_rate": 0.8333333333333334,
-      "conv_a_rate": 0.8333333333333334,
-      "binomial_p_conv_b": 0.109375,
-      "binomial_p_conv_a": 0.109375
+      "n_concordant": 5,
+      "concordance_rate": 0.8333333333333334,
+      "binomial_p": 0.109375
     },
     "med_naive": {
       "n_pairs": 6833,
       "n_subjects": 4116,
       "n_tested": 6,
-      "n_conv_b_concordant": 5,
-      "n_conv_a_concordant": 5,
-      "conv_b_rate": 0.8333333333333334,
-      "conv_a_rate": 0.8333333333333334,
-      "binomial_p_conv_b": 0.109375,
-      "binomial_p_conv_a": 0.109375
+      "n_concordant": 5,
+      "concordance_rate": 0.8333333333333334,
+      "binomial_p": 0.109375
     },
     "age_70plus": {
       "n_pairs": 2855,
       "n_subjects": 1982,
       "n_tested": 6,
-      "n_conv_b_concordant": 4,
-      "n_conv_a_concordant": 4,
-      "conv_b_rate": 0.6666666666666666,
-      "conv_a_rate": 0.6666666666666666,
-      "binomial_p_conv_b": 0.34375,
-      "binomial_p_conv_a": 0.34375
+      "n_concordant": 4,
+      "concordance_rate": 0.6666666666666666,
+      "binomial_p": 0.34375
     }
   },
   "comparison": {
@@ -136,10 +127,9 @@
       "n_pairs": 10849,
       "n_subjects": 6245,
       "j_sign": 1,
-      "predicted_sign_conv_b": 1,
+      "predicted_sign": 1,
       "observed_sign": 1,
-      "conv_b_concordant": true,
-      "conv_a_concordant": true
+      "concordant": true
     },
     {
       "subgroup": "full",
@@ -153,10 +143,9 @@
       "n_pairs": 10849,
       "n_subjects": 6245,
       "j_sign": 1,
-      "predicted_sign_conv_b": 1,
+      "predicted_sign": 1,
       "observed_sign": 1,
-      "conv_b_concordant": true,
-      "conv_a_concordant": true
+      "concordant": true
     },
     {
       "subgroup": "full",
@@ -170,10 +159,9 @@
       "n_pairs": 10849,
       "n_subjects": 6245,
       "j_sign": -1,
-      "predicted_sign_conv_b": 1,
+      "predicted_sign": 1,
       "observed_sign": 1,
-      "conv_b_concordant": true,
-      "conv_a_concordant": false
+      "concordant": true
     },
     {
       "subgroup": "full",
@@ -187,10 +175,9 @@
       "n_pairs": 10849,
       "n_subjects": 6245,
       "j_sign": 1,
-      "predicted_sign_conv_b": 1,
+      "predicted_sign": 1,
       "observed_sign": 1,
-      "conv_b_concordant": true,
-      "conv_a_concordant": true
+      "concordant": true
     },
     {
       "subgroup": "full",
@@ -204,10 +191,9 @@
       "n_pairs": 10849,
       "n_subjects": 6245,
       "j_sign": -1,
-      "predicted_sign_conv_b": 1,
+      "predicted_sign": 1,
       "observed_sign": -1,
-      "conv_b_concordant": false,
-      "conv_a_concordant": true
+      "concordant": false
     },
     {
       "subgroup": "full",
@@ -221,10 +207,9 @@
       "n_pairs": 10849,
       "n_subjects": 6245,
       "j_sign": 1,
-      "predicted_sign_conv_b": 1,
+      "predicted_sign": 1,
       "observed_sign": 1,
-      "conv_b_concordant": true,
-      "conv_a_concordant": true
+      "concordant": true
     },
     {
       "subgroup": "med_naive",
@@ -238,10 +223,9 @@
       "n_pairs": 6833,
       "n_subjects": 4116,
       "j_sign": 1,
-      "predicted_sign_conv_b": 1,
+      "predicted_sign": 1,
       "observed_sign": 1,
-      "conv_b_concordant": true,
-      "conv_a_concordant": true
+      "concordant": true
     },
     {
       "subgroup": "med_naive",
@@ -255,10 +239,9 @@
       "n_pairs": 6833,
       "n_subjects": 4116,
       "j_sign": 1,
-      "predicted_sign_conv_b": 1,
+      "predicted_sign": 1,
       "observed_sign": 1,
-      "conv_b_concordant": true,
-      "conv_a_concordant": true
+      "concordant": true
     },
     {
       "subgroup": "med_naive",
@@ -272,10 +255,9 @@
       "n_pairs": 6833,
       "n_subjects": 4116,
       "j_sign": -1,
-      "predicted_sign_conv_b": 1,
+      "predicted_sign": 1,
       "observed_sign": 1,
-      "conv_b_concordant": true,
-      "conv_a_concordant": false
+      "concordant": true
     },
     {
       "subgroup": "med_naive",
@@ -289,10 +271,9 @@
       "n_pairs": 6833,
       "n_subjects": 4116,
       "j_sign": 1,
-      "predicted_sign_conv_b": 1,
+      "predicted_sign": 1,
       "observed_sign": 1,
-      "conv_b_concordant": true,
-      "conv_a_concordant": true
+      "concordant": true
     },
     {
       "subgroup": "med_naive",
@@ -306,10 +287,9 @@
       "n_pairs": 6833,
       "n_subjects": 4116,
       "j_sign": -1,
-      "predicted_sign_conv_b": 1,
+      "predicted_sign": 1,
       "observed_sign": -1,
-      "conv_b_concordant": false,
-      "conv_a_concordant": true
+      "concordant": false
     },
     {
       "subgroup": "med_naive",
@@ -323,10 +303,9 @@
       "n_pairs": 6833,
       "n_subjects": 4116,
       "j_sign": 1,
-      "predicted_sign_conv_b": 1,
+      "predicted_sign": 1,
       "observed_sign": 1,
-      "conv_b_concordant": true,
-      "conv_a_concordant": true
+      "concordant": true
     },
     {
       "subgroup": "age_70plus",
@@ -340,10 +319,9 @@
       "n_pairs": 2855,
       "n_subjects": 1982,
       "j_sign": 1,
-      "predicted_sign_conv_b": 1,
+      "predicted_sign": 1,
       "observed_sign": 1,
-      "conv_b_concordant": true,
-      "conv_a_concordant": true
+      "concordant": true
     },
     {
       "subgroup": "age_70plus",
@@ -357,10 +335,9 @@
       "n_pairs": 2855,
       "n_subjects": 1982,
       "j_sign": 1,
-      "predicted_sign_conv_b": 1,
+      "predicted_sign": 1,
       "observed_sign": 1,
-      "conv_b_concordant": true,
-      "conv_a_concordant": true
+      "concordant": true
     },
     {
       "subgroup": "age_70plus",
@@ -374,10 +351,9 @@
       "n_pairs": 2855,
       "n_subjects": 1982,
       "j_sign": -1,
-      "predicted_sign_conv_b": 1,
+      "predicted_sign": 1,
       "observed_sign": 1,
-      "conv_b_concordant": true,
-      "conv_a_concordant": false
+      "concordant": true
     },
     {
       "subgroup": "age_70plus",
@@ -391,10 +367,9 @@
       "n_pairs": 2855,
       "n_subjects": 1982,
       "j_sign": 1,
-      "predicted_sign_conv_b": 1,
+      "predicted_sign": 1,
       "observed_sign": -1,
-      "conv_b_concordant": false,
-      "conv_a_concordant": false
+      "concordant": false
     },
     {
       "subgroup": "age_70plus",
@@ -408,10 +383,9 @@
       "n_pairs": 2855,
       "n_subjects": 1982,
       "j_sign": -1,
-      "predicted_sign_conv_b": 1,
+      "predicted_sign": 1,
       "observed_sign": -1,
-      "conv_b_concordant": false,
-      "conv_a_concordant": true
+      "concordant": false
     },
     {
       "subgroup": "age_70plus",
@@ -425,10 +399,9 @@
       "n_pairs": 2855,
       "n_subjects": 1982,
       "j_sign": 1,
-      "predicted_sign_conv_b": 1,
+      "predicted_sign": 1,
       "observed_sign": 1,
-      "conv_b_concordant": true,
-      "conv_a_concordant": true
+      "concordant": true
     }
   ]
 }

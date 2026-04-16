@@ -3,10 +3,10 @@
 ELSA 3-axis lead-lag cross-lagged regression.
 
 For each ordered pair (i, j) in {I, M, F}, regress Delta_x_j(t+1) on
-x_i(t), controlling for x_j(t) and age. Tests directional coupling
-against compiled J-matrix sign predictions in three subgroups:
-  (1) full sample, (2) medication-naive (no diag. HTN, no diag. DM),
-  (3) age 70+.
+x_i(t), controlling for x_j(t) and age. Concordance uses Convention B
+(predicted beta > 0 for all pairs in delta-space; see feedback memory).
+Three subgroups: (1) full sample, (2) medication-naive (no diag. HTN,
+no diag. DM), (3) age 70+.
 
 Mirrors scripts/inchianti_lead_lag.py for direct two-cohort comparison.
 """
@@ -51,15 +51,16 @@ RNG = np.random.default_rng(SEED)
 # ELSA 3-axis columns (positive = decline, standardised)
 AXES = {'I': 'dx_I', 'M': 'dx_M', 'F': 'dx_F'}
 
-# Compiled J-matrix signs (from data/J_matrix_compiled_9x9.csv)
-# Convention B: predicted beta > 0 for ALL pairs (see feedback memory)
+# Compiled J-matrix signs from data/J_matrix_compiled_9x9.csv.
+# Retained for traceability only — concordance uses Convention B
+# (predicted beta > 0 for ALL pairs; see feedback memory).
 J_SIGNS = {
-    ('M', 'I'): +1,   # M→I: J sign +
-    ('I', 'M'): +1,   # I→M: J sign +
-    ('F', 'I'): -1,   # F→I: J sign - (protective)
-    ('I', 'F'): +1,   # I→F: J sign +
-    ('F', 'M'): -1,   # F→M: J sign - (protective)
-    ('M', 'F'): +1,   # M→F: J sign +
+    ('M', 'I'): +1,
+    ('I', 'M'): +1,
+    ('F', 'I'): -1,
+    ('I', 'F'): +1,
+    ('F', 'M'): -1,
+    ('M', 'F'): +1,
 }
 
 # InCHIANTI reference results for direct comparison
@@ -199,9 +200,8 @@ def run_lead_lag(triplets, label, n_boot=N_BOOT):
         return []
 
     print(f"\n{'Pair':<8s} {'beta':>9s} {'95% CI':>22s} {'p':>10s} "
-          f"{'N':>7s} {'Npers':>7s} {'PredB':>6s} {'Obs':>5s} {'B?':>4s} "
-          f"{'Jsig':>5s} {'A?':>4s}")
-    print('-' * 95)
+          f"{'N':>7s} {'Npers':>7s} {'Pred':>5s} {'Obs':>5s} {'Conc':>5s}")
+    print('-' * 82)
 
     results = []
     rng = np.random.default_rng(SEED)
@@ -212,23 +212,18 @@ def run_lead_lag(triplets, label, n_boot=N_BOOT):
         pair_str = f'{from_name}->{to_name}'
         if np.isnan(beta):
             obs_sign = 0
-            conv_b = False
-            conv_a = False
+            concordant = False
         else:
             obs_sign = 1 if beta > 0 else -1
-            conv_b = obs_sign == 1   # Convention B: all predict +
-            conv_a = obs_sign == j_sign  # Convention A: matches raw J sign
+            concordant = obs_sign == 1   # Convention B: all predict +
 
-        pred_b = '+'
         obs_str = '+' if obs_sign > 0 else ('-' if obs_sign < 0 else '?')
-        j_str = '+' if j_sign > 0 else '-'
         ci_str = f'[{ci_lo:+.4f},{ci_hi:+.4f}]' if np.isfinite(ci_lo) else 'N/A'
         p_str = f'{p_val:.4f}' if np.isfinite(p_val) else 'N/A'
 
         print(f"{pair_str:<8s} {beta:>+9.4f} {ci_str:>22s} {p_str:>10s} "
-              f"{n:>7,d} {n_subj:>7,d} {pred_b:>6s} {obs_str:>5s} "
-              f"{'YES' if conv_b else 'NO':>4s} {j_str:>5s} "
-              f"{'YES' if conv_a else 'NO':>4s}")
+              f"{n:>7,d} {n_subj:>7,d} {'+':>5s} {obs_str:>5s} "
+              f"{'YES' if concordant else 'NO':>5s}")
 
         results.append({
             'subgroup': label,
@@ -242,26 +237,20 @@ def run_lead_lag(triplets, label, n_boot=N_BOOT):
             'n_pairs': n,
             'n_subjects': n_subj,
             'j_sign': int(j_sign),
-            'predicted_sign_conv_b': 1,
+            'predicted_sign': 1,
             'observed_sign': int(obs_sign),
-            'conv_b_concordant': bool(conv_b),
-            'conv_a_concordant': bool(conv_a),
+            'concordant': bool(concordant),
         })
 
-    # Concordance summary
+    # Concordance summary (Convention B)
     n_tested = sum(1 for r in results if not np.isnan(r['beta']))
-    n_conv_b = sum(1 for r in results if r['conv_b_concordant'])
-    n_conv_a = sum(1 for r in results if r['conv_a_concordant'])
+    n_conc = sum(1 for r in results if r['concordant'])
 
     if n_tested > 0:
-        p_b = binomtest(n_conv_b, n_tested, 0.5,
-                        alternative='greater').pvalue
-        p_a = binomtest(n_conv_a, n_tested, 0.5,
-                        alternative='greater').pvalue
-        print(f"\n  Convention B concordance: {n_conv_b}/{n_tested} "
-              f"({100 * n_conv_b / n_tested:.0f}%), binomial p={p_b:.4f}")
-        print(f"  Convention A concordance: {n_conv_a}/{n_tested} "
-              f"({100 * n_conv_a / n_tested:.0f}%), binomial p={p_a:.4f}")
+        p_conc = binomtest(n_conc, n_tested, 0.5,
+                           alternative='greater').pvalue
+        print(f"\n  Concordance (Convention B): {n_conc}/{n_tested} "
+              f"({100 * n_conc / n_tested:.0f}%), binomial p={p_conc:.4f}")
 
     return results
 
@@ -380,24 +369,17 @@ def main():
         all_results.extend(res)
 
         n_tested = sum(1 for r in res if not np.isnan(r['beta']))
-        n_conv_b = sum(1 for r in res if r['conv_b_concordant'])
-        n_conv_a = sum(1 for r in res if r['conv_a_concordant'])
-        p_b = (binomtest(n_conv_b, n_tested, 0.5,
-                         alternative='greater').pvalue
-               if n_tested > 0 else None)
-        p_a = (binomtest(n_conv_a, n_tested, 0.5,
-                         alternative='greater').pvalue
-               if n_tested > 0 else None)
+        n_conc = sum(1 for r in res if r['concordant'])
+        p_conc = (binomtest(n_conc, n_tested, 0.5,
+                            alternative='greater').pvalue
+                  if n_tested > 0 else None)
         subgroup_summary[name] = {
             'n_pairs': int(len(tp)),
             'n_subjects': int(tp['idauniq'].nunique()) if len(tp) else 0,
             'n_tested': n_tested,
-            'n_conv_b_concordant': n_conv_b,
-            'n_conv_a_concordant': n_conv_a,
-            'conv_b_rate': n_conv_b / n_tested if n_tested else None,
-            'conv_a_rate': n_conv_a / n_tested if n_tested else None,
-            'binomial_p_conv_b': float(p_b) if p_b is not None else None,
-            'binomial_p_conv_a': float(p_a) if p_a is not None else None,
+            'n_concordant': n_conc,
+            'concordance_rate': n_conc / n_tested if n_tested else None,
+            'binomial_p': float(p_conc) if p_conc is not None else None,
         }
 
     # ---------------------------------------------------------------
@@ -440,9 +422,8 @@ def main():
     summary = {
         'description': 'ELSA 3-axis lead-lag cross-lagged regression, '
                        '6 ordered pairs from {I, M, F}',
-        'convention_note': 'Convention B predicts beta > 0 for all pairs '
-                           '(see feedback_leadlag_sign_convention memory). '
-                           'Convention A uses raw J sign.',
+        'convention_note': 'Convention B: predicted beta > 0 for all pairs '
+                           '(see feedback_leadlag_sign_convention memory).',
         'n_boot': args.n_boot,
         'subgroups': subgroup_summary,
         'comparison': comparison,
