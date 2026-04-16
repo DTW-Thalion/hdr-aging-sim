@@ -15,48 +15,14 @@ from datetime import datetime, timezone
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
-from scipy import linalg as _sla
 
 from hdr_sim.dynamics import (build_A, spectral_abscissa, recovery_timescale,
-                               damping_ratio, simulate)
+                               damping_ratio, simulate, simulate_expm)
 from hdr_sim.aging_params import (tau_of_age, J_of_age, AXIS_NAMES, AXIS_COLORS,
                                    configure, get_fast_system)
 from hdr_sim.csv_loader import _FAST_7_AXES
 from hdr_sim.plotting import setup_style, add_panel_label, save_figure
 from hdr_sim.j_matrix_spec import JMatrixSpec, load_default_spec
-
-
-def simulate_expm(A, x0, dt, T, noise_std=0.0, perturbations=None, seed=42):
-    """Matrix-exponential integrator: x[i+1] = expm(A*dt) @ x[i] + noise.
-
-    Unconditionally stable regardless of eigenvalue magnitudes — avoids the
-    Euler-Maruyama stiffness blowup that occurs when |lambda_max * dt| > 2.
-    The fast subsystem has eigenvalues up to |lambda| ~ 333 at young ages,
-    which exceeds the Euler stability limit of |lambda| < 200 at dt=0.01.
-    """
-    n_steps = int(T / dt)
-    n = len(x0)
-    t = np.linspace(0, T, n_steps + 1)
-    x = np.zeros((n_steps + 1, n))
-    x[0] = x0.copy()
-
-    Phi = _sla.expm(A * dt)
-
-    pert_dict = {}
-    if perturbations:
-        for p_time, p_axis, p_mag in perturbations:
-            step_idx = max(0, min(int(round(p_time / dt)), n_steps))
-            pert_dict.setdefault(step_idx, []).append((p_axis, p_mag))
-
-    rng = np.random.default_rng(seed)
-    for i in range(n_steps):
-        if i in pert_dict:
-            for axis, mag in pert_dict[i]:
-                x[i, axis] += mag
-        x[i + 1] = Phi @ x[i]
-        if noise_std > 0:
-            x[i + 1] += noise_std * np.sqrt(dt) * rng.standard_normal(n)
-    return t, x
 
 
 def parse_args():

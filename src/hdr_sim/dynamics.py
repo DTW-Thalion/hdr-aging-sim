@@ -64,6 +64,9 @@ def simulate(A: np.ndarray, x0: np.ndarray, dt: float, T: float,
              noise_std: float = 0.0, perturbations: list = None) -> tuple:
     """Euler-Maruyama simulation of dx = A·x·dt + σ·dW.
 
+    Conditionally stable: requires |λ_max(A)|·dt < 2. For stiff systems
+    (fast subsystems have |λ| up to ~333), prefer simulate_expm.
+
     Args:
         A: dynamics matrix
         x0: initial state
@@ -105,5 +108,45 @@ def simulate(A: np.ndarray, x0: np.ndarray, dt: float, T: float,
         if noise_std > 0:
             dx += noise_std * np.sqrt(dt) * rng.standard_normal(n)
         x[i + 1] = x[i] + dx
+
+    return t, x
+
+
+def simulate_expm(A: np.ndarray, x0: np.ndarray, dt: float, T: float,
+                  noise_std: float = 0.0, perturbations: list = None,
+                  seed: int = 42) -> tuple:
+    """Matrix-exponential propagator: x[i+1] = expm(A·dt) @ x[i] + σ·sqrt(dt)·ξ.
+
+    Exact for the deterministic part; unconditionally stable regardless of
+    eigenvalue magnitude. Use this for stiff systems where simulate()'s
+    Euler-Maruyama scheme would blow up (|λ_max|·dt ≥ 2). The stochastic
+    term is a first-order Itô-Euler increment on top of the exact flow —
+    acceptable for the demonstration regime used by figure scripts; not
+    an exact SDE solver.
+
+    Same signature as simulate() except for the added `seed` parameter.
+    """
+    n_steps = int(T / dt)
+    n = len(x0)
+    t = np.linspace(0, T, n_steps + 1)
+    x = np.zeros((n_steps + 1, n))
+    x[0] = x0.copy()
+
+    Phi = linalg.expm(A * dt)
+
+    pert_dict = {}
+    if perturbations:
+        for p_time, p_axis, p_mag in perturbations:
+            step_idx = max(0, min(int(round(p_time / dt)), n_steps))
+            pert_dict.setdefault(step_idx, []).append((p_axis, p_mag))
+
+    rng = np.random.default_rng(seed)
+    for i in range(n_steps):
+        if i in pert_dict:
+            for axis, mag in pert_dict[i]:
+                x[i, axis] += mag
+        x[i + 1] = Phi @ x[i]
+        if noise_std > 0:
+            x[i + 1] += noise_std * np.sqrt(dt) * rng.standard_normal(n)
 
     return t, x

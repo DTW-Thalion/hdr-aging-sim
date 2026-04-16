@@ -35,7 +35,7 @@ from hdr_sim.csv_loader import (
     calibrate_stable_system, build_system_at_age,
     _ALL_9_AXES, _FAST_7_AXES,
 )
-from hdr_sim.dynamics import simulate, spectral_abscissa, damping_ratio
+from hdr_sim.dynamics import simulate, simulate_expm, spectral_abscissa, damping_ratio
 from hdr_sim.plotting import setup_style, add_panel_label, save_figure
 from hdr_sim.aging_params import _AXIS_FULL_NAMES, _AXIS_COLORS_MAP
 from hdr_sim.j_matrix_spec import JMatrixSpec
@@ -139,7 +139,7 @@ for age, ls in zip(demo_ages, line_styles):
         age, J_h, J_d, c, amp, axes_fast=axes_fast)
     x0 = np.zeros(n_fast)
     x0[0] = 2.0  # perturb I axis
-    t, x = simulate(A_fast, x0, dt, T)
+    t, x = simulate_expm(A_fast, x0, dt, T)
     norm = np.linalg.norm(x, axis=1)
     ax_d.plot(t, norm, ls, color='#2c3e50', linewidth=1.5,
               label=f'Age {age}')
@@ -153,7 +153,7 @@ add_panel_label(ax_e, 'e')
 _, A_80, _, _ = build_system_at_age(80, J_h, J_d, c, amp, axes_fast=axes_fast)
 x0 = np.zeros(n_fast)
 perturbations = [(5.0, 0, 1.5)]
-t, x = simulate(A_80, x0, dt, T, noise_std=0.05, perturbations=perturbations)
+t, x = simulate_expm(A_80, x0, dt, T, noise_std=0.05, perturbations=perturbations)
 
 for i in range(n_fast):
     ax_e.plot(t, x[:, i], color=axis_colors[i], linewidth=1.5,

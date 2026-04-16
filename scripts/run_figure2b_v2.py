@@ -20,7 +20,7 @@ import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
 from datetime import datetime, timezone
 
-from hdr_sim.dynamics import build_A, spectral_abscissa, recovery_timescale, damping_ratio, simulate
+from hdr_sim.dynamics import build_A, spectral_abscissa, recovery_timescale, damping_ratio, simulate, simulate_expm
 from hdr_sim.aging_params import configure_v2, tau_of_age, J_of_age, get_axis_names, get_axis_colors
 from hdr_sim.plotting import setup_style, add_panel_label, save_figure
 from hdr_sim.j_matrix_spec import JMatrixSpec
@@ -124,7 +124,7 @@ for age, ls in zip(demo_ages, line_styles):
     A = build_A(tau_of_age(age), J_of_age(age))
     x0 = np.zeros(n_axes)
     x0[0] = 2.0
-    t, x = simulate(A, x0, dt, T)
+    t, x = simulate_expm(A, x0, dt, T)
     norm = np.linalg.norm(x, axis=1)
     ax_d.plot(t, norm, ls, color='#2c3e50', linewidth=1.5, label=f'Age {age}')
 
@@ -138,7 +138,7 @@ demo_age = min(max_stable, 80)
 A_demo = build_A(tau_of_age(demo_age), J_of_age(demo_age))
 x0 = np.zeros(n_axes)
 perturbations = [(5.0, 0, 1.5)]
-t, x = simulate(A_demo, x0, dt, T, noise_std=0.05, perturbations=perturbations)
+t, x = simulate_expm(A_demo, x0, dt, T, noise_std=0.05, perturbations=perturbations)
 
 axis_names = get_axis_names()
 axis_colors = get_axis_colors()

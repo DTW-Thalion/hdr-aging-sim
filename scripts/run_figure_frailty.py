@@ -12,7 +12,7 @@ from datetime import datetime, timezone
 import numpy as np
 import matplotlib.pyplot as plt
 
-from hdr_sim.dynamics import build_A, spectral_radius_discrete, simulate
+from hdr_sim.dynamics import build_A, spectral_radius_discrete, simulate, simulate_expm
 from hdr_sim.aging_params import configure, tau_of_age, J_of_age, AXIS_COLORS
 from hdr_sim.plotting import setup_style, add_panel_label, save_figure
 from hdr_sim.j_matrix_spec import JMatrixSpec, load_default_spec
@@ -73,7 +73,7 @@ for age, ls in zip(demo_ages, line_styles):
     _, A_fast, _, _ = get_fast_system(age)
     n_ax = A_fast.shape[0]
     x0 = np.zeros(n_ax); x0[0] = 2.0  # I impulse
-    t, x = simulate(A_fast, x0, dt, T)
+    t, x = simulate_expm(A_fast, x0, dt, T)
     ax.plot(t, x[:, 0], ls, color=AXIS_COLORS[0], linewidth=1.5,
             label=f'Age {age}')
 

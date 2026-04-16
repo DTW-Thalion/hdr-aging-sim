@@ -28,7 +28,7 @@ import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
 from matplotlib.collections import LineCollection
 
-from hdr_sim.dynamics import build_A, spectral_radius_discrete, simulate
+from hdr_sim.dynamics import build_A, spectral_radius_discrete, simulate, simulate_expm
 from hdr_sim.aging_params import configure, tau_of_age, J_of_age, AXIS_COLORS
 from hdr_sim.plotting import setup_style, add_panel_label, save_figure
 
@@ -175,7 +175,7 @@ def panel_frailty(ax):
         _, A_fast, _, _ = get_fast_system(age)
         n_ax = A_fast.shape[0]
         x0 = np.zeros(n_ax); x0[0] = 2.0
-        t, x = simulate(A_fast, x0, 0.01, 80.0)
+        t, x = simulate_expm(A_fast, x0, 0.01, 80.0)
         ax_in.plot(t, x[:, 0], ls, color=AXIS_COLORS[0], linewidth=1.2,
                    label=f'{age}')
     ax_in.set_xlabel('Days', fontsize=7)
