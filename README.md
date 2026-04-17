@@ -263,7 +263,7 @@ Note: NHANES XPT files are downloaded from CDC servers at runtime (~7 MB total).
 | `run_elsa_validation.py` | `outputs/figure_elsa_validation.pdf` | Figure Z (ELSA cohort validation) |
 | `run_medication_sensitivity.py` | `outputs/elsa_medication_sensitivity.json` | R5 corrected Cox models |
 | `run_figure_coupling_tightening.py` | `outputs/figure_coupling_tightening.pdf` | R6 coupling tightening |
-| `run_figure_mortality_prediction.py` | `outputs/figure_mortality_prediction.pdf` | R6 mortality prediction |
+| `run_figure_mortality_prediction.py` | `outputs/figure_mortality_prediction.pdf` | R6 mortality prediction (two-cohort; reads `results/elsa_cox_frozen.json` + `results/inchianti_cox_frozen.json`) |
 | `run_figure_medication_compression.py` | `outputs/figure_medication_compression.pdf` | R6 medication compression |
 | `run_figure_network_schematic.py` | `outputs/figure_network_schematic.pdf` | Main Fig 1: 9-axis network diagram |
 | `run_figure_J_heatmap.py` | `outputs/figure_J_heatmap.pdf` | Main Fig 2: 9×9 annotated J coupling heatmap |
@@ -557,18 +557,29 @@ Adversarial review identified three items requiring resolution before manuscript
 
 The pipeline's `run_matched_cox()` now prints both `CoxPHFitter.concordance_index_` (the fitted model's own Harrell's C) and `lifelines.utils.concordance_index()` for comparison. Result: the two methods produce **identical values to 6 decimal places** — there is no sign convention or partial hazard computation issue.
 
-Pipeline C-indices (authoritative):
+The mortality prediction figure ([`outputs/figure_mortality_prediction.pdf`](outputs/figure_mortality_prediction.pdf)) previously rendered ELSA-only C-indices (0.60–0.62) while the manuscript's Table 1 cited values of 0.71–0.75 — a discrepancy flagged by external review. Investigation established that the 0.71–0.75 values correspond to **InCHIANTI age65+ (N=931, Fried frailty)**, not ELSA (N=5,431, Rockwood FI). The figure has been rebuilt as a **two-cohort comparison** reading from two frozen JSONs as the single source of truth:
 
-| Model | Full (N=5,431) | Med-naive (N=3,233) |
-|-------|----------------|---------------------|
-| M1: Age + Sex | 0.6019 | 0.5860 |
-| M2: + Biomarkers | 0.6145 | 0.6050 |
-| M3: + SWDS-Γ | 0.6030 | 0.5861 |
-| M4: + Rockwood FI | 0.6093 | 0.6000 |
-| M5: Full | 0.6180 | 0.6131 |
-| **ΔC (M5−M4)** | **+0.009** | **+0.013** |
+- **[`results/elsa_cox_frozen.json`](results/elsa_cox_frozen.json)** — ELSA values from [`scripts/run_elsa_validation.py`](scripts/run_elsa_validation.py) via [`outputs/elsa_results_ledger.json`](outputs/elsa_results_ledger.json).
+- **[`results/inchianti_cox_frozen.json`](results/inchianti_cox_frozen.json)** — InCHIANTI age65+ values from [`scripts/inchianti_survival.py`](scripts/inchianti_survival.py) via [`results/inchianti_survival_analysis.json`](results/inchianti_survival_analysis.json).
 
-The ΔC values are consistent with manuscript Table 1. The absolute C-index offset (~0.10–0.14) reflects a different analysis specification in the manuscript; the pipeline values are the authoritative source.
+Both frozen files carry `source_script` and `source_ledger` pointers and must be regenerated (not hand-edited) if the underlying pipeline changes. The figure script re-fits the ELSA Cox models at runtime and prints an audit that flags any drift >5×10⁻⁴ between the frozen values and the fresh fit.
+
+Pipeline C-indices (authoritative — both cohorts):
+
+| Model | ELSA full (N=5,431) | ELSA med-naive (N=3,233) | InCHIANTI age65+ (N=931) |
+|-------|---------------------|---------------------------|--------------------------|
+| M1: Age + Sex         | 0.6019 | 0.5860 | 0.7409 |
+| M2: + Biomarkers      | 0.6145 | 0.6050 | 0.7623 |
+| M3: + SWDS-Γ (alone)  | 0.6030 | 0.5861 | 0.6667 |
+| M4: + frailty         | 0.6093 | 0.6000 | 0.7460 (Fried) |
+| M4a: + biomarkers only, no SWDS-Γ | — | — | 0.7601 |
+| M4b: + SWDS-Γ only, no biomarkers | — | — | 0.7531 |
+| M5: Full              | 0.6180 | 0.6131 | 0.7600 |
+| **ΔC (M5−M4)**        | **+0.0087** | **+0.0131** | **+0.0140** |
+| ΔC (M4a−M4) biomarkers alone | — | — | +0.0141 |
+| ΔC (M4b−M4) SWDS-Γ alone     | — | — | +0.0071 |
+
+In ELSA, the ΔC from SWDS-Γ (+0.009) is indistinguishable from the Mahalanobis and z-sum benchmarks (both +0.009): the eigenvalue weighting contributes no measurable additional information over isotropic distance. In InCHIANTI age65+ the M4a/M4b decomposition shows that biomarkers alone carry the dominant incremental signal above Fried frailty (+0.014) and SWDS-Γ alone captures about half of that (+0.007); the combined M5−M4 (+0.014) does not exceed the biomarker-only increment, indicating substantial overlap between the coupling-weighted score and raw biomarker information. The manuscript text and figure caption should reference these frozen JSONs for any quoted C-index.
 
 #### Biomarker Specification
 
