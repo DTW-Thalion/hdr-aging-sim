@@ -1,0 +1,26 @@
+{
+  "_description": "Frozen Cox C-indices for InCHIANTI age65+ cohort — single source of truth for figure_mortality_prediction.pdf (InCHIANTI half). Values are copied verbatim from the inchianti_survival.py pipeline output captured in results/inchianti_survival_analysis.json. Do NOT edit by hand — regenerate by rerunning the pipeline and copying the values.",
+  "source_script": "scripts/inchianti_survival.py",
+  "source_ledger": "results/inchianti_survival_analysis.json : age65+",
+  "cohort": "InCHIANTI baseline age >= 65, 4-axis (I, M, N, F), complete cases",
+  "axes": ["delta_I", "delta_M", "delta_N", "delta_F"],
+  "frailty_type": "Fried phenotype (dx_frailty)",
+  "N": 931,
+  "n_events": 706,
+  "c_index_method": "Harrell's C (CoxPHFitter.concordance_index_)",
+  "models": {
+    "M1":  {"label": "Age + sex",                       "C": 0.7409},
+    "M2":  {"label": "M1 + biomarkers",                 "C": 0.7623},
+    "M3":  {"label": "SWDS-Gamma only",                 "C": 0.6667},
+    "M4":  {"label": "M1 + Fried frailty",              "C": 0.7460},
+    "M4a": {"label": "M4 + biomarkers only",            "C": 0.7601},
+    "M4b": {"label": "M4 + SWDS-Gamma only",            "C": 0.7531},
+    "M5":  {"label": "M4 + biomarkers + SWDS-Gamma",    "C": 0.7600}
+  },
+  "delta_C": {
+    "M5_minus_M4":  0.0140,
+    "M4a_minus_M4": 0.0141,
+    "M4b_minus_M4": 0.0071,
+    "_note": "Biomarkers alone (M4a-M4=+0.014) carry the dominant incremental signal above Fried frailty; SWDS-Gamma alone (M4b-M4=+0.007) captures roughly half of that, and the combined M5-M4 does not exceed the biomarker-only increment — the coupling-weighted score overlaps with raw biomarker information."
+  }
+}

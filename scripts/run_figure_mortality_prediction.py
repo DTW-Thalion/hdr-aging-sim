@@ -16,6 +16,7 @@ Outputs:
 """
 
 import importlib.util
+import json
 import os
 import sys
 import warnings
@@ -290,127 +291,159 @@ def run_benchmark_cox(baseline):
     return results
 
 
+FROZEN_ELSA_PATH = os.path.join(ROOT, 'results', 'elsa_cox_frozen.json')
+FROZEN_INCHIANTI_PATH = os.path.join(ROOT, 'results', 'inchianti_cox_frozen.json')
+
+
+def _load_frozen(path):
+    with open(path, 'r', encoding='utf-8') as f:
+        return json.load(f)
+
+
+def _audit_against_frozen(cox_res, frozen, key_map, label):
+    """Print audit line per model: frozen vs freshly-computed (should match to 3 d.p.)."""
+    print(f"\n  AUDIT [{label}] frozen JSON vs live pipeline:")
+    for mkey, live_key in key_map.items():
+        frozen_c = frozen['models'].get(mkey, {}).get('C', None)
+        live_c = cox_res.get(live_key, {}).get('c_index', None) if cox_res else None
+        if frozen_c is None or live_c is None:
+            print(f"    {mkey}: frozen={frozen_c}, live={live_c} (skip)")
+            continue
+        drift = abs(frozen_c - live_c)
+        status = 'OK' if drift < 5e-4 else 'DRIFT'
+        print(f"    {mkey}: frozen={frozen_c:.4f}, live={live_c:.4f}, "
+              f"|delta|={drift:.4f} [{status}]")
+
+
 def make_figure(results):
-    """Generate the 3-panel mortality prediction figure."""
+    """Three-panel two-cohort mortality prediction figure.
+
+    Panel (a) and (b) render C-indices and delta-C values from frozen JSONs
+    (`results/elsa_cox_frozen.json`, `results/inchianti_cox_frozen.json`)
+    which are the single source of truth. Panel (c) plots KM curves computed
+    from the ELSA baseline data already loaded in this session.
+
+    A live Cox run is also performed upstream; if it drifts from the frozen
+    values by more than 5e-4, the audit block below flags it.
+    """
+    import json as _json  # local import for clarity in audit block
+
     setup_style()
 
     cox_full = results['cox_full']
     cox_naive = results['cox_naive']
-    cox_benchmarks = results['cox_benchmarks']
     baseline_naive = results['baseline_naive']
 
+    # -- Single source of truth: frozen JSON per cohort --
+    frozen_elsa = _load_frozen(FROZEN_ELSA_PATH)
+    frozen_inch = _load_frozen(FROZEN_INCHIANTI_PATH)
+
+    # Live-vs-frozen audit for ELSA only (InCHIANTI pipeline not loaded here).
+    elsa_key_map = {
+        'M1': 'M1: Age + Sex',
+        'M2': 'M2: + Biomarkers',
+        'M3': 'M3: + SWDS-G',
+        'M4': 'M4: + Rockwood FI',
+        'M5': 'M5: Full',
+    }
+    _audit_against_frozen(cox_full, frozen_elsa, elsa_key_map,
+                          f'ELSA full N={frozen_elsa["N"]}, '
+                          f'events={frozen_elsa["n_events"]}')
+
+    # ---- Figure layout ----
     fig, axes = plt.subplots(1, 3, figsize=(14, 4.8))
-    fig.suptitle('ELSA cohort (3-axis I/M/F; N=5,431 full / 3,233 med-naive)',
-                 fontsize=10, y=1.02)
+    fig.suptitle(
+        f'Two-cohort mortality prediction  |  '
+        f'ELSA N={frozen_elsa["N"]:,} (events={frozen_elsa["n_events"]:,}, '
+        f'Rockwood FI)   ·   '
+        f'InCHIANTI age65+ N={frozen_inch["N"]:,} '
+        f'(events={frozen_inch["n_events"]:,}, Fried frailty)',
+        fontsize=9, y=1.02)
 
     # ================================================================
-    # Panel (a): Nested Cox C-indices — full sample AND med-naive
+    # Panel (a): Grouped C-index bars — ELSA vs InCHIANTI age65+
     # ================================================================
     ax = axes[0]
     add_panel_label(ax, '(a)')
 
     model_labels = ['M1', 'M2', 'M3', 'M4', 'M5']
-    model_keys = ['M1: Age + Sex', 'M2: + Biomarkers', 'M3: + SWDS-G',
-                  'M4: + Rockwood FI', 'M5: Full']
-
-    def extract_c_indices(cox_res, keys):
-        vals = []
-        for k in keys:
-            if cox_res and k in cox_res:
-                vals.append(cox_res[k].get('c_index', np.nan))
-            else:
-                vals.append(np.nan)
-        return vals
-
-    c_full = extract_c_indices(cox_full, model_keys)
-    c_naive = extract_c_indices(cox_naive, model_keys)
+    c_elsa = [frozen_elsa['models'][m]['C'] for m in model_labels]
+    c_inch = [frozen_inch['models'][m]['C'] for m in model_labels]
 
     x = np.arange(len(model_labels))
-    width = 0.35
+    width = 0.38
 
-    bars_full = ax.bar(x - width / 2, c_full, width, label='Full sample',
-                       color='steelblue', alpha=0.85, zorder=3)
-    bars_naive = ax.bar(x + width / 2, c_naive, width, label='Med-naive',
-                        color='forestgreen', alpha=0.85, zorder=3)
+    bars_e = ax.bar(x - width / 2, c_elsa, width,
+                    label=f'ELSA (N={frozen_elsa["N"]:,})',
+                    color='steelblue', alpha=0.88, zorder=3)
+    bars_i = ax.bar(x + width / 2, c_inch, width,
+                    label=f'InCHIANTI age65+ (N={frozen_inch["N"]:,})',
+                    color='#b8437a', alpha=0.88, zorder=3)
 
     ax.set_xticks(x)
     ax.set_xticklabels(model_labels, fontsize=9)
     ax.set_ylabel('C-index (Harrell)')
-    ax.set_title('Nested Cox C-indices (ELSA)')
+    ax.set_title('Nested Cox C-indices — both cohorts')
     ax.legend(fontsize=8, loc='lower right')
-    ax.set_ylim(0.5, None)
+    ax.set_ylim(0.5, 0.85)
     ax.axhline(0.5, color='grey', linestyle='--', alpha=0.3)
 
-    # Annotate M5 values
-    for bars, c_vals, offset in [(bars_full, c_full, -width / 2),
-                                  (bars_naive, c_naive, width / 2)]:
-        for i, c in enumerate(c_vals):
-            if not np.isnan(c):
-                ax.text(i + offset, c + 0.002, f'{c:.3f}',
-                        ha='center', va='bottom', fontsize=7)
+    for bars, vals, offset in [(bars_e, c_elsa, -width / 2),
+                                (bars_i, c_inch, width / 2)]:
+        for i, c in enumerate(vals):
+            ax.text(i + offset, c + 0.004, f'{c:.3f}',
+                    ha='center', va='bottom', fontsize=6.5)
 
-    # Print for verification
-    print("\n  Panel (a) C-indices:")
-    n_full = cox_full.get('_n_matched', 0) if cox_full else 0
-    ev_full = cox_full.get('_n_events', 0) if cox_full else 0
-    n_naive = cox_naive.get('_n_matched', 0) if cox_naive else 0
-    ev_naive = cox_naive.get('_n_events', 0) if cox_naive else 0
-    print(f"    Full sample: N={n_full:,}, events={ev_full:,}")
-    print(f"    Med-naive:   N={n_naive:,}, events={ev_naive:,}")
-    for ml, cf, cn in zip(model_labels, c_full, c_naive):
-        cf_str = f"{cf:.4f}" if not np.isnan(cf) else "N/A"
-        cn_str = f"{cn:.4f}" if not np.isnan(cn) else "N/A"
-        print(f"    {ml}: full={cf_str}, naive={cn_str}")
+    print("\n  Panel (a) C-indices (frozen, both cohorts):")
+    for ml, ce, ci in zip(model_labels, c_elsa, c_inch):
+        print(f"    {ml}: ELSA={ce:.4f}, InCHIANTI-65+={ci:.4f}")
 
     # ================================================================
-    # Panel (b): DeltaC bar chart with benchmarks
+    # Panel (b): ΔC comparison — SWDS-Γ vs benchmarks vs decomposition
     # ================================================================
     ax = axes[1]
     add_panel_label(ax, '(b)')
 
-    dc_items = []
+    dc_items = [
+        # (label, value, color, group)
+        (r'SWDS-$\Gamma$' '\nELSA',
+            frozen_elsa['delta_C']['M5_minus_M4'], '#1f77b4', 'ELSA'),
+        ('Mahalanobis' '\nELSA',
+            frozen_elsa['benchmarks_delta_C']['Mahalanobis'], '#7f7f7f', 'ELSA'),
+        ('z-sum' '\nELSA',
+            frozen_elsa['benchmarks_delta_C']['z_sum'], '#bcbd22', 'ELSA'),
+        (r'SWDS-$\Gamma$' '\nInCHIANTI',
+            frozen_inch['delta_C']['M5_minus_M4'], '#b8437a', 'InCHIANTI'),
+        ('Biomarkers only' '\n(M4a-M4, InCHIANTI)',
+            frozen_inch['delta_C']['M4a_minus_M4'], '#d99ab6', 'InCHIANTI'),
+        (r'SWDS-$\Gamma$ only' '\n(M4b-M4, InCHIANTI)',
+            frozen_inch['delta_C']['M4b_minus_M4'], '#9467bd', 'InCHIANTI'),
+    ]
 
-    # SWDS-Gamma full sample
-    if cox_full:
-        dc = cox_full.get('_delta_c', np.nan)
-        if not np.isnan(dc):
-            dc_items.append(('SWDS-$\\Gamma$\n(full)', dc, '#1f77b4'))
+    labels = [d[0] for d in dc_items]
+    values = [d[1] for d in dc_items]
+    colors = [d[2] for d in dc_items]
 
-    # SWDS-Gamma med-naive
-    if cox_naive:
-        dc = cox_naive.get('_delta_c', np.nan)
-        if not np.isnan(dc):
-            dc_items.append(('SWDS-$\\Gamma$\n(med-naive)', dc, '#2ca02c'))
+    bars = ax.bar(range(len(labels)), values, color=colors, alpha=0.88,
+                  zorder=3, width=0.65)
+    ax.set_xticks(range(len(labels)))
+    ax.set_xticklabels(labels, fontsize=7)
+    ax.set_ylabel(r'$\Delta C$ (relative to M4)')
+    ax.set_title(r'$\Delta C$ with benchmarks & decomposition')
+    ax.axhline(0.01, color='darkred', linestyle='--', linewidth=1.1,
+               alpha=0.8, label=r'$\Delta C = 0.01$ threshold', zorder=2)
+    ax.axhline(0, color='grey', linestyle='-', alpha=0.3, zorder=1)
+    # Divider between cohort groups
+    ax.axvline(2.5, color='#cccccc', linestyle=':', linewidth=0.9, zorder=1)
+    ax.legend(fontsize=7, loc='upper left')
 
-    # Benchmarks
-    for bname, bcolor in [('Mahalanobis', '#7f7f7f'), ('z-sum', '#bcbd22')]:
-        if bname in cox_benchmarks:
-            dc = cox_benchmarks[bname].get('delta_c', np.nan)
-            if not np.isnan(dc):
-                dc_items.append((f'{bname}\n(full)', dc, bcolor))
+    for i, v in enumerate(values):
+        ax.text(i, v + 0.0005, f'{v:+.3f}',
+                ha='center', va='bottom', fontsize=7)
 
-    if dc_items:
-        labels, values, colors = zip(*dc_items)
-        bars = ax.bar(range(len(labels)), values, color=colors, alpha=0.85,
-                      zorder=3, width=0.6)
-        ax.set_xticks(range(len(labels)))
-        ax.set_xticklabels(labels, fontsize=8)
-        ax.set_ylabel(r'$\Delta C$ (M5 $-$ M4)')
-        ax.set_title(r'$\Delta C$ vs benchmarks (ELSA)')
-        ax.axhline(0.01, color='darkred', linestyle='--', linewidth=1.2,
-                   alpha=0.8, label=r'$\Delta C = 0.01$ threshold', zorder=2)
-        ax.axhline(0, color='grey', linestyle='-', alpha=0.3, zorder=1)
-        ax.legend(fontsize=7, loc='upper right')
-
-        for i, (bar, v) in enumerate(zip(bars, values)):
-            ax.text(i, v + 0.001 if v >= 0 else v - 0.002,
-                    f'{v:+.3f}', ha='center', va='bottom' if v >= 0 else 'top',
-                    fontsize=8)
-
-        # Print for verification
-        print("\n  Panel (b) DeltaC values:")
-        for l, v in zip(labels, values):
-            print(f"    {l.replace(chr(10), ' ')}: DC = {v:+.4f}")
+    print("\n  Panel (b) deltaC values (frozen):")
+    for lab, v in zip(labels, values):
+        print(f"    {lab.replace(chr(10), ' | '):<45s} = {v:+.4f}")
 
     # ================================================================
     # Panel (c): KM by SWDS-Gamma tertile
@@ -529,7 +562,7 @@ def make_figure(results):
 
             ax.set_xlabel('Years from baseline')
             ax.set_ylabel('Survival probability')
-            ax.set_title(f'KM by SWDS-$\\Gamma$ tertile (ELSA)\n{km_label}')
+            ax.set_title(f'KM by SWDS-$\\Gamma$ tertile — ELSA only\n{km_label}')
             ax.legend(fontsize=8)
         else:
             ax.text(0.5, 0.5, 'Insufficient events', ha='center',
