@@ -1,13 +1,37 @@
 #!/usr/bin/env python3
 """
-Figure: Mortality Prediction (R6 restructured figure 2 of 3)
+Figure 4: Mortality Prediction (two-cohort, R6)
 
-Three-panel figure showing SWDS-Gamma mortality prediction:
-  (a) Nested Cox C-indices: full sample AND med-naive side by side (M1-M5)
-  (b) DeltaC bar chart with benchmarks — only med-naive clears threshold
-  (c) Kaplan-Meier by SWDS-Gamma tertile (medication-naive subgroup)
+Three-panel figure showing SWDS-Gamma mortality prediction across:
+  InCHIANTI (primary):   4-axis {I, M, N, F}, Fried frailty, N=923, 698 deaths
+                         (706 deaths in pre-matched N=931 age65+ subset;
+                         8 frailty-incomplete subjects dropped for matched-N)
+  ELSA (replication):    3-axis {I, M, F},    Rockwood FI,   N=5,431, 1,122 deaths
+
+Panels:
+  (a) Nested Cox C-indices (M1-M5) for both cohorts, dual y-axis because
+      InCHIANTI (~0.66-0.76) and ELSA (~0.60-0.62) live on different scales.
+  (b) Incremental Delta-C over M4 with clinical-relevance threshold at 0.01:
+      InCHIANTI +0.014 (clears) vs ELSA +0.009 (below). InCHIANTI
+      decomposition (biomarkers alone +0.014, SWDS-Gamma alone +0.007) is
+      annotated below the main bars.
+  (c) Kaplan-Meier survival curves by SWDS-Gamma tertile in the InCHIANTI
+      matched age65+ baseline sample (N=923). Log-rank p and per-tertile N
+      are printed in the panel.
+
+Panels (a) and (b) render from frozen Cox JSONs (single source of truth):
+  results/inchianti_cox_frozen.json  (matched N=923)
+  results/elsa_cox_frozen.json       (matched N=5,431)
+
+Panel (c) reads results/inchianti_baseline_matched.csv written by
+scripts/inchianti_survival.py (same matched age65+ sample as the frozen JSON).
+
+A runtime audit compares the live ELSA Cox run against the frozen ELSA JSON
+and the live inchianti_survival_analysis.json against the frozen InCHIANTI
+JSON, flagging drift > 5e-4.
 
 Usage:
+    python scripts/inchianti_survival.py          # regenerate InCHIANTI ledger + CSV
     python scripts/run_figure_mortality_prediction.py
 
 Outputs:
@@ -315,30 +339,68 @@ def _audit_against_frozen(cox_res, frozen, key_map, label):
               f"|delta|={drift:.4f} [{status}]")
 
 
+def _audit_inchianti_against_frozen(frozen_inch, label):
+    """Compare live results/inchianti_survival_analysis.json (age65+) vs frozen."""
+    ledger_path = os.path.join(ROOT, 'results',
+                                'inchianti_survival_analysis.json')
+    print(f"\n  AUDIT [{label}] frozen JSON vs live ledger ({ledger_path}):")
+    if not os.path.exists(ledger_path):
+        print(f"    ledger missing — run scripts/inchianti_survival.py first")
+        return
+    with open(ledger_path, 'r', encoding='utf-8') as f:
+        live = json.load(f)
+    age65 = live.get('age65+', {})
+    key_map = {
+        'M1': 'M1_age_sex',
+        'M2': 'M2_biomarkers',
+        'M3': 'M3_swds',
+        'M4': 'M4_frailty',
+        'M4a': 'M4a_frailty_biomarkers',
+        'M4b': 'M4b_frailty_swds',
+        'M5': 'M5_full',
+    }
+    for mkey, live_key in key_map.items():
+        frozen_c = frozen_inch['models'].get(mkey, {}).get('C', None)
+        live_entry = age65.get(live_key, {})
+        live_c = live_entry.get('C') if isinstance(live_entry, dict) else None
+        if frozen_c is None or live_c is None:
+            print(f"    {mkey}: frozen={frozen_c}, live={live_c} (skip)")
+            continue
+        drift = abs(frozen_c - live_c)
+        status = 'OK' if drift < 5e-4 else 'DRIFT'
+        print(f"    {mkey}: frozen={frozen_c:.4f}, live={live_c:.4f}, "
+              f"|delta|={drift:.4f} [{status}]")
+    live_N = age65.get('N')
+    live_events = age65.get('n_events')
+    print(f"    sample: frozen N={frozen_inch['N']} events="
+          f"{frozen_inch['n_events']}   live N={live_N} events={live_events}")
+
+
+INCHIANTI_BASELINE_CSV = os.path.join(ROOT, 'results',
+                                       'inchianti_baseline_matched.csv')
+
+
 def make_figure(results):
     """Three-panel two-cohort mortality prediction figure.
 
     Panel (a) and (b) render C-indices and delta-C values from frozen JSONs
     (`results/elsa_cox_frozen.json`, `results/inchianti_cox_frozen.json`)
-    which are the single source of truth. Panel (c) plots KM curves computed
-    from the ELSA baseline data already loaded in this session.
+    which are the single source of truth. Panel (c) reads the matched
+    InCHIANTI baseline (`results/inchianti_baseline_matched.csv`, N=923)
+    written by scripts/inchianti_survival.py and plots KM by SWDS-Gamma
+    tertile.
 
-    A live Cox run is also performed upstream; if it drifts from the frozen
-    values by more than 5e-4, the audit block below flags it.
+    Live-vs-frozen audits are run for both cohorts; drift > 5e-4 flags.
     """
-    import json as _json  # local import for clarity in audit block
-
     setup_style()
 
     cox_full = results['cox_full']
-    cox_naive = results['cox_naive']
-    baseline_naive = results['baseline_naive']
 
     # -- Single source of truth: frozen JSON per cohort --
     frozen_elsa = _load_frozen(FROZEN_ELSA_PATH)
     frozen_inch = _load_frozen(FROZEN_INCHIANTI_PATH)
 
-    # Live-vs-frozen audit for ELSA only (InCHIANTI pipeline not loaded here).
+    # Live-vs-frozen audits
     elsa_key_map = {
         'M1': 'M1: Age + Sex',
         'M2': 'M2: + Biomarkers',
@@ -347,106 +409,142 @@ def make_figure(results):
         'M5': 'M5: Full',
     }
     _audit_against_frozen(cox_full, frozen_elsa, elsa_key_map,
-                          f'ELSA full N={frozen_elsa["N"]}, '
+                          f'ELSA matched N={frozen_elsa["N"]}, '
                           f'events={frozen_elsa["n_events"]}')
+    _audit_inchianti_against_frozen(
+        frozen_inch,
+        f'InCHIANTI age65+ matched N={frozen_inch["N"]}, '
+        f'events={frozen_inch["n_events"]}')
 
     # ---- Figure layout ----
-    fig, axes = plt.subplots(1, 3, figsize=(14, 4.8))
+    fig, axes = plt.subplots(1, 3, figsize=(15, 5.2))
     fig.suptitle(
         f'Two-cohort mortality prediction  |  '
-        f'ELSA N={frozen_elsa["N"]:,} (events={frozen_elsa["n_events"]:,}, '
-        f'Rockwood FI)   ·   '
         f'InCHIANTI age65+ N={frozen_inch["N"]:,} '
-        f'(events={frozen_inch["n_events"]:,}, Fried frailty)',
-        fontsize=9, y=1.02)
+        f'(events={frozen_inch["n_events"]:,}, Fried frailty)   \u00b7   '
+        f'ELSA N={frozen_elsa["N"]:,} '
+        f'(events={frozen_elsa["n_events"]:,}, Rockwood FI)',
+        fontsize=9.5, y=0.995)
 
     # ================================================================
-    # Panel (a): Grouped C-index bars — ELSA vs InCHIANTI age65+
+    # Panel (a): Dual-y grouped C-index bars — InCHIANTI + ELSA
     # ================================================================
-    ax = axes[0]
-    add_panel_label(ax, '(a)')
+    ax_inch = axes[0]
+    add_panel_label(ax_inch, '(a)')
+    ax_elsa = ax_inch.twinx()
 
     model_labels = ['M1', 'M2', 'M3', 'M4', 'M5']
-    c_elsa = [frozen_elsa['models'][m]['C'] for m in model_labels]
     c_inch = [frozen_inch['models'][m]['C'] for m in model_labels]
+    c_elsa = [frozen_elsa['models'][m]['C'] for m in model_labels]
 
     x = np.arange(len(model_labels))
     width = 0.38
 
-    bars_e = ax.bar(x - width / 2, c_elsa, width,
-                    label=f'ELSA (N={frozen_elsa["N"]:,})',
-                    color='steelblue', alpha=0.88, zorder=3)
-    bars_i = ax.bar(x + width / 2, c_inch, width,
-                    label=f'InCHIANTI age65+ (N={frozen_inch["N"]:,})',
-                    color='#b8437a', alpha=0.88, zorder=3)
+    col_inch = '#b8437a'
+    col_elsa = 'steelblue'
 
-    ax.set_xticks(x)
-    ax.set_xticklabels(model_labels, fontsize=9)
-    ax.set_ylabel('C-index (Harrell)')
-    ax.set_title('Nested Cox C-indices — both cohorts')
-    ax.legend(fontsize=8, loc='lower right')
-    ax.set_ylim(0.5, 0.85)
-    ax.axhline(0.5, color='grey', linestyle='--', alpha=0.3)
+    bars_i = ax_inch.bar(
+        x - width / 2, c_inch, width,
+        label=f'InCHIANTI age65+ (N={frozen_inch["N"]:,}, '
+              f'{frozen_inch["n_events"]:,} deaths)',
+        color=col_inch, alpha=0.88, zorder=3)
+    bars_e = ax_elsa.bar(
+        x + width / 2, c_elsa, width,
+        label=f'ELSA (N={frozen_elsa["N"]:,}, '
+              f'{frozen_elsa["n_events"]:,} deaths)',
+        color=col_elsa, alpha=0.88, zorder=3)
 
-    for bars, vals, offset in [(bars_e, c_elsa, -width / 2),
-                                (bars_i, c_inch, width / 2)]:
+    ax_inch.set_xticks(x)
+    ax_inch.set_xticklabels(model_labels, fontsize=9)
+    ax_inch.set_xlabel('Model')
+    ax_inch.set_ylabel('InCHIANTI C-index (Harrell)', color=col_inch)
+    ax_elsa.set_ylabel('ELSA C-index (Harrell)', color=col_elsa)
+    ax_inch.tick_params(axis='y', labelcolor=col_inch)
+    ax_elsa.tick_params(axis='y', labelcolor=col_elsa)
+    ax_inch.set_title('Nested Cox C-indices \u2014 both cohorts')
+    # Leave headroom for the legend above the bars.
+    ax_inch.set_ylim(0.60, 0.82)
+    ax_elsa.set_ylim(0.55, 0.66)
+
+    # Merge legends from twin axes
+    lines = [bars_i, bars_e]
+    labs = [b.get_label() for b in lines]
+    ax_inch.legend(lines, labs, fontsize=7, loc='upper center',
+                   bbox_to_anchor=(0.5, -0.13), ncol=2, frameon=False)
+
+    for bars, vals, offset, ax_ref in [
+            (bars_i, c_inch, -width / 2, ax_inch),
+            (bars_e, c_elsa, width / 2, ax_elsa)]:
         for i, c in enumerate(vals):
-            ax.text(i + offset, c + 0.004, f'{c:.3f}',
-                    ha='center', va='bottom', fontsize=6.5)
+            ax_ref.text(i + offset, c + 0.002, f'{c:.3f}',
+                        ha='center', va='bottom', fontsize=6.5)
 
     print("\n  Panel (a) C-indices (frozen, both cohorts):")
-    for ml, ce, ci in zip(model_labels, c_elsa, c_inch):
-        print(f"    {ml}: ELSA={ce:.4f}, InCHIANTI-65+={ci:.4f}")
+    for ml, ci, ce in zip(model_labels, c_inch, c_elsa):
+        print(f"    {ml}: InCHIANTI-65+={ci:.4f}, ELSA={ce:.4f}")
 
     # ================================================================
-    # Panel (b): ΔC comparison — SWDS-Γ vs benchmarks vs decomposition
+    # Panel (b): ΔC over M4 with threshold + InCHIANTI decomposition
     # ================================================================
     ax = axes[1]
     add_panel_label(ax, '(b)')
 
-    dc_items = [
-        # (label, value, color, group)
-        (r'SWDS-$\Gamma$' '\nELSA',
-            frozen_elsa['delta_C']['M5_minus_M4'], '#1f77b4', 'ELSA'),
-        ('Mahalanobis' '\nELSA',
-            frozen_elsa['benchmarks_delta_C']['Mahalanobis'], '#7f7f7f', 'ELSA'),
-        ('z-sum' '\nELSA',
-            frozen_elsa['benchmarks_delta_C']['z_sum'], '#bcbd22', 'ELSA'),
-        (r'SWDS-$\Gamma$' '\nInCHIANTI',
-            frozen_inch['delta_C']['M5_minus_M4'], '#b8437a', 'InCHIANTI'),
-        ('Biomarkers only' '\n(M4a-M4, InCHIANTI)',
-            frozen_inch['delta_C']['M4a_minus_M4'], '#d99ab6', 'InCHIANTI'),
-        (r'SWDS-$\Gamma$ only' '\n(M4b-M4, InCHIANTI)',
-            frozen_inch['delta_C']['M4b_minus_M4'], '#9467bd', 'InCHIANTI'),
-    ]
+    dc_inch = frozen_inch['delta_C']['M5_minus_M4']
+    dc_elsa = frozen_elsa['delta_C']['M5_minus_M4']
+    threshold = 0.01
 
-    labels = [d[0] for d in dc_items]
-    values = [d[1] for d in dc_items]
-    colors = [d[2] for d in dc_items]
+    labels = [f'InCHIANTI\n(M5-M4)', f'ELSA\n(M5-M4)']
+    values = [dc_inch, dc_elsa]
+    # Clears threshold -> signal color; below -> muted
+    colors = ['#2ca02c' if v >= threshold else '#c44e52' for v in values]
 
     bars = ax.bar(range(len(labels)), values, color=colors, alpha=0.88,
-                  zorder=3, width=0.65)
+                  zorder=3, width=0.55)
     ax.set_xticks(range(len(labels)))
-    ax.set_xticklabels(labels, fontsize=7)
+    ax.set_xticklabels(labels, fontsize=9)
     ax.set_ylabel(r'$\Delta C$ (relative to M4)')
-    ax.set_title(r'$\Delta C$ with benchmarks & decomposition')
-    ax.axhline(0.01, color='darkred', linestyle='--', linewidth=1.1,
-               alpha=0.8, label=r'$\Delta C = 0.01$ threshold', zorder=2)
+    ax.set_title(r'$\Delta C$ over M4 + InCHIANTI decomposition')
+    ax.axhline(threshold, color='darkred', linestyle='--', linewidth=1.2,
+               alpha=0.85,
+               label=f'Clinical-relevance threshold (+{threshold:.2f})',
+               zorder=2)
     ax.axhline(0, color='grey', linestyle='-', alpha=0.3, zorder=1)
-    # Divider between cohort groups
-    ax.axvline(2.5, color='#cccccc', linestyle=':', linewidth=0.9, zorder=1)
-    ax.legend(fontsize=7, loc='upper left')
+
+    # Leave plenty of headroom for the decomposition box + legend + bar labels.
+    y_top = 0.025
+    y_bot = -0.003
+    ax.set_ylim(y_bot, y_top)
 
     for i, v in enumerate(values):
-        ax.text(i, v + 0.0005, f'{v:+.3f}',
-                ha='center', va='bottom', fontsize=7)
+        status = 'clears' if v >= threshold else 'below'
+        ax.text(i, v + 0.0006, f'{v:+.3f}\n({status})',
+                ha='center', va='bottom', fontsize=8)
+
+    # --- Decomposition annotation: biomarkers-alone vs SWDS-alone (InCHIANTI) ---
+    dc_bio = frozen_inch['delta_C']['M4a_minus_M4']
+    dc_swds = frozen_inch['delta_C']['M4b_minus_M4']
+    decomp_text = (
+        'InCHIANTI decomposition over M4:\n'
+        f'  biomarkers alone (M4a-M4) = {dc_bio:+.3f}\n'
+        f'  SWDS-$\\Gamma$ alone (M4b-M4) = {dc_swds:+.3f}')
+    ax.text(0.98, 0.98, decomp_text, transform=ax.transAxes,
+            fontsize=7, va='top', ha='right',
+            bbox=dict(boxstyle='round,pad=0.35', facecolor='#f5f5f5',
+                      edgecolor='#cccccc', linewidth=0.7, alpha=0.95))
+
+    ax.legend(fontsize=7, loc='upper center',
+              bbox_to_anchor=(0.5, -0.13), frameon=False)
 
     print("\n  Panel (b) deltaC values (frozen):")
-    for lab, v in zip(labels, values):
-        print(f"    {lab.replace(chr(10), ' | '):<45s} = {v:+.4f}")
+    print(f"    InCHIANTI M5-M4 = {dc_inch:+.4f} "
+          f"({'clears' if dc_inch >= threshold else 'below'} threshold)")
+    print(f"    ELSA M5-M4      = {dc_elsa:+.4f} "
+          f"({'clears' if dc_elsa >= threshold else 'below'} threshold)")
+    print(f"    InCHIANTI M4a-M4 (biomarkers alone) = {dc_bio:+.4f}")
+    print(f"    InCHIANTI M4b-M4 (SWDS-Gamma alone) = {dc_swds:+.4f}")
 
     # ================================================================
-    # Panel (c): KM by SWDS-Gamma tertile
+    # Panel (c): KM by SWDS-Gamma tertile — InCHIANTI matched age65+
     # ================================================================
     ax = axes[2]
     add_panel_label(ax, '(c)')
@@ -455,123 +553,72 @@ def make_figure(results):
         from lifelines import KaplanMeierFitter
         from lifelines.statistics import logrank_test
 
-        score_col = 'swds_gamma'
-        baseline_full = results['baseline_full']
+        if not os.path.exists(INCHIANTI_BASELINE_CSV):
+            raise FileNotFoundError(
+                f"Missing {INCHIANTI_BASELINE_CSV} — run "
+                f"scripts/inchianti_survival.py first.")
 
-        def _km_diagnostics(surv_data, label_str):
-            """Print KM diagnostic info for a dataset."""
-            print(f"\n  KM diagnostics ({label_str}):")
-            print(f"    Total N = {len(surv_data):,}, "
-                  f"events = {surv_data['deceased'].sum():,}")
-            print(f"    SWDS-Gamma: mean={surv_data[score_col].mean():.4f}, "
-                  f"std={surv_data[score_col].std():.4f}, "
-                  f"min={surv_data[score_col].min():.4f}, "
-                  f"max={surv_data[score_col].max():.4f}")
-            print(f"    Survival time: mean={surv_data['time'].mean():.1f}y, "
-                  f"max={surv_data['time'].max():.1f}y")
-            print(f"    Deceased coding: unique={sorted(surv_data['deceased'].unique())}")
+        inch_base = pd.read_csv(INCHIANTI_BASELINE_CSV)
+        print(f"\n  Loaded InCHIANTI matched baseline: "
+              f"N={len(inch_base):,}, deaths={int(inch_base['event'].sum()):,}")
 
-            tertiles = pd.qcut(surv_data[score_col], 3,
-                               labels=['T1 (low)', 'T2 (mid)', 'T3 (high)'])
-            surv_data = surv_data.copy()
-            surv_data['tertile'] = tertiles
-            for tl in ['T1 (low)', 'T2 (mid)', 'T3 (high)']:
-                sub = surv_data[surv_data['tertile'] == tl]
-                print(f"    {tl}: N={len(sub):,}, "
-                      f"events={sub['deceased'].sum():,}, "
-                      f"median SWDS-G={sub[score_col].median():.4f}")
-            return surv_data
+        surv = inch_base.dropna(subset=['swds_gamma', 'time_years',
+                                         'event']).copy()
+        surv = surv[surv['time_years'] > 0]
+        surv['tertile'] = pd.qcut(
+            surv['swds_gamma'], 3,
+            labels=['T1 (low)', 'T2 (mid)', 'T3 (high)'])
 
-        def _km_logrank_p(surv_data):
-            """Compute log-rank p (T1 vs T3)."""
-            t1 = surv_data[surv_data['tertile'] == 'T1 (low)']
-            t3 = surv_data[surv_data['tertile'] == 'T3 (high)']
-            if len(t1) > 5 and len(t3) > 5:
-                lr = logrank_test(t1['time'], t3['time'],
-                                  t1['deceased'], t3['deceased'])
-                return lr.p_value
-            return np.nan
+        tertile_summary = {}
+        for tl in ['T1 (low)', 'T2 (mid)', 'T3 (high)']:
+            tsub = surv[surv['tertile'] == tl]
+            tertile_summary[tl] = (len(tsub), int(tsub['event'].sum()),
+                                    float(tsub['swds_gamma'].median()))
+            print(f"    {tl}: N={len(tsub):,}, "
+                  f"deaths={int(tsub['event'].sum()):,}, "
+                  f"median SWDS-G={tsub['swds_gamma'].median():.4f}")
 
-        # --- Investigate med-naive KM first ---
-        surv_naive = baseline_naive[
-            baseline_naive[score_col].notna() &
-            baseline_naive['time'].notna() &
-            (baseline_naive['time'] > 0)
-        ].copy()
+        t1 = surv[surv['tertile'] == 'T1 (low)']
+        t3 = surv[surv['tertile'] == 'T3 (high)']
+        lr = logrank_test(t1['time_years'], t3['time_years'],
+                          t1['event'], t3['event'])
+        p_used = lr.p_value
+        print(f"    Log-rank p (T1 vs T3, InCHIANTI matched) = {p_used:.4g}")
 
-        surv_full = baseline_full[
-            baseline_full[score_col].notna() &
-            baseline_full['time'].notna() &
-            (baseline_full['time'] > 0)
-        ].copy()
+        colors_km = ['forestgreen', 'orange', 'crimson']
+        kmf = KaplanMeierFitter()
+        for label, color in zip(['T1 (low)', 'T2 (mid)', 'T3 (high)'],
+                                 colors_km):
+            mask = surv['tertile'] == label
+            if mask.sum() > 5:
+                n_t, ev_t, _ = tertile_summary[label]
+                kmf.fit(surv.loc[mask, 'time_years'],
+                        surv.loc[mask, 'event'],
+                        label=f'{label}  (n={n_t:,}, d={ev_t:,})')
+                kmf.plot_survival_function(ax=ax, color=color,
+                                           linewidth=1.8, ci_show=False)
 
-        naive_ok = (len(surv_naive) > 50 and
-                    surv_naive['deceased'].sum() > 10)
-        full_ok = (len(surv_full) > 50 and
-                   surv_full['deceased'].sum() > 10)
-
-        p_naive = np.nan
-        p_full = np.nan
-
-        if naive_ok:
-            surv_naive = _km_diagnostics(surv_naive, 'med-naive')
-            p_naive = _km_logrank_p(surv_naive)
-            print(f"    Log-rank p (T1 vs T3, med-naive) = {p_naive:.4f}")
-
-        if full_ok:
-            surv_full = _km_diagnostics(surv_full, 'full sample')
-            p_full = _km_logrank_p(surv_full)
-            print(f"    Log-rank p (T1 vs T3, full sample) = {p_full:.4f}")
-
-        # Decision: use med-naive if significant, else full sample
-        use_naive = naive_ok and p_naive < 0.05
-        if use_naive:
-            surv_data = surv_naive
-            km_label = '(medication-naive)'
-            p_used = p_naive
-            print(f"\n  => Using med-naive KM (p={p_naive:.4f})")
-        elif full_ok:
-            surv_data = surv_full
-            km_label = '(full sample)'
-            p_used = p_full
-            print(f"\n  => Med-naive KM non-significant (p={p_naive:.4f}); "
-                  f"using full sample (p={p_full:.4f})")
+        if p_used < 0.001:
+            p_str = r'$p_{\mathrm{log\text{-}rank}} < 0.001$'
         else:
-            surv_data = None
+            p_str = fr'$p_{{\mathrm{{log\text{{-}}rank}}}} = {p_used:.4f}$'
+        ax.text(0.02, 0.04, p_str, transform=ax.transAxes,
+                fontsize=8, va='bottom')
 
-        if surv_data is not None and len(surv_data) > 50:
-            colors_km = ['forestgreen', 'orange', 'crimson']
-            kmf = KaplanMeierFitter()
-            for label, color in zip(['T1 (low)', 'T2 (mid)', 'T3 (high)'],
-                                     colors_km):
-                mask = surv_data['tertile'] == label
-                if mask.sum() > 5:
-                    kmf.fit(surv_data.loc[mask, 'time'],
-                            surv_data.loc[mask, 'deceased'],
-                            label=label)
-                    kmf.plot_survival_function(ax=ax, color=color,
-                                               linewidth=1.8)
-
-            # Annotate p-value
-            if p_used < 0.001:
-                p_str = '< 0.001'
-            else:
-                p_str = f'= {p_used:.4f}'
-            ax.text(0.02, 0.02, f'$p_{{log-rank}}$ {p_str}',
-                    transform=ax.transAxes, fontsize=8, va='bottom')
-
-            ax.set_xlabel('Years from baseline')
-            ax.set_ylabel('Survival probability')
-            ax.set_title(f'KM by SWDS-$\\Gamma$ tertile — ELSA only\n{km_label}')
-            ax.legend(fontsize=8)
-        else:
-            ax.text(0.5, 0.5, 'Insufficient events', ha='center',
-                    va='center', transform=ax.transAxes)
+        ax.set_xlabel('Years from baseline')
+        ax.set_ylabel('Survival probability')
+        ax.set_title(r'KM by SWDS-$\Gamma$ tertile — '
+                     f'InCHIANTI age65+ (N={len(surv):,})')
+        ax.legend(fontsize=7, loc='lower left', bbox_to_anchor=(0.0, 0.08))
+        ax.set_ylim(0, 1.02)
     except ImportError:
         ax.text(0.5, 0.5, 'lifelines not installed', ha='center',
                 va='center', transform=ax.transAxes)
+    except FileNotFoundError as e:
+        ax.text(0.5, 0.5, str(e), ha='center', va='center',
+                transform=ax.transAxes, fontsize=7, wrap=True)
 
-    plt.tight_layout()
+    plt.tight_layout(rect=(0, 0.06, 1, 0.94))
     save_figure(fig, 'figure_mortality_prediction', OUTPUT_DIR)
     plt.close(fig)
 

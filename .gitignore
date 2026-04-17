@@ -13,5 +13,8 @@ data/nhanes/*.XPT
 data/inchianti_panel.*
 data/inchianti_*.parquet
 data/inchianti_*.xlsx
+# Derived InCHIANTI per-subject extract written by scripts/inchianti_survival.py
+# for figure_mortality_prediction KM panel (regenerated on each run).
+results/inchianti_baseline_matched.csv
 
 # results/RESULTS.md is intentionally tracked — it's the persistent test record

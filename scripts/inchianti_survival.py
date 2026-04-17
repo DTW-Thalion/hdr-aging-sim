@@ -99,16 +99,58 @@ def main():
 
     # ── Fit Cox models ──
     results = {}
+    bio_cols = ["log_il6", "log_homa", "resting_hr", "sppb"]
 
     # Restrict to 65+ where frailty is defined
     for subgroup_name, mask in [("age65+", bl_complete["age"] >= 65),
                                  ("full", pd.Series(True, index=bl_complete.index)),
                                  ("med_naive", bl_complete["n_med_classes"] == 0)]:
         sub = bl_complete[mask].dropna(subset=["time_years", "event", "age", "female"]).copy()
+
+        if subgroup_name == "age65+":
+            # Build matched complete-case across ALL covariate sets used in any model
+            # so that M1..M5 all share the same N (manuscript reports N=923, 706 deaths).
+            required_cols = (axes + ["dx_frailty", "time_years", "event",
+                                     "age", "female"]
+                             + bio_cols + ["log_swds"])
+            required_cols = [c for c in required_cols if c in sub.columns]
+            missing_breakdown = {c: int(sub[c].isna().sum()) for c in required_cols}
+            sub = sub.dropna(subset=required_cols).copy()
+            n_matched = len(sub)
+            n_events_matched = int(sub["event"].sum())
+            print(f"\n--- age65+ MATCHED complete-case: N={n_matched}, "
+                  f"deaths={n_events_matched} ---")
+            print(f"    matched on: {required_cols}")
+            if n_matched != 923 or n_events_matched != 698:
+                print("    Per-column missingness in pre-match age65+ subset:")
+                for c, n_miss in missing_breakdown.items():
+                    print(f"      {c}: {n_miss} missing")
+            assert n_matched == 923, (
+                f"Expected N=923 matched age65+ sample, got {n_matched}. "
+                f"Investigate before continuing.")
+            # All 8 subjects dropped for missing dx_frailty happen to be
+            # deceased, so the matched sample has 706 - 8 = 698 deaths.
+            # The manuscript text reports 706 (pre-frailty-drop); matched-N
+            # is 698.
+            assert n_events_matched == 698, (
+                f"Expected 698 deaths in matched age65+ sample (706 pre-drop "
+                f"minus 8 frailty-incomplete deaths), got {n_events_matched}. "
+                f"Investigate before continuing.")
+            # Persist matched baseline for downstream figure scripts (KM, etc.)
+            keep_cols = (["code98"] if "code98" in sub.columns else []) + \
+                        ["time_years", "event", "age", "female", "swds_gamma",
+                         "log_swds", "dx_frailty"] + axes + bio_cols
+            keep_cols = [c for c in keep_cols if c in sub.columns]
+            os.makedirs("results", exist_ok=True)
+            sub[keep_cols].to_csv(
+                "results/inchianti_baseline_matched.csv", index=False)
+            print(f"    Saved matched baseline -> "
+                  f"results/inchianti_baseline_matched.csv ({len(sub)} rows)")
+
         n_events_sub = int(sub["event"].sum())
         print(f"\n--- Subgroup: {subgroup_name} (N={len(sub)}, deaths={n_events_sub}) ---")
 
-        models = {"n_events": n_events_sub}
+        models = {"n_events": n_events_sub, "N": len(sub)}
 
         # M1: age + sex
         try:
@@ -121,7 +163,6 @@ def main():
             print(f"  M1 failed: {e}")
 
         # M2: + biomarkers
-        bio_cols = ["log_il6", "log_homa", "resting_hr", "sppb"]
         m2_cols = ["time_years", "event", "age", "female"] + bio_cols
         sub_m2 = sub.dropna(subset=m2_cols)
         try:
