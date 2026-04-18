@@ -1,0 +1,67 @@
+{
+  "test_a_statins": {
+    "prediction": "Statin users show weaker \u03b2_{I\u2192M}",
+    "beta_nostatin": 0.023708544706432317,
+    "beta_statin": 0.05032721302586979,
+    "interaction_p_unadj": 0.7496758012790248,
+    "interaction_p_matched": 0.5167937249013015,
+    "bonferroni_p": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "supported": false
+  },
+  "test_b_metformin": {
+    "prediction": "M\u2192I weakens, I\u2192M unchanged (D-vs-J)",
+    "I_to_M_interaction_p": 0.9271825079500365,
+    "M_to_I_interaction_p": 0.3500106219574949,
+    "discrimination_supported": false
+  },
+  "test_c_exercise": {
+    "prediction": "High SPPB \u2192 weaker pathological coupling, stronger F\u2192I protection",
+    "n_pairs_weaker_high_sppb": 9,
+    "n_pairs_total": 12,
+    "F_to_I_stronger_protective": true,
+    "trend_bonferroni": {
+      "I_M": 1.0,
+      "M_I": 1.0,
+      "I_N": 1.0,
+      "N_I": 1.0,
+      "I_F": 0.3158574311173612,
+      "F_I": 1.0,
+      "M_F": 1.0,
+      "F_M": 1.0,
+      "M_N": 1.0,
+      "N_M": 1.0,
+      "F_N": 1.0,
+      "N_F": 1.0
+    }
+  },
+  "test_d_nsaid": {
+    "prediction": "NSAIDs attenuate I\u2192M, I\u2192N, I\u2192F",
+    "interaction_p_raw": [
+      0.08082161183410982,
+      0.5133445098587215,
+      0.6468504682436241
+    ],
+    "interaction_p_bonf": [
+      0.24246483550232947,
+      1.0,
+      1.0
+    ],
+    "n_attenuated_of_3": 0
+  },
+  "test_e_bone": {
+    "prediction": "F\u2192B protective (\u03b2>0 w/ sign-flipped \u0394F), I\u2192B inflammatory (\u03b2>0)",
+    "F_to_B_beta": 0.024895006210528373,
+    "F_to_B_p": 0.0033706994157256896,
+    "I_to_B_beta": 0.045974229912279334,
+    "I_to_B_p": 0.1979183876471473,
+    "bonferroni_p_primary": [
+      0.006741398831451379,
+      0.3958367752942946
+    ],
+    "bisphos_skipped_due_to_N": false
+  }
+}
