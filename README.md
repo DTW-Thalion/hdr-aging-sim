@@ -864,6 +864,7 @@ python scripts/inchianti_extract_panel.py
 python scripts/inchianti_qc.py                         # Cohort description
 python scripts/inchianti_lambda_max_trajectory.py       # Lambda_max by age stratum
 python scripts/inchianti_lead_lag.py                    # 6-pair cross-lagged regression
+python scripts/inchianti_nonlinearity_test.py           # Linearity robustness (Supplementary Note 10)
 python scripts/inchianti_medication_dose_response.py    # Medication compression test (raw)
 python scripts/inchianti_medication_refined.py          # Refined: age-stratified, SWDS-Gamma, HTN matched
 python scripts/inchianti_pi_trajectory.py               # Pi = C_norm / V_norm trajectory
@@ -918,6 +919,8 @@ python scripts/inchianti_manuscript_summary.py
 
 5. **SPPB ceiling effect**: All healthy 20-30 year-olds scored 12/12 (SD = 0). Reference SD computed from healthy adults < 60.
 
+6. **Linearity of cross-lagged regressions (robustness check)**: Each of the 12 ordered pair regressions was re-fit with a quadratic-in-predictor term, a predictor×autoregressor interaction, and both, using HC3 robust SEs on the same N=1,523 triplets. Across 24 nonlinear-term tests the minimum p-value was 0.039 (N→M interaction), none surviving the Bonferroni threshold p<0.0021; 0/12 joint F-tests (M3 vs M0) cleared a 12-test Bonferroni threshold. Residual regressions on x_i² yielded R² ≤ 0.0007. The linear OU specification is adequate within the observed biomarker range; behaviour far from equilibrium is not probed by this in-sample test. See `results/nonlinearity_test.json` and Supplementary Note 10.
+
 ### Scripts and outputs
 
 | Script | Output | Description |
@@ -926,6 +929,7 @@ python scripts/inchianti_manuscript_summary.py
 | `inchianti_qc.py` | `results/inchianti_qc_report.md` | Cohort description and data availability |
 | `inchianti_lambda_max_trajectory.py` | `results/inchianti_lambda_max_by_age.csv` | Lambda_max by age stratum with bootstrap CIs |
 | `inchianti_lead_lag.py` | `results/inchianti_lead_lag_matrix.csv` | 12 cross-lagged regression coefficients |
+| `inchianti_nonlinearity_test.py` | `results/nonlinearity_test.json` | Linearity robustness for 12 cross-lagged regressions (quadratic + interaction terms, HC3 SEs); Supplementary Note 10 |
 | `inchianti_medication_dose_response.py` | `results/inchianti_med_dose_response.csv` | Medication stratification + regression (raw) |
 | `inchianti_medication_refined.py` | `results/inchianti_med_refined_results.json` | Age-stratified, SWDS-Gamma, HTN matched, off-diag |
 | `inchianti_figures.py` | `outputs/figure_inchianti_*.pdf` | 5 publication figures (A-E) |
