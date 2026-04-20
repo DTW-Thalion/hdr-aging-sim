@@ -1,0 +1,26 @@
+{
+  "_description": "Frozen Cox C-indices for ELSA cohort — single source of truth for figure_mortality_prediction.pdf (ELSA half). Values are copied verbatim from the run_elsa_validation.py / run_medication_sensitivity.py pipeline output captured in outputs/elsa_results_ledger.json. Do NOT edit by hand — regenerate by rerunning the pipeline and copying the values.",
+  "source_script": "scripts/run_elsa_validation.py (via run_medication_sensitivity.run_matched_cox)",
+  "source_ledger": "outputs/elsa_results_ledger.json : results.cox_3axis_full_matched",
+  "cohort": "ELSA Waves 2-11, 3-axis (I, M, F), full matched sample",
+  "axes": ["dx_I", "dx_M", "dx_F"],
+  "frailty_type": "Rockwood FI",
+  "N": 5431,
+  "n_events": 1122,
+  "c_index_method": "Harrell's C (CoxPHFitter.concordance_index_)",
+  "models": {
+    "M1": {"label": "Age + sex",                        "C": 0.6019},
+    "M2": {"label": "M1 + biomarkers",                  "C": 0.6145},
+    "M3": {"label": "SWDS-Gamma only",                  "C": 0.6030},
+    "M4": {"label": "M1 + Rockwood FI",                 "C": 0.6093},
+    "M5": {"label": "M4 + biomarkers + SWDS-Gamma",     "C": 0.6180}
+  },
+  "delta_C": {
+    "M5_minus_M4": 0.0087
+  },
+  "benchmarks_delta_C": {
+    "Mahalanobis": 0.0088,
+    "z_sum":       0.0088,
+    "_note": "Benchmark delta-C values from run_figure_mortality_prediction.py stdout on the same N=5,431 matched sample; SWDS-Gamma does not outperform raw distance measures in ELSA."
+  }
+}

@@ -1,0 +1,221 @@
+{
+  "_description": "Bootstrap 95% confidence intervals for \u0394C = C(M5) - C(M4) in Cox models of mortality. Event-stratified resampling preserves the number of deaths across bootstrap samples.",
+  "method": {
+    "resampling": "event-stratified (separate resample within event==0 and event==1 strata)",
+    "c_index": "Harrell's C via CoxPHFitter.concordance_index_",
+    "penalizer_fallback": 0.01,
+    "ci": "percentile (2.5, 97.5)",
+    "p_value": "fraction of bootstrap delta_c <= 0 (one-sided H0: M5 does not improve on M4)",
+    "n_boot": 2000,
+    "seed": 42
+  },
+  "inchianti_age65": {
+    "M5_vs_M4": {
+      "delta_c_point": 0.01395427392028259,
+      "c_m4_point": 0.7459971062136614,
+      "c_m5_point": 0.759951380133944,
+      "delta_c_median": 0.014672317331242468,
+      "delta_c_mean": 0.014877235272670708,
+      "delta_c_se": 0.0037148645318958564,
+      "delta_c_ci_lo": 0.008199733772915238,
+      "delta_c_ci_hi": 0.02260050192230031,
+      "ci_95": [
+        0.008199733772915238,
+        0.02260050192230031
+      ],
+      "p_value": 0.0,
+      "ci_excludes_zero": true,
+      "ci_excludes_0_01": false,
+      "n": 923,
+      "events": 698,
+      "n_boot": 2000,
+      "n_successful": 2000,
+      "n_failed": 0,
+      "seed": 42,
+      "penalizer": 0.01,
+      "m4_covs": [
+        "age",
+        "female",
+        "dx_frailty"
+      ],
+      "m5_covs": [
+        "age",
+        "female",
+        "dx_frailty",
+        "log_il6",
+        "log_homa",
+        "resting_hr",
+        "sppb",
+        "log_swds"
+      ],
+      "stratified_by_event": true
+    },
+    "M4a_vs_M4": {
+      "delta_c_point": 0.014116517455808553,
+      "c_m4_point": 0.7459971062136614,
+      "c_m5_point": 0.76011362366947,
+      "delta_c_median": 0.014476017030651378,
+      "delta_c_mean": 0.01470379154894896,
+      "delta_c_se": 0.0038111846778460337,
+      "delta_c_ci_lo": 0.007968896900686733,
+      "delta_c_ci_hi": 0.022745984365466265,
+      "ci_95": [
+        0.007968896900686733,
+        0.022745984365466265
+      ],
+      "p_value": 0.0,
+      "ci_excludes_zero": true,
+      "ci_excludes_0_01": false,
+      "n": 923,
+      "events": 698,
+      "n_boot": 2000,
+      "n_successful": 2000,
+      "n_failed": 0,
+      "seed": 43,
+      "penalizer": 0.01,
+      "m4_covs": [
+        "age",
+        "female",
+        "dx_frailty"
+      ],
+      "m5_covs": [
+        "age",
+        "female",
+        "dx_frailty",
+        "log_il6",
+        "log_homa",
+        "resting_hr",
+        "sppb"
+      ],
+      "stratified_by_event": true
+    },
+    "M4b_vs_M4": {
+      "delta_c_point": 0.0070549340652910075,
+      "c_m4_point": 0.7459971062136614,
+      "c_m5_point": 0.7530520402789525,
+      "delta_c_median": 0.007053090824762465,
+      "delta_c_mean": 0.007228671972312404,
+      "delta_c_se": 0.002807536971206181,
+      "delta_c_ci_lo": 0.0023678976262916595,
+      "delta_c_ci_hi": 0.0133139494830417,
+      "ci_95": [
+        0.0023678976262916595,
+        0.0133139494830417
+      ],
+      "p_value": 0.001,
+      "ci_excludes_zero": true,
+      "ci_excludes_0_01": false,
+      "n": 923,
+      "events": 698,
+      "n_boot": 2000,
+      "n_successful": 2000,
+      "n_failed": 0,
+      "seed": 44,
+      "penalizer": 0.01,
+      "m4_covs": [
+        "age",
+        "female",
+        "dx_frailty"
+      ],
+      "m5_covs": [
+        "age",
+        "female",
+        "dx_frailty",
+        "log_swds"
+      ],
+      "stratified_by_event": true
+    }
+  },
+  "elsa_full": {
+    "M5_vs_M4": {
+      "delta_c_point": 0.008721233470278644,
+      "c_m4_point": 0.6092545265046148,
+      "c_m5_point": 0.6179757599748934,
+      "delta_c_median": 0.009364104504895943,
+      "delta_c_mean": 0.009859470228530662,
+      "delta_c_se": 0.004162389564338457,
+      "delta_c_ci_lo": 0.0030390361513904563,
+      "delta_c_ci_hi": 0.019136626015585398,
+      "ci_95": [
+        0.0030390361513904563,
+        0.019136626015585398
+      ],
+      "p_value": 0.0005,
+      "ci_excludes_zero": true,
+      "ci_excludes_0_01": false,
+      "n": 5431,
+      "events": 1122,
+      "n_boot": 2000,
+      "n_successful": 2000,
+      "n_failed": 0,
+      "seed": 45,
+      "penalizer": 0.01,
+      "m4_covs": [
+        "age",
+        "sex",
+        "rockwood_fi",
+        "smoking",
+        "diabetes",
+        "highbp"
+      ],
+      "m5_covs": [
+        "age",
+        "sex",
+        "log_crp",
+        "hba1c",
+        "grip_max",
+        "bmival",
+        "swds_gamma",
+        "rockwood_fi",
+        "smoking",
+        "diabetes",
+        "highbp"
+      ],
+      "stratified_by_event": true
+    }
+  },
+  "elsa_mednative": {
+    "M5_vs_M4": {
+      "delta_c_point": 0.013112118713932475,
+      "c_m4_point": 0.600029541082715,
+      "c_m5_point": 0.6131416597966475,
+      "delta_c_median": 0.015034239455940235,
+      "delta_c_mean": 0.01575571275561351,
+      "delta_c_se": 0.007423087637550303,
+      "delta_c_ci_lo": 0.0032274252090028154,
+      "delta_c_ci_hi": 0.03189334879546258,
+      "ci_95": [
+        0.0032274252090028154,
+        0.03189334879546258
+      ],
+      "p_value": 0.005,
+      "ci_excludes_zero": true,
+      "ci_excludes_0_01": false,
+      "n": 3233,
+      "events": 618,
+      "n_boot": 2000,
+      "n_successful": 2000,
+      "n_failed": 0,
+      "seed": 46,
+      "penalizer": 0.01,
+      "m4_covs": [
+        "age",
+        "sex",
+        "rockwood_fi",
+        "smoking"
+      ],
+      "m5_covs": [
+        "age",
+        "sex",
+        "log_crp",
+        "hba1c",
+        "grip_max",
+        "bmival",
+        "swds_gamma",
+        "rockwood_fi",
+        "smoking"
+      ],
+      "stratified_by_event": true
+    }
+  }
+}

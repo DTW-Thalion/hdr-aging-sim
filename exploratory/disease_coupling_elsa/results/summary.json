@@ -1,0 +1,74 @@
+{
+  "cohort": "ELSA",
+  "waves": [
+    2,
+    4,
+    6,
+    8
+  ],
+  "test_a_statins": {
+    "statin_flag": "hechmd (prescribed cholesterol-lowering, waves 4/6/8)",
+    "beta_nostatin": 0.46966314859913844,
+    "beta_statin": 0.9396582618689794,
+    "interaction_p_unadj": 0.10543172088150052,
+    "interaction_p_matched": 0.15415554257547434,
+    "bonferroni_p": [
+      0.3162951626445015,
+      0.5985183776632749,
+      0.462466627726423
+    ]
+  },
+  "test_b_metformin": {
+    "I_to_M_interaction_p": 0.13226333520359027,
+    "M_to_I_interaction_p": 0.6966769273354001,
+    "discrimination_supported": false
+  },
+  "test_c_exercise": {
+    "n_pairs_weaker_high_grip": 10,
+    "n_pairs_total": 12,
+    "F_to_I_stronger_protective": true,
+    "trend_bonferroni": {
+      "I_M": 1.0,
+      "M_I": 0.467273335141033,
+      "I_N": 0.23222497564873665,
+      "N_I": 1.0,
+      "I_F": 1.0,
+      "F_I": 1.0,
+      "M_F": 0.7066326265026404,
+      "F_M": 1.0,
+      "M_N": 1.0,
+      "N_M": 1.0,
+      "F_N": 0.9803795806813096,
+      "N_F": 1.0
+    }
+  },
+  "test_d_nsaid": {
+    "med_nsaid": {
+      "interaction_p_raw": [
+        0.7099060965958666,
+        0.7485380798831256,
+        0.4117147317008597
+      ],
+      "interaction_p_bonf": [
+        1.0,
+        1.0,
+        1.0
+      ]
+    },
+    "med_aspirin": {
+      "interaction_p_raw": [
+        0.8675950949747513,
+        0.5933014260290415,
+        0.03779969408983454
+      ],
+      "interaction_p_bonf": [
+        1.0,
+        1.0,
+        0.11339908226950361
+      ]
+    }
+  },
+  "test_e_bone": {
+    "skipped": "PTH not measured in ELSA"
+  }
+}

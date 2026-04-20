@@ -9,15 +9,16 @@ for Multi-Axis Physiological Decline."
 
 ## Key result
 
-The simulation shows that a 4-axis linear dynamical system with biologically parameterised
-recovery times (τ_i) and inter-axis coupling (J) loaded from the literature-derived
-`data/J_matrix_compiled.csv`, when degraded according to known age-related trajectories,
+The simulation shows that a multi-axis linear dynamical system with PMID-cited
+recovery times (τ_i) and inter-axis coupling (J) loaded from the compiled
+`data/J_matrix_compiled_9x9.csv`, when degraded according to known age-related trajectories,
 produces:
 
 - Progressive drift of the spectral abscissa toward instability (α → 0⁻)
 - Critical slowing-down: recovery timescale diverges as α → 0
-- Identical perturbations produce age-dependent responses (fast recovery at 30,
-  near-catastrophic excursion at 80)
+- Identical perturbations produce age-dependent responses: fast recovery at 30
+  (≈5d); large, slower, bounded recovery at 80 (≈9d recovery timescale,
+  ~30d to baseline)
 - Cross-axis propagation of perturbations through the coupling matrix
 
 These are the dynamical signatures of aging predicted by the HDR formalism and
@@ -70,7 +71,7 @@ pip install pandas pyreadstat pyarrow openpyxl
 ```bash
 python scripts/run_figure_network_schematic.py  # Main Fig 1: 9-axis network diagram
 python scripts/run_figure_J_heatmap.py          # Main Fig 2: 9x9 coupling heatmap
-python scripts/run_figure2b.py                  # Spectral-abscissa drift demo (legacy tau)
+python scripts/run_figure2b.py                  # Spectral-abscissa drift (7-axis fast subsystem, 25-120)
 python scripts/run_figure2b_v3.py               # V2 fast-subsystem calibration (6-axis, 25-120)
 python scripts/run_figure_frailty.py            # Frailty perturbation-response
 python scripts/run_figure_t2d.py                # T2D phase portrait
@@ -130,23 +131,23 @@ from hdr_sim import (
 
 ### Machine-Readable Coupling Matrix (CSV-Driven Architecture)
 
-The machine-readable coupling matrix is provided in `data/J_matrix_compiled_9x9.csv` (9×9, 72 off-diagonal entries); the legacy 8×8 version is retained as `data/J_matrix_compiled.csv` for reproducibility of prior analyses.
+`data/J_matrix_compiled_9x9.csv` is the **single source of truth** for the 9×9 coupling matrix J_mech. It contains all 72 off-diagonal entries of the 9 regulatory capacity axes. A frozen copy of the former 8×8 version is archived in `data/legacy/` for reproducibility of intermediate analyses.
 
-`data/J_matrix_compiled_9x9.csv` is the **single source of truth** for the 9×9 coupling matrix J_mech. It contains all 72 off-diagonal entries of the 9 regulatory capacity axes:
+### PMID-Cited Recovery Time Constants (tau registry)
 
-| Axis | Name | Legacy tau (days) | V2 tau(25/80/120) | Trajectory | PMID |
-|------|------|-------------------|---------------------|------------|------|
-| I | Inflammatory resolution capacity | 7–25 | 4 / 17 / 45 | Gompertz | 27467771 |
-| M | Metabolic regulatory gain | 0.1–0.3 | 0.08 / 0.21 / 0.35 | Piecewise-linear | 18268070 |
-| E | Epigenetic maintenance fidelity | ~1000 | 500 / 2000 / 5000 | Piecewise-exp | 15509558 |
-| mito | Mitochondrial bioenergetic capacity | 1–3 | 1.0 / 2.0 / 5.0 | Piecewise-linear | 12563009 |
-| P | Proteostatic clearance capacity | 0.5–2 | 1.5 / 3.0 / 4.0 | Piecewise-linear | 24437518 |
-| C | Circadian oscillator amplitude | 1–3 | 6.0 / 10 / 18 | Piecewise-linear | 1557592 |
-| N | Neuroendocrine feedback gain | 0.5–2 | 0.003 / 0.005 / 0.008 | Piecewise-linear | 29581219 |
-| F | Functional reserve (musculoskeletal) | 8–42 | 2.0 / 3.5 / 6.0 | Piecewise-Gompertz | 9252485 |
-| B | Bone remodelling regulatory balance | 90–120 | 135 / 250 / 500 | Piecewise-linear | 3213608 |
+| Axis | Name | tau(25) | tau(80) | tau(120) | Trajectory | PMID |
+|------|------|---------|---------|----------|------------|------|
+| I | Inflammatory resolution capacity | 4d | 17d | 45d | Gompertz | 27467771 |
+| M | Metabolic regulatory gain | 0.08d | 0.21d | 0.35d | Piecewise-linear | 18268070 |
+| E | Epigenetic maintenance fidelity | 500d | 2000d | 5000d | Piecewise-exp | 15509558 |
+| mito | Mitochondrial bioenergetic capacity | 1.0d | 2.0d | 5.0d | Piecewise-linear | 12563009 |
+| P | Proteostatic clearance capacity | 1.5d | 3.0d | 4.0d | Piecewise-linear | 24437518 |
+| C | Circadian oscillator amplitude | 6.0d | 10d | 18d | Piecewise-linear | 1557592 |
+| N | Neuroendocrine feedback gain | 0.003d | 0.005d | 0.008d | Piecewise-linear | 29581219 |
+| F | Functional reserve (musculoskeletal) | 2.0d | 3.5d | 6.0d | Piecewise-Gompertz | 9252485 |
+| B | Bone remodelling regulatory balance | 135d | 250d | 500d | Piecewise-linear | 3213608 |
 
-The **V2 (literature-calibrated) tau registry** (`TAU_REGISTRY_V2`) provides PMID-cited recovery time constants at three age anchors (25, 80, 120) with axis-specific trajectory shapes. Key corrections from the legacy values: mito (1->1d, bioenergetic functional recovery via PGC-1a signaling cycle, not protein half-life), C (1->6d, jet-lag re-entrainment), F (8->2d, MPS return to baseline). The legacy registry (`TAU_REGISTRY_LEGACY`, aliased as `TAU_REGISTRY`) is retained for reproducibility of prior analyses.
+All tau values cite primary literature for the mechanistic recovery process (e.g., mito measures PGC-1a bioenergetic signaling cycle, not protein pool half-life; F measures muscle protein synthesis return to baseline, not remodelling).
 
 CSV columns include:
 
@@ -156,41 +157,35 @@ CSV columns include:
 
 Sign distribution (9×9): 57 positive (pathological), 11 negative (protective), 4 unknown.
 
-**How it works**: `hdr_sim.aging_params.configure()` loads the CSV via `csv_loader`, extracts any axis subset for the healthy and disease basins, looks up per-axis recovery time constants from a built-in registry (`TAU_REGISTRY`), and applies a calibration scalar (c) to map SD-per-SD literature values to simulation coupling rates. The calibration scalar is computed via Brent's method to match the target spectral abscissa. Axis subsets from 2x2 through 9x9 are supported.
-
-Two configuration modes are available:
-- **Legacy** (`configure()`): Uses `TAU_REGISTRY_LEGACY` (2-anchor, ages 30/80), linear interpolation, original J matrix. Calibrates to alpha(30) = -0.134.
-- **V2** (`configure_v2()`): Uses `TAU_REGISTRY_V2` (3-anchor, ages 25/80/120), Gompertz-like J interpolation, qual_only-imputed J matrix (68/72 nonzero). Calibrates to alpha(25) = -0.134. Age range 25-120.
-
-The ELSA validation uses a 3-axis reduction (I, M, F) and is unaffected by the B-axis addition.
+**How it works**: `hdr_sim.aging_params.configure()` calibrates the 7-axis fast subsystem (I, M, mito, P, C, N, F) via `calibrate_stable_system()`, guaranteeing stability at all ages 25-120. It then extracts the requested axis subset. The calibration scalar (c=0.890) and Gompertz blend amplitude (A=0.00236) are computed once and cached. Axis subsets from 2×2 through 9×9 are supported; all subsets inherit the fast-subsystem stability guarantee.
 
 ```python
-from hdr_sim import configure, configure_v2, tau_of_age, J_of_age
-from hdr_sim import load_J_csv, build_J_basin, build_J_basin_imputed
-from hdr_sim import tau_at_age, tau_vector, J_at_age
+from hdr_sim import configure, tau_of_age, J_of_age
+from hdr_sim import load_J_csv, build_J_basin_imputed
+from hdr_sim import tau_at_age, tau_vector
+from hdr_sim.aging_params import get_fast_system
 
-# Legacy configuration (backward compatible)
-configure(axes=('I', 'M', 'F'))       # 3-axis, linear interp, ages 30-80
+# Standard configuration (any axis subset, stable 25-120)
+configure(axes=('I', 'M', 'F'))       # 3-axis subset
 tau = tau_of_age(65)                   # 3-element array
-J = J_of_age(65)                      # 3x3 matrix
+J = J_of_age(65)                      # 3×3 matrix (stable at all ages)
 
-# V2 configuration (literature-calibrated, ages 25-120)
-configure_v2(axes=('I', 'M', 'N', 'F'))  # Gompertz J interp, V2 tau
-tau = tau_of_age(100)                     # works for ages 25-120
-J = J_of_age(100)                         # Gompertz-interpolated
+configure(axes=('I', 'M', 'N', 'F'))  # 4-axis subset
+tau = tau_of_age(100)                  # works for ages 25-120
+J = J_of_age(100)                     # Gompertz-interpolated
 
-# Direct V2 tau access (no configure needed)
+# Direct tau access (no configure needed)
 tau_I_50 = tau_at_age('I', 50)            # single axis, single age
 tau_vec = tau_vector(('I', 'M', 'F'), 65) # multi-axis vector
 
-# Imputed J matrix (68/72 nonzero, qual_only entries filled from tier defaults)
+# Fast-subsystem dynamics (7-axis, guaranteed stable)
+A_full, A_fast, alpha_fast, alpha_full = get_fast_system(80)
+# alpha_fast ~ -0.108, recovery ~ 9.2 days
+
+# Raw J matrix access
 rows = load_J_csv()
 J_imp = build_J_basin_imputed(rows, basin='healthy',
                               axes=('I','M','E','mito','P','C','N','F','B'))
-
-# Original J matrix (42/72 nonzero, qual_only entries = 0)
-J_orig = build_J_basin(rows, basin='disease',
-                       axes=('I','M','E','mito','P','C','N','F','B'))
 
 # Provenance tracking via JMatrixSpec
 from hdr_sim.j_matrix_spec import JMatrixSpec
@@ -268,7 +263,7 @@ Note: NHANES XPT files are downloaded from CDC servers at runtime (~7 MB total).
 | `run_elsa_validation.py` | `outputs/figure_elsa_validation.pdf` | Figure Z (ELSA cohort validation) |
 | `run_medication_sensitivity.py` | `outputs/elsa_medication_sensitivity.json` | R5 corrected Cox models |
 | `run_figure_coupling_tightening.py` | `outputs/figure_coupling_tightening.pdf` | R6 coupling tightening |
-| `run_figure_mortality_prediction.py` | `outputs/figure_mortality_prediction.pdf` | R6 mortality prediction |
+| `run_figure_mortality_prediction.py` | `outputs/figure_mortality_prediction.pdf` | R6 mortality prediction (two-cohort; reads `results/elsa_cox_frozen.json` + `results/inchianti_cox_frozen.json`) |
 | `run_figure_medication_compression.py` | `outputs/figure_medication_compression.pdf` | R6 medication compression |
 | `run_figure_network_schematic.py` | `outputs/figure_network_schematic.pdf` | Main Fig 1: 9-axis network diagram |
 | `run_figure_J_heatmap.py` | `outputs/figure_J_heatmap.pdf` | Main Fig 2: 9×9 annotated J coupling heatmap |
@@ -562,18 +557,41 @@ Adversarial review identified three items requiring resolution before manuscript
 
 The pipeline's `run_matched_cox()` now prints both `CoxPHFitter.concordance_index_` (the fitted model's own Harrell's C) and `lifelines.utils.concordance_index()` for comparison. Result: the two methods produce **identical values to 6 decimal places** — there is no sign convention or partial hazard computation issue.
 
-Pipeline C-indices (authoritative):
+The mortality prediction figure ([`outputs/figure_mortality_prediction.pdf`](outputs/figure_mortality_prediction.pdf)) previously rendered ELSA-only C-indices (0.60–0.62) while the manuscript's Table 1 cited values of 0.71–0.75 — a discrepancy flagged by external review. Investigation established that the 0.71–0.75 values correspond to **InCHIANTI age65+ (N=931, Fried frailty)**, not ELSA (N=5,431, Rockwood FI). The figure has been rebuilt as a **two-cohort comparison** reading from two frozen JSONs as the single source of truth:
 
-| Model | Full (N=5,431) | Med-naive (N=3,233) |
-|-------|----------------|---------------------|
-| M1: Age + Sex | 0.6019 | 0.5860 |
-| M2: + Biomarkers | 0.6145 | 0.6050 |
-| M3: + SWDS-Γ | 0.6030 | 0.5861 |
-| M4: + Rockwood FI | 0.6093 | 0.6000 |
-| M5: Full | 0.6180 | 0.6131 |
-| **ΔC (M5−M4)** | **+0.009** | **+0.013** |
+- **[`results/elsa_cox_frozen.json`](results/elsa_cox_frozen.json)** — ELSA values from [`scripts/run_elsa_validation.py`](scripts/run_elsa_validation.py) via [`outputs/elsa_results_ledger.json`](outputs/elsa_results_ledger.json).
+- **[`results/inchianti_cox_frozen.json`](results/inchianti_cox_frozen.json)** — InCHIANTI age65+ values from [`scripts/inchianti_survival.py`](scripts/inchianti_survival.py) via [`results/inchianti_survival_analysis.json`](results/inchianti_survival_analysis.json).
 
-The ΔC values are consistent with manuscript Table 1. The absolute C-index offset (~0.10–0.14) reflects a different analysis specification in the manuscript; the pipeline values are the authoritative source.
+Both frozen files carry `source_script` and `source_ledger` pointers and must be regenerated (not hand-edited) if the underlying pipeline changes. The figure script re-fits the ELSA Cox models at runtime and prints an audit that flags any drift >5×10⁻⁴ between the frozen values and the fresh fit.
+
+Pipeline C-indices (authoritative — both cohorts):
+
+| Model | ELSA full (N=5,431) | ELSA med-naive (N=3,233) | InCHIANTI age65+ (N=931) |
+|-------|---------------------|---------------------------|--------------------------|
+| M1: Age + Sex         | 0.6019 | 0.5860 | 0.7409 |
+| M2: + Biomarkers      | 0.6145 | 0.6050 | 0.7623 |
+| M3: + SWDS-Γ (alone)  | 0.6030 | 0.5861 | 0.6667 |
+| M4: + frailty         | 0.6093 | 0.6000 | 0.7460 (Fried) |
+| M4a: + biomarkers only, no SWDS-Γ | — | — | 0.7601 |
+| M4b: + SWDS-Γ only, no biomarkers | — | — | 0.7531 |
+| M5: Full              | 0.6180 | 0.6131 | 0.7600 |
+| **ΔC (M5−M4)**        | **+0.0087** | **+0.0131** | **+0.0140** |
+| ΔC (M4a−M4) biomarkers alone | — | — | +0.0141 |
+| ΔC (M4b−M4) SWDS-Γ alone     | — | — | +0.0071 |
+
+In ELSA, the ΔC from SWDS-Γ (+0.009) is indistinguishable from the Mahalanobis and z-sum benchmarks (both +0.009): the eigenvalue weighting contributes no measurable additional information over isotropic distance. In InCHIANTI age65+ the M4a/M4b decomposition shows that biomarkers alone carry the dominant incremental signal above Fried frailty (+0.014) and SWDS-Γ alone captures about half of that (+0.007); the combined M5−M4 (+0.014) does not exceed the biomarker-only increment, indicating substantial overlap between the coupling-weighted score and raw biomarker information. The manuscript text and figure caption should reference these frozen JSONs for any quoted C-index.
+
+**Bootstrap 95% CIs for ΔC(M5−M4)** (source: [`results/bootstrap_delta_c.json`](results/bootstrap_delta_c.json), n=2000 event-stratified resamples, `scripts/run_bootstrap_delta_c.py`):
+
+| Cohort | ΔC | 95% CI | p | N / events |
+|--------|---:|--------|---:|-----------|
+| InCHIANTI M5−M4         | +0.0140 | [+0.0082, +0.0226] | <0.001  | 923 / 698 |
+| InCHIANTI M4a−M4 (bio)  | +0.0141 | [+0.0080, +0.0227] | <0.001  | 923 / 698 |
+| InCHIANTI M4b−M4 (SWDS) | +0.0071 | [+0.0024, +0.0133] | 0.001   | 923 / 698 |
+| ELSA full M5−M4         | +0.0087 | [+0.0030, +0.0191] | 0.0005  | 5,431 / 1,122 |
+| ELSA med-naive M5−M4    | +0.0131 | [+0.0032, +0.0319] | 0.005   | 3,233 / 618 |
+
+All five 95% CIs **exclude zero** (significant vs null), but **none exclude 0.01** (the Pencina/Steyerberg threshold). The SWDS-Γ increment above frailty-adjusted models is reliably > 0 but cannot be declared to clear 0.01 in either cohort.
 
 #### Biomarker Specification
 
@@ -620,22 +638,22 @@ Coupling values sourced from `data/J_matrix_compiled_9x9.csv`.
 
 `outputs/elsa_results_ledger.json` contains SHA-256 hashes of all data files and every numerical result reported in Appendix H. Use this to verify that your ELSA data extract and pipeline output match ours.
 
-## V2: Literature-Calibrated Tau Registry (25-120)
+## Tau Registry and Calibration Architecture
 
-Replaces the ad-hoc tau registry with PMID-cited recovery time constants at three age anchors (25, 80, 120) with axis-specific trajectory shapes. Extends the simulation age range from 30-80 to 25-120.
+The simulation uses PMID-cited recovery time constants at three age anchors (25, 80, 120) with axis-specific trajectory shapes, covering ages 25-120.
 
-### Key changes
+### Key features
 
-1. **Tau registry V2** (`TAU_REGISTRY_V2`): Three-anchor tau values with Gompertz, saturating-exponential, and piecewise-linear trajectory functions. Major corrections: mito (1->36d), C (1->6d), F (8->2d).
+1. **PMID-cited tau values** (`TAU_REGISTRY`): Three-anchor recovery time constants with Gompertz, saturating-exponential, and piecewise-linear trajectory functions. Each axis cites the primary literature for the specific recovery process measured (e.g., mito = PGC-1a bioenergetic signaling cycle, not protein pool half-life; F = muscle protein synthesis return to baseline).
 
-2. **Qual-only imputation** (`build_J_basin_imputed()`): Fills qual_only entries from tier defaults (S=0.20/0.40, M=0.10/0.20, W=0.05/0.10), increasing J matrix fill from 42/72 (58%) to 68/72 (94%).
+2. **Qual-only imputation** (`build_J_basin_imputed()`): Fills qual_only entries from tier defaults (S=0.20/0.40, M=0.10/0.20, W=0.05/0.10), giving 68/72 (94%) nonzero J entries.
 
-3. **Gompertz J interpolation** (`J_at_age()`, `j_at_age_blended()`): Non-linear aging trajectory for the coupling matrix with Gompertz-shaped blending function and tunable blend amplitude.
+3. **Gompertz J interpolation** (`j_at_age_blended()`): Non-linear aging trajectory for the coupling matrix with Gompertz-shaped blending function and tunable blend amplitude.
 
-4. **Fast-subsystem calibration** (`calibrate_stable_system()`): Jointly finds the coupling scalar c and J blend amplitude A ensuring the fast subsystem remains stable from age 25 to 120. The 6-axis fast subsystem (I, M, P, C, N, F) achieves:
-   - c = 1.57, alpha_fast(25) = -0.24, alpha_fast(120) = -0.004
-   - Monotonic critical slowing-down (recovery: 4.1d at 25 -> 250d at 120)
-   - J blend amplitude A = 0.001 (tau degradation dominates J evolution)
+4. **Fast-subsystem calibration** (`calibrate_stable_system()`): Jointly finds the coupling scalar c and J blend amplitude A ensuring the 7-axis fast subsystem remains stable from age 25 to 120:
+   - c = 0.890, alpha_fast(25) = -0.188, alpha_fast(120) = -0.004
+   - Monotonic critical slowing-down (recovery: 5.3d at 25 -> 250d at 120)
+   - J blend amplitude A = 0.00236 (tau degradation dominates J evolution)
 
 ### Two-timescale calibration architecture
 
@@ -655,14 +673,29 @@ The calibration procedure:
 
 Note on mito tau: the V2.2 registry uses bioenergetic functional recovery (PGC-1a signaling cycle, 1-5d) rather than the mitochondrial protein pool half-life (36d, Rooyackers 1996). This is the same conceptual distinction applied to the I axis (CRP half-life vs inflammatory resolution programme duration).
 
+### Numerical integration
+
+Perturbation-response panels in `run_figure2b.py`, `run_figure2b_v2.py`,
+`run_figure2b_v3.py`, `run_figure_frailty.py`, and `run_figure_disease_demos.py`
+use a **matrix-exponential propagator** (`hdr_sim.dynamics.simulate_expm`):
+`x[i+1] = expm(A·dt) @ x[i] + σ·√dt·ξ`. This is exact for the deterministic
+flow and unconditionally stable regardless of eigenvalue magnitude. It
+replaces an earlier Euler–Maruyama scheme that was conditionally stable
+(requires `|λ_max(A)|·dt < 2`); the fast subsystem reaches `|λ_max| ≈ 333`
+at young ages, which exceeded the Euler limit at the `dt = 0.01` used by the
+demonstration panels and produced numerical overflow rather than the
+intended dynamics. `simulate()` (Euler–Maruyama) remains available and is
+still used by the SDE-specific analyses in `run_dj_bayes_robust.py`, where
+the SDE structure is central and `|λ_max|·dt` stays within the stability
+region.
+
 ### Stability findings
 
 | Configuration | Max stable age | alpha(25) | Recovery at 120 | Notes |
 |--------------|---------------|-----------|-----------------|-------|
-| **7-axis fast (I,M,mito,P,C,N,F)** | **120** | **-0.188** | **250d** | Primary: 7+2 fast-subsystem calibration |
-| 6-axis fast (I,M,P,C,N,F) | 120 | -0.242 | 250d | Alternative (excludes mito) |
-| 9x9 full system | -- | -0.018 | -- | alpha_full goes positive at ~48 (expected) |
-| 4-axis classic (I,M,N,F) | ~30 | -0.134 | -- | Unstable beyond 30 |
+| **7-axis fast (I,M,mito,P,C,N,F)** | **120** | **-0.188** | **250d** | Primary calibration; all axis subsets inherit stability |
+| Any axis subset (e.g., I,M,F) | 120 | -0.375 | N/A | Extracted from fast subsystem; always stable |
+| Full 9×9 system | ~48 | -0.018 | -- | alpha_full goes positive (expected: E-axis dominated) |
 
 ### V2 scripts
 
@@ -679,9 +712,9 @@ python scripts/run_figure2b_v2.py               # V2 figure (4-axis)
 python scripts/run_tau_comparison.py            # Old vs new tau comparison table
 ```
 
-### Backward compatibility
+### Configuration
 
-All existing scripts and tests are unaffected. The legacy `TAU_REGISTRY`, `configure()`, `get_J_anchors()`, and `_tau_for_axes()` functions continue to work with the original 2-anchor values. The V2 system is opt-in via `configure_v2()` or direct use of `TAU_REGISTRY_V2` / `tau_vector()` / `tau_at_age()`. The fast-subsystem calibration is accessed via `calibrate_stable_system()` and `build_system_at_age()`.
+As of v2.5, there is a single configuration path. `configure()` uses the 9×9 compiled CSV, PMID-cited tau registry, and fast-subsystem calibration by default. The former `configure_v2()` function is still available but `configure()` produces identical results. The legacy 2-anchor tau values and 8×8 CSV are archived in `data/legacy/` and `TAU_REGISTRY_LEGACY_FROZEN` for reproducibility of intermediate analyses only.
 
 ## Part 2: Mechanistic-Evidence-Informed Model
 
@@ -843,6 +876,7 @@ python scripts/inchianti_extract_panel.py
 python scripts/inchianti_qc.py                         # Cohort description
 python scripts/inchianti_lambda_max_trajectory.py       # Lambda_max by age stratum
 python scripts/inchianti_lead_lag.py                    # 6-pair cross-lagged regression
+python scripts/inchianti_nonlinearity_test.py           # Linearity robustness (Supplementary Note 10)
 python scripts/inchianti_medication_dose_response.py    # Medication compression test (raw)
 python scripts/inchianti_medication_refined.py          # Refined: age-stratified, SWDS-Gamma, HTN matched
 python scripts/inchianti_pi_trajectory.py               # Pi = C_norm / V_norm trajectory
@@ -854,33 +888,52 @@ python scripts/inchianti_figures.py
 python scripts/inchianti_manuscript_summary.py
 ```
 
-### Key results (v2.3-inchianti-replication)
+### Key results
 
 | Analysis | Result | Interpretation |
 |----------|--------|----------------|
-| **Lambda_max trajectory** | 1.17 (20–49) → 8.04 (60–69) → 22.1 (80+), monotonically increasing | ✅ Replicates ELSA coupling-tightening |
-| **Lead-lag concordance** | 9/12 ordered pairs match compiled J-matrix signs (p = 0.073) | ✅ Meets ≥ 8/12 threshold |
-| **Medication dose-response** | Within-decade CIs overlap; SWDS-Gamma regression n_meds p = 0.35; HTN matched: treated > untreated | Confounding by indication, not genuine compression |
-| **Pi trajectory** | Slope = −0.019/yr (D-dominated) | ⚠️ Divergent from ELSA (+0.001/yr); likely N-axis proxy noise |
+| **Lambda_max trajectory** | 1.17 (20–49) → 22.1 (80+) [4-axis]; 3.28 → 28.7 [5-axis], monotonically increasing | ✅ Replicates ELSA coupling-tightening; permutation null p<0.001, random-panel null p<0.001 (see below) |
+| **Lambda_max single-axis check** | λ_max / max-univariate-variance ≈ 1.001 at ages 70+ | ⚠️ Amplification is driven by single-axis (F/SPPB) growth at old ages, not by coupling tightening |
+| **Lead-lag concordance** | 4-axis HR: 9/12 (75%, p=0.073, Conv B); 5-axis: 12/20 (60%); see concordance audit | Convention B (biological direction) recommended |
+| **Lead-lag FDR (BH within cohort)** | ELSA: 4/6 pairs FDR<0.05 (I→M q=1.9e-19); InCHIANTI: 0/12 pairs FDR<0.05 | ELSA carries per-pair significance; InCHIANTI carries directional-concordance claim |
+| **Medication dose-response** | Within-decade CIs overlap; SWDS-Gamma n_meds p = 0.35; HTN matched: treated > untreated | Confounding by indication, not genuine compression |
+| **Pi trajectory** | Slope = −0.019/yr (D-dominated) | ⚠️ Divergent from ELSA (+0.001/yr) |
+| **Survival** | deltaC(M5-M4) = +0.014 [+0.008,+0.023] (age 65+), +0.014 (med-naive); ELSA full +0.009 [+0.003,+0.019]; ELSA med-naive +0.013 [+0.003,+0.032] | ✅ All CIs exclude 0; none exclude 0.01 (see bootstrap section above) |
+
+**Lead-lag concordance audit:** A 3-convention comparison (`scripts/verify_lead_lag_concordance.py`) resolves the concordance discrepancy between the original (9/12) and expanded (6/12) analyses. Convention B (biological direction: all beta > 0 predicted) gives 9/12 (75%, p=0.073) for the 4-axis HR model. Convention A (naive J sign) gives 8/12 (67%). The discrepancy arose because the expanded script incorrectly applied a sign-flip adjustment for protective F-axis entries. Convention B is recommended because cross-lagged regressions in declining systems measure co-decline direction, not individual coupling signs. See `results/lead_lag_concordance_audit.md`.
+
+### Axis configurations tested
+
+| Config | Axes | N pairs | Concordance (Conv A / Conv B) | Pi slope |
+|--------|------|---------|-------------------------------|----------|
+| 5-axis | I (IL-6), M (HOMA-IR), N (cortisol/DHEAS), F (SPPB), B (PTH) | 1,629 | 7/20 (35%) / 12/20 (60%) | -0.010/yr |
+| 4-axis cortisol/DHEAS | I, M, N (cortisol/DHEAS ratio), F | 1,660 | 6/12 (50%) / 7/12 (58%) | -0.017/yr |
+| 4-axis resting HR | I, M, N (resting HR), F | 1,523 | 8/12 (67%) / 9/12 (75%) | -0.019/yr |
+| 4-axis NLR | I (NLR), M, N (cortisol/DHEAS), F | 1,688 | 6/12 (50%) / 7/12 (58%) | -0.016/yr |
 
 ### Cohort summary
 
 - **N = 1,453** at baseline (ages 20–102), 6 waves over 18 years
 - **176 young adults (20–49)** — key advantage, ELSA lacks this age range
-- **2,858 four-axis complete observations** from 1,276 subjects
-- **957 subjects with ≥ 2 waves** of 4-axis data (for change-covariance)
-- HOMA-IR available waves 0–2 only (insulin not measured FU3+)
-- RMSSD/HRV not in standard data release; resting HR used as N-axis proxy
+- **950 deaths** (65%) over median 14.7 years follow-up
+- **1,629 five-axis complete change pairs** from 957+ subjects
+- Cortisol/DHEAS ratio available waves 0–2; PTH available waves 0–3
+- Cystatin C and CTX-1 available at baseline only (no longitudinal P or B_resorption)
+- RMSSD/HRV not in standard data release
 
 ### Limitations and divergences
 
-1. **RMSSD unavailable**: The N-axis uses resting HR instead of RMSSD. This is mechanistically inferior — resting HR captures only tonic sympathovagal balance, not beat-to-beat parasympathetic modulation. InCHIANTI published HRV papers (Stein et al., 2005) suggest 24h Holter data may exist in ancillary files not included in the standard data release.
+1. **Lead-lag concordance convention**: Three conventions were audited (`results/lead_lag_concordance_audit.md`). Convention B (biological direction: all pairs predict positive beta in delta-space) gives 9/12 (75%, p=0.073) for 4-axis HR, matching the original report. Convention A (naive J sign) gives 8/12 (67%). An intermediate "correction" that reported 6/12 was itself erroneous (double-counted the F-axis sign flip). The recommended Convention B concordance is the one to cite.
 
-2. **Pi divergence**: The D-dominated Pi trajectory (−0.019/yr) opposes the ELSA result (+0.001/yr proportional). This is likely driven by the resting HR proxy inflating diagonal variance (noisy single-measurement HR) relative to off-diagonal covariance, biasing toward apparent D-dominance.
+2. **RMSSD unavailable**: The N-axis uses cortisol/DHEAS ratio (primary) or resting HR (secondary). Neither captures beat-to-beat parasympathetic modulation. Cortisol/DHEAS shows lower concordance (7/12 Conv B) than resting HR (9/12), suggesting resting HR better captures the coupling structure despite being a cruder measure. Cystatin C and CTX-1 are baseline-only.
 
-3. **HOMA-IR temporal coverage**: Insulin was only measured at baseline, FU1, and FU2. FU3 has IL-6 but no insulin; FU4–5 have neither. Full 4-axis longitudinal coverage is limited to waves 0–2 (~6 years).
+3. **Pi divergence**: All configurations show D-dominated Pi trajectories (slopes -0.010 to -0.019/yr), opposing the ELSA result (+0.001/yr). Consistent across N-axis choices, suggesting a systematic cohort or biomarker-panel difference.
 
-4. **SPPB ceiling effect**: All healthy 20–30 year-olds scored 12/12 on SPPB (SD = 0). Reference SD was computed from healthy adults < 60 instead.
+4. **Temporal coverage**: HOMA-IR and cortisol/DHEAS available waves 0-2 only (~6 years). PTH extends to wave 3. Full 5-axis coverage is limited to waves 0-2.
+
+5. **SPPB ceiling effect**: All healthy 20-30 year-olds scored 12/12 (SD = 0). Reference SD computed from healthy adults < 60.
+
+6. **Linearity of cross-lagged regressions (robustness check)**: Each of the 12 ordered pair regressions was re-fit with a quadratic-in-predictor term, a predictor×autoregressor interaction, and both, using HC3 robust SEs on the same N=1,523 triplets. Across 24 nonlinear-term tests the minimum p-value was 0.039 (N→M interaction), none surviving the Bonferroni threshold p<0.0021; 0/12 joint F-tests (M3 vs M0) cleared a 12-test Bonferroni threshold. Residual regressions on x_i² yielded R² ≤ 0.0007. The linear OU specification is adequate within the observed biomarker range; behaviour far from equilibrium is not probed by this in-sample test. See `results/nonlinearity_test.json` and Supplementary Note 10.
 
 ### Scripts and outputs
 
@@ -890,10 +943,17 @@ python scripts/inchianti_manuscript_summary.py
 | `inchianti_qc.py` | `results/inchianti_qc_report.md` | Cohort description and data availability |
 | `inchianti_lambda_max_trajectory.py` | `results/inchianti_lambda_max_by_age.csv` | Lambda_max by age stratum with bootstrap CIs |
 | `inchianti_lead_lag.py` | `results/inchianti_lead_lag_matrix.csv` | 12 cross-lagged regression coefficients |
+| `inchianti_nonlinearity_test.py` | `results/nonlinearity_test.json` | Linearity robustness for 12 cross-lagged regressions (quadratic + interaction terms, HC3 SEs); Supplementary Note 10 |
 | `inchianti_medication_dose_response.py` | `results/inchianti_med_dose_response.csv` | Medication stratification + regression (raw) |
 | `inchianti_medication_refined.py` | `results/inchianti_med_refined_results.json` | Age-stratified, SWDS-Gamma, HTN matched, off-diag |
 | `inchianti_figures.py` | `outputs/figure_inchianti_*.pdf` | 5 publication figures (A-E) |
 | `inchianti_pi_trajectory.py` | `results/inchianti_pi_trajectory.csv` | Pi = C_norm / V_norm by age stratum |
+| `inchianti_6axis_analysis.py` | `results/inchianti_6axis_results.json` | 5-axis, 4 config comparison (lambda, lead-lag, Pi) |
+| `inchianti_survival.py` | `results/inchianti_survival_analysis.json` | Cox models: SWDS-Gamma vs mortality |
+| `inchianti_figures_6axis.py` | `outputs/figure_inchianti_*_6axis.pdf` | 6-axis figures (comparison, 5x5 heatmap, N-axis, survival) |
+| `run_bootstrap_delta_c.py` | `results/bootstrap_delta_c.json` | Event-stratified paired bootstrap (n=2000) for ΔC(M5−M4) 95% CIs in both cohorts; utility in `src/hdr_sim/bootstrap.py` |
+| `lambda_max_null_tests.py` | `results/lambda_max_null_tests.json`, `outputs/figure_lambda_max_null.pdf` | 4 null tests for the λ_max age-trajectory: InCHIANTI age-permutation, random 4-biomarker panels, univariate-variance control, ELSA age-permutation |
+| `elsa_lead_lag.py` | `results/elsa_lead_lag_summary.json`, `results/lead_lag_fdr_combined.json`, `outputs/figure_elsa_lead_lag.pdf` | ELSA 3-axis cross-lagged lead-lag + BH-FDR within each cohort |
 | `inchianti_manuscript_summary.py` | `results/inchianti_summary_for_manuscript.md` | Consolidated manuscript-ready results |
 
 ### Dependencies

@@ -1,0 +1,392 @@
+{
+  "CYSC": {
+    "description": "Cystatin C (P-axis)",
+    "waves": {
+      "0": {
+        "varname": "X_CYSC",
+        "n": 1189,
+        "mean": 0.9885281749369219,
+        "min": 0.46,
+        "max": 4.03
+      },
+      "1": {
+        "varname": null,
+        "n": 0
+      },
+      "2": {
+        "varname": null,
+        "n": 0
+      },
+      "3": {
+        "varname": null,
+        "n": 0
+      },
+      "4": {
+        "varname": null,
+        "n": 0
+      }
+    }
+  },
+  "CTX_1": {
+    "description": "CTX-1 bone resorption (B-axis)",
+    "waves": {
+      "0": {
+        "varname": "X_CTX_1",
+        "n": 1227,
+        "mean": 0.49976691116544414,
+        "min": 0.045,
+        "max": 2.89
+      },
+      "1": {
+        "varname": null,
+        "n": 0
+      },
+      "2": {
+        "varname": null,
+        "n": 0
+      },
+      "3": {
+        "varname": null,
+        "n": 0
+      },
+      "4": {
+        "varname": null,
+        "n": 0
+      }
+    }
+  },
+  "PTH": {
+    "description": "Parathyroid hormone (B-axis)",
+    "waves": {
+      "0": {
+        "varname": "X_PTH",
+        "n": 1277,
+        "mean": 25.55332811276429,
+        "min": 9.0,
+        "max": 396.40000000000003
+      },
+      "1": {
+        "varname": "Y_PTH_I",
+        "n": 1029,
+        "mean": 47.90962099125365,
+        "note": "fuzzy match from ['Y_PTH_I']"
+      },
+      "2": {
+        "varname": "Z_PTH_I",
+        "n": 941,
+        "mean": 63.324123273113706,
+        "note": "fuzzy match from ['Z_PTH_I']"
+      },
+      "3": {
+        "varname": "Q_PTH_I",
+        "n": 731,
+        "mean": 61.48837209302326,
+        "note": "fuzzy match from ['Q_PTH_I']"
+      },
+      "4": {
+        "varname": null,
+        "n": 0
+      }
+    }
+  },
+  "25OH_D": {
+    "description": "25-OH Vitamin D (B-axis)",
+    "waves": {
+      "0": {
+        "varname": "X_25OH_D",
+        "n": 1277,
+        "mean": 52.34622145653876,
+        "min": 6.24,
+        "max": 310.2528
+      },
+      "1": {
+        "varname": null,
+        "n": 0
+      },
+      "2": {
+        "varname": null,
+        "n": 0
+      },
+      "3": {
+        "varname": null,
+        "n": 0
+      },
+      "4": {
+        "varname": null,
+        "n": 0
+      }
+    }
+  },
+  "CORTIS": {
+    "description": "Serum cortisol (N-axis)",
+    "waves": {
+      "0": {
+        "varname": "X_CORTIS",
+        "n": 1317,
+        "mean": 13.47768413059985,
+        "min": 0.72,
+        "max": 46.76
+      },
+      "1": {
+        "varname": "Y_CORTIS",
+        "n": 1025,
+        "mean": 14.345882926829267,
+        "min": 0.2,
+        "max": 35.34
+      },
+      "2": {
+        "varname": "Z_CORTIS",
+        "n": 937,
+        "mean": 17.634418356456774,
+        "min": 0.52,
+        "max": 44.85
+      },
+      "3": {
+        "varname": null,
+        "n": 0
+      },
+      "4": {
+        "varname": null,
+        "n": 0
+      }
+    }
+  },
+  "DHEAS": {
+    "description": "DHEA-sulfate (N-axis)",
+    "waves": {
+      "0": {
+        "varname": "X_DHEAS",
+        "n": 1317,
+        "mean": 105.60461655277145,
+        "min": 0.7,
+        "max": 854.74
+      },
+      "1": {
+        "varname": "Y_DHEAS",
+        "n": 1025,
+        "mean": 105.68243902439025,
+        "min": 0.09,
+        "max": 537.1
+      },
+      "2": {
+        "varname": "Z_DHEAS",
+        "n": 937,
+        "mean": 100.20566702241194,
+        "min": 1.54,
+        "max": 488.35
+      },
+      "3": {
+        "varname": null,
+        "n": 0
+      },
+      "4": {
+        "varname": null,
+        "n": 0
+      }
+    }
+  },
+  "CORTDH": {
+    "description": "Cortisol/DHEAS ratio (N-axis)",
+    "waves": {
+      "0": {
+        "varname": "X_CORTDH",
+        "n": 1314,
+        "mean": 0.3426698385943017,
+        "min": 0.004849535824838558,
+        "max": 28.414760147601477
+      },
+      "1": {
+        "varname": "Y_CORTDH",
+        "n": 1025,
+        "mean": 0.43462289634178636,
+        "min": 0.011154985591476945,
+        "max": 132.0590405904059
+      },
+      "2": {
+        "varname": "Z_CORTDH",
+        "n": 934,
+        "mean": 0.35786157026740806,
+        "min": 0.004643118498517968,
+        "max": 6.738965831216754
+      },
+      "3": {
+        "varname": null,
+        "n": 0
+      },
+      "4": {
+        "varname": null,
+        "n": 0
+      }
+    }
+  },
+  "TIGF1": {
+    "description": "Total IGF-1 (F enrichment)",
+    "waves": {
+      "0": {
+        "varname": "X_TIGF1",
+        "n": 1290,
+        "mean": 129.06418604651162,
+        "min": 2.81,
+        "max": 466.3
+      },
+      "1": {
+        "varname": "Y_TIGF1",
+        "n": 1023,
+        "mean": 129.16487781036167,
+        "min": 12.370000000000001,
+        "max": 468.8
+      },
+      "2": {
+        "varname": "Z_TIGF1",
+        "n": 936,
+        "mean": 129.54183760683762,
+        "min": 11.94,
+        "max": 500.0
+      },
+      "3": {
+        "varname": null,
+        "n": 0
+      },
+      "4": {
+        "varname": null,
+        "n": 0
+      }
+    }
+  },
+  "OX_LDL": {
+    "description": "Oxidized LDL (ox stress)",
+    "waves": {
+      "0": {
+        "varname": "X_OX_LDL",
+        "n": 1310,
+        "mean": 41.46136821509868,
+        "min": 6.281115029110172,
+        "max": 126.1540329298736
+      },
+      "1": {
+        "varname": null,
+        "n": 0
+      },
+      "2": {
+        "varname": null,
+        "n": 0
+      },
+      "3": {
+        "varname": null,
+        "n": 0
+      },
+      "4": {
+        "varname": null,
+        "n": 0
+      }
+    }
+  },
+  "AGECML": {
+    "description": "AGE carboxymethyl-lysine",
+    "waves": {
+      "0": {
+        "varname": "X_AGECML",
+        "n": 1284,
+        "mean": 364.99570399996713,
+        "min": 150.14305242359723,
+        "max": 1637.1470940221457
+      },
+      "1": {
+        "varname": null,
+        "n": 0
+      },
+      "2": {
+        "varname": null,
+        "n": 0
+      },
+      "3": {
+        "varname": null,
+        "n": 0
+      },
+      "4": {
+        "varname": null,
+        "n": 0
+      }
+    }
+  },
+  "N_NEU": {
+    "description": "Neutrophils (NLR)",
+    "waves": {
+      "0": {
+        "varname": "X_N_NEU",
+        "n": 1318,
+        "mean": 3.7548406676783004,
+        "min": 0.79,
+        "max": 12.46
+      },
+      "1": {
+        "varname": "Y_N_NEU",
+        "n": 1025,
+        "mean": 3.598858536585366,
+        "min": 1.28,
+        "max": 9.36
+      },
+      "2": {
+        "varname": "Z_N_NEU",
+        "n": 946,
+        "mean": 3.6670190274841437,
+        "min": 0.9,
+        "max": 11.1
+      },
+      "3": {
+        "varname": "Q_N_NEU",
+        "n": 805,
+        "mean": 3.7260372670807453,
+        "min": 1.1,
+        "max": 12.8
+      },
+      "4": {
+        "varname": "C_N_NEU",
+        "n": 463,
+        "mean": 3.563563714902808,
+        "min": 1.06,
+        "max": 14.33
+      }
+    }
+  },
+  "N_LIN": {
+    "description": "Lymphocytes (NLR)",
+    "waves": {
+      "0": {
+        "varname": "X_N_LIN",
+        "n": 1318,
+        "mean": 1.905933232169954,
+        "min": 0.5,
+        "max": 6.11
+      },
+      "1": {
+        "varname": "Y_N_LIN",
+        "n": 1025,
+        "mean": 1.949970731707317,
+        "min": 0.69,
+        "max": 5.35
+      },
+      "2": {
+        "varname": "Z_N_LIN",
+        "n": 946,
+        "mean": 1.8665961945031713,
+        "min": 0.4,
+        "max": 9.1
+      },
+      "3": {
+        "varname": "Q_N_LIN",
+        "n": 805,
+        "mean": 1.9169192546583849,
+        "min": 0.4,
+        "max": 8.6
+      },
+      "4": {
+        "varname": "C_N_LIN",
+        "n": 463,
+        "mean": 1.9693088552915765,
+        "min": 0.57,
+        "max": 9.7
+      }
+    }
+  }
+}

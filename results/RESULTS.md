@@ -816,3 +816,604 @@ Tests robustness of stability trends to age-varying noise
 - ✅ `test_get_axis_names_2axis` (0.002s)
 - ✅ `test_stability_2axis` (0.003s)
 
+
+---
+
+### Unit Tests (pytest)
+*Run: 2026-04-16 14:09:02*
+
+- **Total**: 2 tests
+- **Passed**: 1 ✅
+- **Failed**: 1 ❌
+- **Duration**: 0.00s
+
+- ✅ `test_stable_system_has_negative_abscissa` (0.003s)
+- ❌ `test_aged_system_closer_to_zero` (0.001s)
+
+
+---
+
+### Unit Tests (pytest)
+*Run: 2026-04-16 14:10:36*
+
+- **Total**: 11 tests
+- **Passed**: 11 ✅
+- **Failed**: 0 
+- **Duration**: 0.39s
+
+- ✅ `test_stable_system_has_negative_abscissa` (0.381s)
+- ✅ `test_aged_system_closer_to_zero` (0.001s)
+- ✅ `test_diagonal_J_is_zero` (0.000s)
+- ✅ `test_recovery_timescale_increases_with_age` (0.000s)
+- ✅ `test_f_column_is_negative` (0.001s)
+- ✅ `test_spectral_radius_discrete` (0.002s)
+- ✅ `test_calibration_alpha_range` (0.001s)
+- ✅ `test_recovery_ratio` (0.000s)
+- ✅ `test_stability_all_ages` (0.002s)
+- ✅ `test_csv_loaded` (0.001s)
+- ✅ `test_csv_basin_structure` (0.001s)
+
+
+---
+
+### Unit Tests (pytest)
+*Run: 2026-04-16 14:10:52*
+
+- **Total**: 107 tests
+- **Passed**: 105 ✅
+- **Failed**: 2 ❌
+- **Duration**: 1.15s
+
+- ✅ `test_stable_system_has_negative_abscissa` (0.421s)
+- ✅ `test_aged_system_closer_to_zero` (0.001s)
+- ✅ `test_diagonal_J_is_zero` (0.001s)
+- ✅ `test_recovery_timescale_increases_with_age` (0.000s)
+- ✅ `test_f_column_is_negative` (0.001s)
+- ✅ `test_spectral_radius_discrete` (0.002s)
+- ✅ `test_calibration_alpha_range` (0.001s)
+- ✅ `test_recovery_ratio` (0.001s)
+- ✅ `test_stability_all_ages` (0.002s)
+- ✅ `test_csv_loaded` (0.001s)
+- ✅ `test_csv_basin_structure` (0.000s)
+- ✅ `test_dcct_to_ifcc_known_values` (0.000s)
+- ✅ `test_unit_detection_dcct` (0.657s)
+- ✅ `test_unit_detection_ifcc` (0.000s)
+- ✅ `test_empty_series` (0.000s)
+- ✅ `test_identity_covariance` (0.000s)
+- ✅ `test_diagonal_covariance` (0.000s)
+- ✅ `test_batch_matches_individual` (0.003s)
+- ✅ `test_zero_vector` (0.000s)
+- ✅ `test_nonnegative` (0.001s)
+- ✅ `test_identity_matrix` (0.000s)
+- ✅ `test_known_eigenvalues` (0.000s)
+- ✅ `test_eigenvalues_descending` (0.000s)
+- ✅ `test_fi_range` (0.000s)
+- ✅ `test_fi_zero_deficits` (0.000s)
+- ✅ `test_fi_insufficient_items` (0.000s)
+- ✅ `test_grip_max_selection` (0.001s)
+- ✅ `test_grip_max_all_nan` (0.001s)
+- ✅ `test_negative_codes_replaced` (0.001s)
+- ✅ `test_zscore_known_values` (0.000s)
+- ✅ `test_zscore_missing_col_fallback` (0.000s)
+- ✅ `test_zscore_small_ref_fallback` (0.000s)
+- ✅ `test_n_axes` (0.002s)
+- ✅ `test_sign_counts` (0.001s)
+- ✅ `test_axes_sorted` (0.001s)
+- ✅ `test_roundtrip_json` (0.001s)
+- ✅ `test_same_file_same_hash` (0.001s)
+- ✅ `test_load_default_spec` (0.001s)
+- ✅ `test_load_provenance_spec` (0.002s)
+- ✅ `test_fast_subsystem_dimension` (0.000s)
+- ✅ `test_full_system_dimension` (0.000s)
+- ✅ `test_fast_axes_list` (0.000s)
+- ✅ `test_quasi_static_axes` (0.000s)
+- ✅ `test_fast_vs_full_alpha` (0.000s)
+- ✅ `test_tau_per_axis_ranges` (0.000s)
+- ✅ `test_stability_all_ages` (0.001s)
+- ✅ `test_alpha_age30_near_target` (0.000s)
+- ✅ `test_alpha_age80_near_target` (0.000s)
+- ✅ `test_spectral_drift_monotonic` (0.001s)
+- ✅ `test_recovery_slowing` (0.000s)
+- ✅ `test_recovery_ratio` (0.000s)
+- ✅ `test_damping_decline` (0.001s)
+- ✅ `test_excluded_entries_full` (0.000s)
+- ✅ `test_diagonal_zero` (0.000s)
+- ✅ `test_A_equals_neg_D_plus_J` (0.000s)
+- ✅ `test_coupling_signs` (0.000s)
+- ✅ `test_age_interpolation_endpoints` (0.002s)
+- ✅ `test_forcing_zero_at_age30` (0.000s)
+- ✅ `test_forcing_nonzero_at_age80` (0.000s)
+- ✅ `test_equilibrium_shift_increases` (0.001s)
+- ✅ `test_quasi_static_state_has_E_and_B` (0.000s)
+- ✅ `test_perturbation_vector` (0.000s)
+- ✅ `test_perturb_quasi_static_raises` (0.000s)
+- ✅ `test_perturbation_recovery_age30` (0.002s)
+- ✅ `test_cross_axis_propagation_age80` (0.002s)
+- ✅ `test_bifurcation_margin_positive` (0.000s)
+- ✅ `test_bifurcation_margin_decreases` (0.000s)
+- ✅ `test_stationary_covariance_symmetric` (0.003s)
+- ✅ `test_stationary_covariance_psd` (0.000s)
+- ✅ `test_swds_nonnegative` (0.000s)
+- ✅ `test_swds_zero_at_origin` (0.000s)
+- ✅ `test_age_trajectory_returns_all_ages` (0.002s)
+- ✅ `test_age_trajectory_all_stable` (0.002s)
+- ✅ `test_age_trajectory_has_equilibrium_shift` (0.002s)
+- ✅ `test_simulate_ou_shape` (0.002s)
+- ✅ `test_simulate_ou_full_shape` (0.001s)
+- ✅ `test_simulate_discrete_shape` (0.001s)
+- ✅ `test_deterministic_decay` (0.001s)
+- ✅ `test_get_entry_info_active` (0.000s)
+- ✅ `test_get_entry_info_excluded` (0.000s)
+- ✅ `test_calibration_scalar_positive` (0.000s)
+- ✅ `test_calibration_scalar_range` (0.000s)
+- ✅ `test_healthy_at_origin` (0.000s)
+- ✅ `test_disease_at_positive_dysregulation` (0.000s)
+- ✅ `test_simulation_produces_switches` (0.004s)
+- ✅ `test_switched_simulation_shape` (0.001s)
+- ✅ `test_a_healthy_differs_from_a_disease` (0.000s)
+- ✅ `test_set_age_updates_both_matrices` (0.000s)
+- ✅ `test_2x2_shape` (0.000s)
+- ✅ `test_2x2_diagonal_zero` (0.000s)
+- ✅ `test_3x3_shape` (0.000s)
+- ✅ `test_3x3_sign_counts` (0.000s)
+- ✅ `test_5x5_shape` (0.000s)
+- ✅ `test_5x5_signs` (0.001s)
+- ✅ `test_full_9x9` (0.000s)
+- ✅ `test_2x2_calibration` (0.000s)
+- ✅ `test_3x3_calibration` (0.000s)
+- ✅ `test_5x5_calibration` (0.002s)
+- ✅ `test_2x2_anchors` (0.001s)
+- ✅ `test_3x3_anchors` (0.001s)
+- ✅ `test_4x4_anchors_default` (0.002s)
+- ❌ `test_2_axes` (0.000s)
+- ❌ `test_unknown_axis_raises` (0.000s)
+- ✅ `test_2axis_configure` (0.002s)
+- ✅ `test_3axis_configure` (0.002s)
+- ✅ `test_get_axis_names_2axis` (0.001s)
+- ✅ `test_stability_2axis` (0.001s)
+
+
+---
+
+### Unit Tests (pytest)
+*Run: 2026-04-16 14:11:47*
+
+- **Total**: 107 tests
+- **Passed**: 107 ✅
+- **Failed**: 0 
+- **Duration**: 1.10s
+
+- ✅ `test_stable_system_has_negative_abscissa` (0.375s)
+- ✅ `test_aged_system_closer_to_zero` (0.000s)
+- ✅ `test_diagonal_J_is_zero` (0.000s)
+- ✅ `test_recovery_timescale_increases_with_age` (0.001s)
+- ✅ `test_f_column_is_negative` (0.001s)
+- ✅ `test_spectral_radius_discrete` (0.002s)
+- ✅ `test_calibration_alpha_range` (0.000s)
+- ✅ `test_recovery_ratio` (0.000s)
+- ✅ `test_stability_all_ages` (0.002s)
+- ✅ `test_csv_loaded` (0.001s)
+- ✅ `test_csv_basin_structure` (0.001s)
+- ✅ `test_dcct_to_ifcc_known_values` (0.000s)
+- ✅ `test_unit_detection_dcct` (0.659s)
+- ✅ `test_unit_detection_ifcc` (0.001s)
+- ✅ `test_empty_series` (0.000s)
+- ✅ `test_identity_covariance` (0.000s)
+- ✅ `test_diagonal_covariance` (0.000s)
+- ✅ `test_batch_matches_individual` (0.000s)
+- ✅ `test_zero_vector` (0.000s)
+- ✅ `test_nonnegative` (0.000s)
+- ✅ `test_identity_matrix` (0.000s)
+- ✅ `test_known_eigenvalues` (0.000s)
+- ✅ `test_eigenvalues_descending` (0.000s)
+- ✅ `test_fi_range` (0.000s)
+- ✅ `test_fi_zero_deficits` (0.000s)
+- ✅ `test_fi_insufficient_items` (0.000s)
+- ✅ `test_grip_max_selection` (0.001s)
+- ✅ `test_grip_max_all_nan` (0.001s)
+- ✅ `test_negative_codes_replaced` (0.001s)
+- ✅ `test_zscore_known_values` (0.000s)
+- ✅ `test_zscore_missing_col_fallback` (0.000s)
+- ✅ `test_zscore_small_ref_fallback` (0.000s)
+- ✅ `test_n_axes` (0.001s)
+- ✅ `test_sign_counts` (0.001s)
+- ✅ `test_axes_sorted` (0.001s)
+- ✅ `test_roundtrip_json` (0.001s)
+- ✅ `test_same_file_same_hash` (0.001s)
+- ✅ `test_load_default_spec` (0.001s)
+- ✅ `test_load_provenance_spec` (0.001s)
+- ✅ `test_fast_subsystem_dimension` (0.000s)
+- ✅ `test_full_system_dimension` (0.000s)
+- ✅ `test_fast_axes_list` (0.000s)
+- ✅ `test_quasi_static_axes` (0.000s)
+- ✅ `test_fast_vs_full_alpha` (0.001s)
+- ✅ `test_tau_per_axis_ranges` (0.000s)
+- ✅ `test_stability_all_ages` (0.001s)
+- ✅ `test_alpha_age30_near_target` (0.000s)
+- ✅ `test_alpha_age80_near_target` (0.001s)
+- ✅ `test_spectral_drift_monotonic` (0.001s)
+- ✅ `test_recovery_slowing` (0.000s)
+- ✅ `test_recovery_ratio` (0.001s)
+- ✅ `test_damping_decline` (0.001s)
+- ✅ `test_excluded_entries_full` (0.000s)
+- ✅ `test_diagonal_zero` (0.000s)
+- ✅ `test_A_equals_neg_D_plus_J` (0.000s)
+- ✅ `test_coupling_signs` (0.000s)
+- ✅ `test_age_interpolation_endpoints` (0.002s)
+- ✅ `test_forcing_zero_at_age30` (0.000s)
+- ✅ `test_forcing_nonzero_at_age80` (0.000s)
+- ✅ `test_equilibrium_shift_increases` (0.001s)
+- ✅ `test_quasi_static_state_has_E_and_B` (0.000s)
+- ✅ `test_perturbation_vector` (0.000s)
+- ✅ `test_perturb_quasi_static_raises` (0.000s)
+- ✅ `test_perturbation_recovery_age30` (0.003s)
+- ✅ `test_cross_axis_propagation_age80` (0.002s)
+- ✅ `test_bifurcation_margin_positive` (0.000s)
+- ✅ `test_bifurcation_margin_decreases` (0.000s)
+- ✅ `test_stationary_covariance_symmetric` (0.001s)
+- ✅ `test_stationary_covariance_psd` (0.000s)
+- ✅ `test_swds_nonnegative` (0.001s)
+- ✅ `test_swds_zero_at_origin` (0.000s)
+- ✅ `test_age_trajectory_returns_all_ages` (0.002s)
+- ✅ `test_age_trajectory_all_stable` (0.002s)
+- ✅ `test_age_trajectory_has_equilibrium_shift` (0.003s)
+- ✅ `test_simulate_ou_shape` (0.001s)
+- ✅ `test_simulate_ou_full_shape` (0.001s)
+- ✅ `test_simulate_discrete_shape` (0.001s)
+- ✅ `test_deterministic_decay` (0.001s)
+- ✅ `test_get_entry_info_active` (0.000s)
+- ✅ `test_get_entry_info_excluded` (0.000s)
+- ✅ `test_calibration_scalar_positive` (0.000s)
+- ✅ `test_calibration_scalar_range` (0.000s)
+- ✅ `test_healthy_at_origin` (0.000s)
+- ✅ `test_disease_at_positive_dysregulation` (0.000s)
+- ✅ `test_simulation_produces_switches` (0.003s)
+- ✅ `test_switched_simulation_shape` (0.001s)
+- ✅ `test_a_healthy_differs_from_a_disease` (0.000s)
+- ✅ `test_set_age_updates_both_matrices` (0.000s)
+- ✅ `test_2x2_shape` (0.000s)
+- ✅ `test_2x2_diagonal_zero` (0.000s)
+- ✅ `test_3x3_shape` (0.000s)
+- ✅ `test_3x3_sign_counts` (0.000s)
+- ✅ `test_5x5_shape` (0.000s)
+- ✅ `test_5x5_signs` (0.000s)
+- ✅ `test_full_9x9` (0.000s)
+- ✅ `test_2x2_calibration` (0.000s)
+- ✅ `test_3x3_calibration` (0.000s)
+- ✅ `test_5x5_calibration` (0.002s)
+- ✅ `test_2x2_anchors` (0.001s)
+- ✅ `test_3x3_anchors` (0.001s)
+- ✅ `test_4x4_anchors_default` (0.001s)
+- ✅ `test_2_axes` (0.000s)
+- ✅ `test_unknown_axis_raises` (0.000s)
+- ✅ `test_2axis_configure` (0.002s)
+- ✅ `test_3axis_configure` (0.002s)
+- ✅ `test_get_axis_names_2axis` (0.001s)
+- ✅ `test_stability_2axis` (0.002s)
+
+
+---
+
+### Unit Tests (pytest)
+*Run: 2026-04-16 14:27:04*
+
+- **Total**: 107 tests
+- **Passed**: 107 ✅
+- **Failed**: 0 
+- **Duration**: 1.10s
+
+- ✅ `test_stable_system_has_negative_abscissa` (0.390s)
+- ✅ `test_aged_system_closer_to_zero` (0.000s)
+- ✅ `test_diagonal_J_is_zero` (0.000s)
+- ✅ `test_recovery_timescale_increases_with_age` (0.000s)
+- ✅ `test_f_column_is_negative` (0.001s)
+- ✅ `test_spectral_radius_discrete` (0.002s)
+- ✅ `test_calibration_alpha_range` (0.001s)
+- ✅ `test_recovery_ratio` (0.000s)
+- ✅ `test_stability_all_ages` (0.002s)
+- ✅ `test_csv_loaded` (0.001s)
+- ✅ `test_csv_basin_structure` (0.000s)
+- ✅ `test_dcct_to_ifcc_known_values` (0.000s)
+- ✅ `test_unit_detection_dcct` (0.649s)
+- ✅ `test_unit_detection_ifcc` (0.001s)
+- ✅ `test_empty_series` (0.000s)
+- ✅ `test_identity_covariance` (0.000s)
+- ✅ `test_diagonal_covariance` (0.000s)
+- ✅ `test_batch_matches_individual` (0.000s)
+- ✅ `test_zero_vector` (0.000s)
+- ✅ `test_nonnegative` (0.000s)
+- ✅ `test_identity_matrix` (0.000s)
+- ✅ `test_known_eigenvalues` (0.000s)
+- ✅ `test_eigenvalues_descending` (0.000s)
+- ✅ `test_fi_range` (0.000s)
+- ✅ `test_fi_zero_deficits` (0.000s)
+- ✅ `test_fi_insufficient_items` (0.000s)
+- ✅ `test_grip_max_selection` (0.001s)
+- ✅ `test_grip_max_all_nan` (0.001s)
+- ✅ `test_negative_codes_replaced` (0.001s)
+- ✅ `test_zscore_known_values` (0.001s)
+- ✅ `test_zscore_missing_col_fallback` (0.000s)
+- ✅ `test_zscore_small_ref_fallback` (0.000s)
+- ✅ `test_n_axes` (0.001s)
+- ✅ `test_sign_counts` (0.001s)
+- ✅ `test_axes_sorted` (0.002s)
+- ✅ `test_roundtrip_json` (0.001s)
+- ✅ `test_same_file_same_hash` (0.002s)
+- ✅ `test_load_default_spec` (0.001s)
+- ✅ `test_load_provenance_spec` (0.001s)
+- ✅ `test_fast_subsystem_dimension` (0.000s)
+- ✅ `test_full_system_dimension` (0.000s)
+- ✅ `test_fast_axes_list` (0.000s)
+- ✅ `test_quasi_static_axes` (0.000s)
+- ✅ `test_fast_vs_full_alpha` (0.000s)
+- ✅ `test_tau_per_axis_ranges` (0.000s)
+- ✅ `test_stability_all_ages` (0.001s)
+- ✅ `test_alpha_age30_near_target` (0.000s)
+- ✅ `test_alpha_age80_near_target` (0.000s)
+- ✅ `test_spectral_drift_monotonic` (0.001s)
+- ✅ `test_recovery_slowing` (0.000s)
+- ✅ `test_recovery_ratio` (0.000s)
+- ✅ `test_damping_decline` (0.000s)
+- ✅ `test_excluded_entries_full` (0.000s)
+- ✅ `test_diagonal_zero` (0.000s)
+- ✅ `test_A_equals_neg_D_plus_J` (0.000s)
+- ✅ `test_coupling_signs` (0.000s)
+- ✅ `test_age_interpolation_endpoints` (0.002s)
+- ✅ `test_forcing_zero_at_age30` (0.000s)
+- ✅ `test_forcing_nonzero_at_age80` (0.000s)
+- ✅ `test_equilibrium_shift_increases` (0.001s)
+- ✅ `test_quasi_static_state_has_E_and_B` (0.000s)
+- ✅ `test_perturbation_vector` (0.000s)
+- ✅ `test_perturb_quasi_static_raises` (0.000s)
+- ✅ `test_perturbation_recovery_age30` (0.002s)
+- ✅ `test_cross_axis_propagation_age80` (0.002s)
+- ✅ `test_bifurcation_margin_positive` (0.000s)
+- ✅ `test_bifurcation_margin_decreases` (0.000s)
+- ✅ `test_stationary_covariance_symmetric` (0.000s)
+- ✅ `test_stationary_covariance_psd` (0.000s)
+- ✅ `test_swds_nonnegative` (0.000s)
+- ✅ `test_swds_zero_at_origin` (0.000s)
+- ✅ `test_age_trajectory_returns_all_ages` (0.003s)
+- ✅ `test_age_trajectory_all_stable` (0.001s)
+- ✅ `test_age_trajectory_has_equilibrium_shift` (0.002s)
+- ✅ `test_simulate_ou_shape` (0.001s)
+- ✅ `test_simulate_ou_full_shape` (0.001s)
+- ✅ `test_simulate_discrete_shape` (0.001s)
+- ✅ `test_deterministic_decay` (0.001s)
+- ✅ `test_get_entry_info_active` (0.000s)
+- ✅ `test_get_entry_info_excluded` (0.000s)
+- ✅ `test_calibration_scalar_positive` (0.000s)
+- ✅ `test_calibration_scalar_range` (0.000s)
+- ✅ `test_healthy_at_origin` (0.000s)
+- ✅ `test_disease_at_positive_dysregulation` (0.000s)
+- ✅ `test_simulation_produces_switches` (0.003s)
+- ✅ `test_switched_simulation_shape` (0.001s)
+- ✅ `test_a_healthy_differs_from_a_disease` (0.000s)
+- ✅ `test_set_age_updates_both_matrices` (0.000s)
+- ✅ `test_2x2_shape` (0.000s)
+- ✅ `test_2x2_diagonal_zero` (0.000s)
+- ✅ `test_3x3_shape` (0.000s)
+- ✅ `test_3x3_sign_counts` (0.000s)
+- ✅ `test_5x5_shape` (0.000s)
+- ✅ `test_5x5_signs` (0.000s)
+- ✅ `test_full_9x9` (0.000s)
+- ✅ `test_2x2_calibration` (0.001s)
+- ✅ `test_3x3_calibration` (0.000s)
+- ✅ `test_5x5_calibration` (0.002s)
+- ✅ `test_2x2_anchors` (0.001s)
+- ✅ `test_3x3_anchors` (0.001s)
+- ✅ `test_4x4_anchors_default` (0.001s)
+- ✅ `test_2_axes` (0.000s)
+- ✅ `test_unknown_axis_raises` (0.000s)
+- ✅ `test_2axis_configure` (0.001s)
+- ✅ `test_3axis_configure` (0.001s)
+- ✅ `test_get_axis_names_2axis` (0.001s)
+- ✅ `test_stability_2axis` (0.001s)
+
+
+---
+
+### Prior Stress Tests
+*Run: 2026-04-16 14:51:48 | Python 3.14.3*
+
+Quantifies prior vs data contribution for Tests 3-4 Layer B
+
+
+#### Mean Concordance by Condition
+
+- **Correct prior**: 0.813
+- **Null prior**: 0.542
+- **Adversarial prior**: 0.354
+- **Layer A (Γ̂ signs)**: 0.583
+
+#### Decomposition
+
+- **Prior contribution (correct − null)**: +0.271
+- **Data contribution (null − chance)**: +0.042
+- ✅ **Null prior ≈ chance (confirms Tier-3)**: PASS
+- ✅ **Adversarial < null (prior matters)**: PASS
+
+
+---
+
+### Q-Sensitivity Analysis
+*Run: 2026-04-16 14:52:30 | Python 3.14.3*
+
+Tests robustness of stability trends to age-varying noise
+
+
+#### Trend Survival
+
+| β | Q₈₀/Q₃₀ | α̂ trend | λ_max trend |
+| --- | --- | --- | --- |
+| 0.00 | 1.0× | ✅ | ✅ |
+| 0.25 | 1.2× | ✅ | ✅ |
+| 0.50 | 1.5× | ✅ | ✅ |
+| 0.75 | 1.8× | ✅ | ✅ |
+| 1.00 | 2.0× | ✅ | ✅ |
+| 1.50 | 2.5× | ✅ | ✅ |
+| 2.00 | 3.0× | ✅ | ✅ |
+| 3.00 | 4.0× | ✅ | ✅ |
+| 5.00 | 6.0× | ✅ | ✅ |
+- ✅ **α̂ trend survives all β ≤ 5.0**: PASS
+- ✅ **λ_max trend survives all β ≤ 5.0**: PASS
+
+*Note: λ_max(Γ̂) does not require Q specification — robust by construction.*
+
+
+---
+
+### Γ-Native Equivalence Study
+*Run: 2026-04-16 14:52:58 | Python 3.14.3*
+
+Confirms SWDS-Γ ≈ SWDS and λ_max(Γ̂) tracks stability
+
+
+#### λ_max(Γ̂) Stability Tracking
+
+- ✅ **λ_max monotone increasing with age**: PASS
+- **Spearman(α_true, λ_max)**: 1.0000
+
+#### SWDS-Γ vs SWDS Ranking Equivalence
+
+- **Spearman (age 44)**: 0.8936
+- **Spearman (age 54)**: 0.9055
+- **Spearman (age 64)**: 0.9071
+- **Spearman (age 74)**: 0.9242
+- ❌ **All rank correlations > 0.93**: FAIL
+
+#### C-Index Comparison
+
+| Score | C-index |
+| --- | --- |
+| SWDS-Γ | 0.5219 |
+| SWDS (A-based) | 0.5264 |
+| Mahalanobis | 0.5186 |
+| L2 | 0.5200 |
+| Age | 0.5096 |
+
+#### T* Calibration (Layer A)
+
+- **Bootstrap mean concordance**: 0.533
+- **Bootstrap SD**: 0.287
+- **T* (mean - 2×SD)**: -0.040
+
+
+---
+
+### Unit Tests (pytest)
+*Run: 2026-04-16 15:09:54*
+
+- **Total**: 107 tests
+- **Passed**: 107 ✅
+- **Failed**: 0 
+- **Duration**: 1.19s
+
+- ✅ `test_stable_system_has_negative_abscissa` (0.355s)
+- ✅ `test_aged_system_closer_to_zero` (0.000s)
+- ✅ `test_diagonal_J_is_zero` (0.000s)
+- ✅ `test_recovery_timescale_increases_with_age` (0.000s)
+- ✅ `test_f_column_is_negative` (0.001s)
+- ✅ `test_spectral_radius_discrete` (0.002s)
+- ✅ `test_calibration_alpha_range` (0.001s)
+- ✅ `test_recovery_ratio` (0.001s)
+- ✅ `test_stability_all_ages` (0.002s)
+- ✅ `test_csv_loaded` (0.000s)
+- ✅ `test_csv_basin_structure` (0.000s)
+- ✅ `test_dcct_to_ifcc_known_values` (0.000s)
+- ✅ `test_unit_detection_dcct` (0.775s)
+- ✅ `test_unit_detection_ifcc` (0.000s)
+- ✅ `test_empty_series` (0.000s)
+- ✅ `test_identity_covariance` (0.000s)
+- ✅ `test_diagonal_covariance` (0.000s)
+- ✅ `test_batch_matches_individual` (0.000s)
+- ✅ `test_zero_vector` (0.000s)
+- ✅ `test_nonnegative` (0.000s)
+- ✅ `test_identity_matrix` (0.000s)
+- ✅ `test_known_eigenvalues` (0.000s)
+- ✅ `test_eigenvalues_descending` (0.000s)
+- ✅ `test_fi_range` (0.000s)
+- ✅ `test_fi_zero_deficits` (0.000s)
+- ✅ `test_fi_insufficient_items` (0.000s)
+- ✅ `test_grip_max_selection` (0.001s)
+- ✅ `test_grip_max_all_nan` (0.001s)
+- ✅ `test_negative_codes_replaced` (0.001s)
+- ✅ `test_zscore_known_values` (0.000s)
+- ✅ `test_zscore_missing_col_fallback` (0.000s)
+- ✅ `test_zscore_small_ref_fallback` (0.000s)
+- ✅ `test_n_axes` (0.001s)
+- ✅ `test_sign_counts` (0.001s)
+- ✅ `test_axes_sorted` (0.001s)
+- ✅ `test_roundtrip_json` (0.001s)
+- ✅ `test_same_file_same_hash` (0.002s)
+- ✅ `test_load_default_spec` (0.001s)
+- ✅ `test_load_provenance_spec` (0.001s)
+- ✅ `test_fast_subsystem_dimension` (0.000s)
+- ✅ `test_full_system_dimension` (0.000s)
+- ✅ `test_fast_axes_list` (0.000s)
+- ✅ `test_quasi_static_axes` (0.000s)
+- ✅ `test_fast_vs_full_alpha` (0.000s)
+- ✅ `test_tau_per_axis_ranges` (0.000s)
+- ✅ `test_stability_all_ages` (0.001s)
+- ✅ `test_alpha_age30_near_target` (0.000s)
+- ✅ `test_alpha_age80_near_target` (0.000s)
+- ✅ `test_spectral_drift_monotonic` (0.001s)
+- ✅ `test_recovery_slowing` (0.000s)
+- ✅ `test_recovery_ratio` (0.000s)
+- ✅ `test_damping_decline` (0.000s)
+- ✅ `test_excluded_entries_full` (0.000s)
+- ✅ `test_diagonal_zero` (0.000s)
+- ✅ `test_A_equals_neg_D_plus_J` (0.000s)
+- ✅ `test_coupling_signs` (0.000s)
+- ✅ `test_age_interpolation_endpoints` (0.002s)
+- ✅ `test_forcing_zero_at_age30` (0.000s)
+- ✅ `test_forcing_nonzero_at_age80` (0.000s)
+- ✅ `test_equilibrium_shift_increases` (0.001s)
+- ✅ `test_quasi_static_state_has_E_and_B` (0.000s)
+- ✅ `test_perturbation_vector` (0.000s)
+- ✅ `test_perturb_quasi_static_raises` (0.000s)
+- ✅ `test_perturbation_recovery_age30` (0.002s)
+- ✅ `test_cross_axis_propagation_age80` (0.002s)
+- ✅ `test_bifurcation_margin_positive` (0.001s)
+- ✅ `test_bifurcation_margin_decreases` (0.000s)
+- ✅ `test_stationary_covariance_symmetric` (0.000s)
+- ✅ `test_stationary_covariance_psd` (0.000s)
+- ✅ `test_swds_nonnegative` (0.000s)
+- ✅ `test_swds_zero_at_origin` (0.000s)
+- ✅ `test_age_trajectory_returns_all_ages` (0.002s)
+- ✅ `test_age_trajectory_all_stable` (0.002s)
+- ✅ `test_age_trajectory_has_equilibrium_shift` (0.002s)
+- ✅ `test_simulate_ou_shape` (0.001s)
+- ✅ `test_simulate_ou_full_shape` (0.001s)
+- ✅ `test_simulate_discrete_shape` (0.001s)
+- ✅ `test_deterministic_decay` (0.001s)
+- ✅ `test_get_entry_info_active` (0.000s)
+- ✅ `test_get_entry_info_excluded` (0.000s)
+- ✅ `test_calibration_scalar_positive` (0.000s)
+- ✅ `test_calibration_scalar_range` (0.000s)
+- ✅ `test_healthy_at_origin` (0.000s)
+- ✅ `test_disease_at_positive_dysregulation` (0.000s)
+- ✅ `test_simulation_produces_switches` (0.003s)
+- ✅ `test_switched_simulation_shape` (0.001s)
+- ✅ `test_a_healthy_differs_from_a_disease` (0.000s)
+- ✅ `test_set_age_updates_both_matrices` (0.000s)
+- ✅ `test_2x2_shape` (0.000s)
+- ✅ `test_2x2_diagonal_zero` (0.000s)
+- ✅ `test_3x3_shape` (0.000s)
+- ✅ `test_3x3_sign_counts` (0.000s)
+- ✅ `test_5x5_shape` (0.000s)
+- ✅ `test_5x5_signs` (0.000s)
+- ✅ `test_full_9x9` (0.000s)
+- ✅ `test_2x2_calibration` (0.000s)
+- ✅ `test_3x3_calibration` (0.000s)
+- ✅ `test_5x5_calibration` (0.003s)
+- ✅ `test_2x2_anchors` (0.001s)
+- ✅ `test_3x3_anchors` (0.001s)
+- ✅ `test_4x4_anchors_default` (0.001s)
+- ✅ `test_2_axes` (0.000s)
+- ✅ `test_unknown_axis_raises` (0.000s)
+- ✅ `test_2axis_configure` (0.001s)
+- ✅ `test_3axis_configure` (0.001s)
+- ✅ `test_get_axis_names_2axis` (0.001s)
+- ✅ `test_stability_2axis` (0.001s)
+

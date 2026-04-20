@@ -28,13 +28,14 @@ import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
 from matplotlib.collections import LineCollection
 
-from hdr_sim.dynamics import build_A, spectral_radius_discrete, simulate
+from hdr_sim.dynamics import build_A, spectral_radius_discrete, simulate, simulate_expm
 from hdr_sim.aging_params import configure, tau_of_age, J_of_age, AXIS_COLORS
 from hdr_sim.plotting import setup_style, add_panel_label, save_figure
 
 os.makedirs('outputs', exist_ok=True)
 setup_style()
 configure()
+from hdr_sim.aging_params import get_fast_system
 
 # ============================================================================
 # Coupling values from J_matrix_compiled_9x9.csv
@@ -149,11 +150,11 @@ def panel_t2d(ax):
 # ============================================================================
 def panel_frailty(ax):
     """Spectral radius rho(Phi) vs age with impulse response inset."""
-    ages = np.arange(25, 91, 1)
+    ages = np.arange(25, 121, 1)
     rhos = []
     for age in ages:
-        A = build_A(tau_of_age(age), J_of_age(age))
-        rhos.append(spectral_radius_discrete(A, dt=1.0))
+        _, A_fast, _, _ = get_fast_system(age)
+        rhos.append(spectral_radius_discrete(A_fast, dt=1.0))
     rhos = np.array(rhos)
 
     ax.plot(ages, rhos, color='#2c3e50', linewidth=2)
@@ -171,9 +172,10 @@ def panel_frailty(ax):
     # Inset: I-axis impulse response at 3 ages
     ax_in = ax.inset_axes([0.12, 0.55, 0.38, 0.38])
     for age, ls in [(30, '-'), (60, '--'), (80, ':')]:
-        A = build_A(tau_of_age(age), J_of_age(age))
-        x0 = np.array([2.0, 0.0, 0.0, 0.0])
-        t, x = simulate(A, x0, 0.01, 80.0)
+        _, A_fast, _, _ = get_fast_system(age)
+        n_ax = A_fast.shape[0]
+        x0 = np.zeros(n_ax); x0[0] = 2.0
+        t, x = simulate_expm(A_fast, x0, 0.01, 80.0)
         ax_in.plot(t, x[:, 0], ls, color=AXIS_COLORS[0], linewidth=1.2,
                    label=f'{age}')
     ax_in.set_xlabel('Days', fontsize=7)

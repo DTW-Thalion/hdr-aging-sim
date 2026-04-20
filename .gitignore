@@ -13,5 +13,16 @@ data/nhanes/*.XPT
 data/inchianti_panel.*
 data/inchianti_*.parquet
 data/inchianti_*.xlsx
+# Derived InCHIANTI per-subject extract written by scripts/inchianti_survival.py
+# for figure_mortality_prediction KM panel (regenerated on each run).
+results/inchianti_baseline_matched.csv
+
+# Derived ELSA per-subject matched baseline (idauniq + biomarkers) used as a
+# cache by scripts/run_bootstrap_delta_c.py. ELSA is restricted-access —
+# regenerate from the raw TAB files.
+results/elsa_baseline_matched.csv
+
+# Local Claude Code tooling state (hooks, permissions, settings)
+.claude/
 
 # results/RESULTS.md is intentionally tracked — it's the persistent test record
