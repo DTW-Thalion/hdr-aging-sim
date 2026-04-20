@@ -59,3 +59,39 @@ Under Convention B, the discordant pairs (beta < 0) are those where worsening in
 - M->I: beta = -0.0210 (p = 0.1978)
 - M->N: beta = -0.0098 (p = 0.5135)
 - F->M: beta = -0.0069 (p = 0.0213)
+
+## ELSA Replication (added 2026-04-19)
+
+Source: [`results/elsa_lead_lag_summary.json`](elsa_lead_lag_summary.json)
+produced by `scripts/elsa_lead_lag.py`. ELSA 3-axis (I, M, F), N = 10,849
+consecutive-wave pairs from 6,245 subjects, 10,000 subject-clustered bootstraps.
+
+**Full sample Convention B concordance: 5/6 (83%, binomial p=0.109).**
+The two InCHIANTI key pairs both replicate with larger magnitudes:
+- I→M: β=+0.065, 95% CI [+0.051, +0.079], p=3.2×10⁻²⁰ (InCHIANTI: +0.033, p=0.031)
+- F→I: β=+0.025, 95% CI [+0.009, +0.041], p=0.0023 (InCHIANTI: +0.014, p<0.001)
+
+The one discordant pair is F→M: β=−0.014, p=0.043 (concordant under Convention
+A, discordant under Convention B). This is a genuine InCHIANTI-vs-ELSA tension
+worth flagging.
+
+Med-naive subgroup (no diag. HTN, no diag. DM; N=6,833, 4,116 subjects)
+confirms I↔M and F→I all at p<0.01, so the coupling signal is not driven
+by antihypertensive or antidiabetic medication.
+
+## FDR Correction (BH within each cohort, added 2026-04-19)
+
+Source: [`results/lead_lag_fdr_combined.json`](lead_lag_fdr_combined.json),
+Benjamini-Hochberg applied independently to the 6 ELSA full-sample p-values
+and the 12 InCHIANTI p-values.
+
+| Cohort | n_tests | n FDR<0.05 | Pairs surviving FDR<0.05 |
+|--------|--------:|-----------:|--------------------------|
+| ELSA (3-axis full)  | 6  | **4** | I→M (q=1.9e-19), M→I (3.0e-4), F→I (4.6e-3), I→F (6.3e-3) |
+| InCHIANTI (4-axis)  | 12 | **0** | — (strongest: F→I q=0.102, I→M q=0.123) |
+
+**Implication for the manuscript:** the per-pair significance claim rests on
+ELSA; InCHIANTI supports the *directional-concordance* claim (9/12 Conv-B,
+binomial p=0.073) but does not survive multiple-comparison correction at the
+individual-pair level. Cite ELSA when arguing per-pair significance and
+InCHIANTI when arguing directional concordance — do not conflate.

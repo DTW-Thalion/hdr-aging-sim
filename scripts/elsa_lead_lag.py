@@ -23,6 +23,7 @@ import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 from scipy.stats import binomtest, t as t_dist
+from statsmodels.stats.multitest import multipletests
 
 # Ensure UTF-8 output on Windows
 if sys.stdout.encoding != 'utf-8':
@@ -255,55 +256,176 @@ def run_lead_lag(triplets, label, n_boot=N_BOOT):
     return results
 
 
+def apply_fdr_bh(results, key_pair='pair', key_p='p_value',
+                 key_out='p_fdr', alpha=0.05):
+    """In-place Benjamini-Hochberg FDR on a list of result dicts.
+
+    Writes `p_fdr`, `fdr_reject` onto each dict. Entries with NaN p-values
+    are skipped (keep `p_fdr` = NaN, `fdr_reject` = False) and do not
+    consume an FDR correction slot.
+    """
+    idx = [i for i, r in enumerate(results)
+           if np.isfinite(r.get(key_p, np.nan))]
+    if not idx:
+        return
+    pvals = np.array([results[i][key_p] for i in idx])
+    reject, p_fdr, _, _ = multipletests(pvals, alpha=alpha, method='fdr_bh')
+    for k, i in enumerate(idx):
+        results[i][key_out] = float(p_fdr[k])
+        results[i]['fdr_reject'] = bool(reject[k])
+    for i in range(len(results)):
+        results[i].setdefault(key_out, None)
+        results[i].setdefault('fdr_reject', False)
+
+
+def build_combined_fdr(elsa_full_results, inchianti_results,
+                       output_path, alpha=0.05):
+    """Compile FDR-adjusted p-values across both cohorts (separate
+    corrections per cohort) and persist as a single JSON for reviewers.
+    """
+    elsa_rows = [
+        {
+            'cohort': 'ELSA', 'pair': r['pair'],
+            'from_axis': r['from_axis'], 'to_axis': r['to_axis'],
+            'beta': r['beta'], 'ci_lower': r.get('ci_lower'),
+            'ci_upper': r.get('ci_upper'),
+            'p_raw': r['p_value'], 'p_fdr': r.get('p_fdr'),
+            'fdr_reject_05': r.get('fdr_reject'),
+            'n_pairs': r.get('n_pairs'), 'n_subjects': r.get('n_subjects'),
+            'predicted_sign': r.get('predicted_sign', 1),
+            'observed_sign': r.get('observed_sign'),
+            'concordant': r.get('concordant'),
+        }
+        for r in elsa_full_results
+    ]
+
+    # Apply BH FDR to the 12 InCHIANTI pairs independently.
+    inchianti_copy = [dict(r) for r in inchianti_results]
+    apply_fdr_bh(inchianti_copy, alpha=alpha)
+    inchianti_rows = [
+        {
+            'cohort': 'InCHIANTI', 'pair': r['pair'],
+            'from_axis': r['from_axis'], 'to_axis': r['to_axis'],
+            'beta': r['beta'], 'ci_lower': r.get('ci_lower'),
+            'ci_upper': r.get('ci_upper'),
+            'p_raw': r['p_value'], 'p_fdr': r.get('p_fdr'),
+            'fdr_reject_05': r.get('fdr_reject'),
+            'n_pairs': r.get('n', r.get('n_pairs')),
+            'predicted_sign': r.get('predicted_sign', 1),
+            'observed_sign': r.get('observed_sign'),
+            'concordant': r.get('concordant'),
+        }
+        for r in inchianti_copy
+    ]
+
+    n_elsa_sig = sum(1 for r in elsa_rows if r['fdr_reject_05'])
+    n_inch_sig = sum(1 for r in inchianti_rows if r['fdr_reject_05'])
+
+    payload = {
+        'description': (
+            'Benjamini-Hochberg FDR-adjusted p-values for cross-lagged '
+            'lead-lag coefficients in ELSA (3-axis, 6 ordered pairs) and '
+            'InCHIANTI (4-axis, 12 ordered pairs). FDR is applied '
+            'independently within each cohort.'
+        ),
+        'method': {
+            'correction': 'Benjamini-Hochberg (statsmodels multipletests, '
+                          "method='fdr_bh')",
+            'alpha': alpha,
+            'elsa_n_tests': len(elsa_rows),
+            'inchianti_n_tests': len(inchianti_rows),
+            'note': ('ELSA FDR uses the full-sample (non-stratified) 6 pairs '
+                     'only; subgroup analyses are not included in the FDR '
+                     'family.'),
+        },
+        'summary': {
+            'elsa_n_fdr_05': n_elsa_sig,
+            'elsa_n_tests': len(elsa_rows),
+            'inchianti_n_fdr_05': n_inch_sig,
+            'inchianti_n_tests': len(inchianti_rows),
+        },
+        'elsa': elsa_rows,
+        'inchianti': inchianti_rows,
+    }
+
+    with open(output_path, 'w') as f:
+        json.dump(payload, f, indent=2, default=str)
+    print(f"Combined FDR JSON: {output_path}")
+    return payload
+
+
 def make_heatmap(all_results, output_path):
-    """3×3 cross-lagged beta heatmap (matching InCHIANTI figure style).
-    Full-sample subgroup; rows = from-axis, columns = to-axis.
+    """3×3 cross-lagged β heatmap.
+
+    Rows = source axis level at t; columns = target axis change t→t+1.
+    Cell annotation: β, raw p, FDR-adjusted p (BH across the 6 pairs).
+    A bold border on the cell indicates FDR<0.05.
     """
     full = [r for r in all_results if r['subgroup'] == 'full']
     axes = list(AXES.keys())
     mat = np.full((3, 3), np.nan)
     pmat = np.full((3, 3), np.nan)
+    pfdr_mat = np.full((3, 3), np.nan)
+    fdr_ok = np.zeros((3, 3), dtype=bool)
+    n_pair = None
     for r in full:
         i = axes.index(r['from_axis'])
         j = axes.index(r['to_axis'])
         mat[i, j] = r['beta']
         pmat[i, j] = r['p_value']
+        pfdr = r.get('p_fdr')
+        if pfdr is not None and np.isfinite(pfdr):
+            pfdr_mat[i, j] = pfdr
+        fdr_ok[i, j] = bool(r.get('fdr_reject', False))
+        n_pair = r.get('n_pairs', n_pair)
 
-    fig, ax = plt.subplots(figsize=(5.5, 5))
+    fig, ax = plt.subplots(figsize=(6.0, 5.2))
     vmax = max(abs(np.nanmin(mat)), abs(np.nanmax(mat)), 0.02)
     im = ax.imshow(mat, cmap='RdBu_r', vmin=-vmax, vmax=vmax, aspect='equal')
     ax.set_xticks(range(3))
     ax.set_yticks(range(3))
-    ax.set_xticklabels([f'd_{a}' for a in axes])
-    ax.set_yticklabels([f'{a}_t0' for a in axes])
-    ax.set_xlabel('Target axis change (t→t+1)')
+    ax.set_xticklabels([f'Δ{a}' for a in axes])
+    ax.set_yticklabels([f'{a}(t)' for a in axes])
+    ax.set_xlabel('Target axis change (t → t+1)')
     ax.set_ylabel('Source axis level (t)')
-    ax.set_title('ELSA 3-axis cross-lagged β (full sample)')
+    title = 'ELSA 3-axis cross-lagged β'
+    if n_pair is not None:
+        title += f'  (N={n_pair:,} consecutive-wave pairs)'
+    ax.set_title(title)
 
     for i in range(3):
         for j in range(3):
             if not np.isnan(mat[i, j]):
-                stars = ''
-                if np.isfinite(pmat[i, j]):
-                    if pmat[i, j] < 0.001:
-                        stars = '***'
-                    elif pmat[i, j] < 0.01:
-                        stars = '**'
-                    elif pmat[i, j] < 0.05:
-                        stars = '*'
-                ax.text(j, i, f'{mat[i, j]:+.3f}\n{stars}',
-                        ha='center', va='center',
-                        fontsize=10,
-                        color='white' if abs(mat[i, j]) > 0.6 * vmax else 'black')
+                p_raw = pmat[i, j]
+                p_fdr = pfdr_mat[i, j]
+                if np.isfinite(p_fdr):
+                    label = (f'β={mat[i, j]:+.3f}\n'
+                             f'p={p_raw:.2g}\n'
+                             f'q={p_fdr:.2g}')
+                else:
+                    label = f'β={mat[i, j]:+.3f}\np={p_raw:.2g}'
+                color = ('white' if abs(mat[i, j]) > 0.6 * vmax else 'black')
+                ax.text(j, i, label, ha='center', va='center',
+                        fontsize=8.5, color=color,
+                        fontweight='bold' if fdr_ok[i, j] else 'normal')
+                if fdr_ok[i, j]:
+                    ax.add_patch(plt.Rectangle(
+                        (j - 0.5, i - 0.5), 1, 1, fill=False,
+                        edgecolor='black', linewidth=2.2))
             else:
                 ax.text(j, i, '—', ha='center', va='center',
                         fontsize=10, color='gray')
 
-    plt.colorbar(im, ax=ax, label='β (cross-lagged)')
-    plt.tight_layout()
+    cb = plt.colorbar(im, ax=ax, label='β (cross-lagged)')
+    cb.ax.tick_params(labelsize=8)
+    fig.text(0.01, 0.01, 'q = BH-FDR p across 6 pairs; '
+             'bold border = FDR<0.05',
+             fontsize=8, color='#555555')
+    plt.tight_layout(rect=[0, 0.03, 1, 1])
     fig.savefig(output_path, bbox_inches='tight')
+    fig.savefig(output_path.replace('.pdf', '.png'), dpi=300, bbox_inches='tight')
     plt.close(fig)
-    print(f"\nFigure saved: {output_path}")
+    print(f"Figure saved: {output_path}")
 
 
 def parse_args():
@@ -383,6 +505,35 @@ def main():
         }
 
     # ---------------------------------------------------------------
+    # FDR adjustment (Benjamini-Hochberg) on the 6 full-sample pairs
+    # ---------------------------------------------------------------
+    full_results = [r for r in all_results if r['subgroup'] == 'full']
+    apply_fdr_bh(full_results)
+    # Write back so downstream `all_results` carries the p_fdr field.
+    full_by_pair = {r['pair']: r for r in full_results}
+    for r in all_results:
+        if r['subgroup'] == 'full':
+            src = full_by_pair[r['pair']]
+            r['p_fdr'] = src.get('p_fdr')
+            r['fdr_reject'] = src.get('fdr_reject', False)
+
+    print("\n" + "=" * 70)
+    print("Full-sample ELSA lead-lag with FDR (BH)")
+    print("=" * 70)
+    print(f"{'Pair':<8s} {'beta':>9s} {'p_raw':>10s} {'p_fdr':>10s} "
+          f"{'FDR<0.05':>10s}  concordant")
+    print('-' * 65)
+    for r in full_results:
+        pf = r.get('p_fdr')
+        pf_str = f"{pf:.4g}" if pf is not None and np.isfinite(pf) else '   N/A '
+        print(f"{r['pair']:<8s} {r['beta']:>+9.4f} "
+              f"{r['p_value']:>10.4g} {pf_str:>10s} "
+              f"{str(r.get('fdr_reject', False)):>10s}  "
+              f"{'YES' if r['concordant'] else 'NO '}")
+    n_sig = sum(1 for r in full_results if r.get('fdr_reject'))
+    print(f"\nELSA: {n_sig}/{len(full_results)} pairs survive FDR<0.05")
+
+    # ---------------------------------------------------------------
     # Save outputs
     # ---------------------------------------------------------------
     os.makedirs('results', exist_ok=True)
@@ -434,6 +585,19 @@ def main():
     with open(json_path, 'w') as f:
         json.dump(summary, f, indent=2, default=str)
     print(f"Summary JSON: {json_path}")
+
+    # ---------------------------------------------------------------
+    # Combined FDR across both cohorts
+    # ---------------------------------------------------------------
+    inch_path = 'results/inchianti_lead_lag_summary.json'
+    if os.path.exists(inch_path):
+        with open(inch_path) as f:
+            inch_summary = json.load(f)
+        inch_results = inch_summary.get('results', [])
+        combined_path = 'results/lead_lag_fdr_combined.json'
+        build_combined_fdr(full_results, inch_results, combined_path)
+    else:
+        print(f"\n  WARNING: {inch_path} not found — skipping combined FDR.")
 
     # Figure
     fig_path = 'outputs/figure_elsa_lead_lag.pdf'

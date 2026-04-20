@@ -1,0 +1,828 @@
+{
+  "_description": "Permutation and random-panel null tests for the age-stratified \u03bb_max(\u0393\u0302_change) trajectory. Contextualises the manuscript's reported ~19-fold InCHIANTI increase and ~1.2-fold ELSA increase against nulls that control for marginal biomarker distributions, inter-biomarker correlation, and biomarker-panel selection.",
+  "method": {
+    "seed": 42,
+    "n_permutations": 1000,
+    "n_random_panels": 500,
+    "inchianti_axes": [
+      "delta_I",
+      "delta_M",
+      "delta_N",
+      "delta_F"
+    ],
+    "inchianti_strata": [
+      {
+        "label": "20-49",
+        "lo": 20,
+        "hi": 49
+      },
+      {
+        "label": "50-59",
+        "lo": 50,
+        "hi": 59
+      },
+      {
+        "label": "60-69",
+        "lo": 60,
+        "hi": 69
+      },
+      {
+        "label": "70-79",
+        "lo": 70,
+        "hi": 79
+      },
+      {
+        "label": "80+",
+        "lo": 80,
+        "hi": 120
+      }
+    ],
+    "elsa_axes": [
+      "dx_I",
+      "dx_M",
+      "dx_F"
+    ],
+    "elsa_strata": [
+      {
+        "label": "50-59",
+        "lo": 50,
+        "hi": 59
+      },
+      {
+        "label": "60-69",
+        "lo": 60,
+        "hi": 69
+      },
+      {
+        "label": "70-79",
+        "lo": 70,
+        "hi": 79
+      },
+      {
+        "label": "80+",
+        "lo": 80,
+        "hi": 120
+      }
+    ]
+  },
+  "inchianti_age_permutation": {
+    "observed_ratio": 18.82059875969661,
+    "observed_trajectory": {
+      "20-49": 1.1718834008756627,
+      "50-59": 1.218663406235102,
+      "60-69": 8.044252140891263,
+      "70-79": 11.255230017847492,
+      "80+": 22.05554728102954
+    },
+    "null_mean": 1.583215496442087,
+    "null_sd": 0.29686680267476373,
+    "null_median": 1.5358063501470203,
+    "null_p025": 1.1705571310868585,
+    "null_p975": 2.318803854596798,
+    "null_percentile_rank": 1.0,
+    "p_value": 0.0,
+    "n_permutations": 1000,
+    "n_valid": 1000,
+    "n_change_vectors": 1523
+  },
+  "inchianti_univariate_control": {
+    "by_stratum": {
+      "20-49": {
+        "lambda_max": 1.1718834008756625,
+        "max_univariate_var": 1.1625140408065489,
+        "ratio": 1.0080595672312165,
+        "per_axis_var": {
+          "delta_I": 0.9785859041945631,
+          "delta_M": 0.3824756757498471,
+          "delta_N": 0.7273463036913608,
+          "delta_F": 1.1625140408065489
+        },
+        "n": 229
+      },
+      "50-59": {
+        "lambda_max": 1.2186634062351023,
+        "max_univariate_var": 1.1968081217833921,
+        "ratio": 1.0182613102751534,
+        "per_axis_var": {
+          "delta_I": 0.9722696528780116,
+          "delta_M": 0.2917641371716064,
+          "delta_N": 0.6246588183705613,
+          "delta_F": 1.1968081217833921
+        },
+        "n": 97
+      },
+      "60-69": {
+        "lambda_max": 8.044252140891265,
+        "max_univariate_var": 8.021654153998883,
+        "ratio": 1.0028171230594773,
+        "per_axis_var": {
+          "delta_I": 0.812592199234276,
+          "delta_M": 0.49264935351856015,
+          "delta_N": 0.7622433904461163,
+          "delta_F": 8.021654153998883
+        },
+        "n": 227
+      },
+      "70-79": {
+        "lambda_max": 11.255230017847488,
+        "max_univariate_var": 11.243591355931107,
+        "ratio": 1.0010351373994255,
+        "per_axis_var": {
+          "delta_I": 0.9876094444204782,
+          "delta_M": 0.33920271363663757,
+          "delta_N": 0.7009149821313309,
+          "delta_F": 11.243591355931107
+        },
+        "n": 683
+      },
+      "80+": {
+        "lambda_max": 22.055547281029526,
+        "max_univariate_var": 22.043922309692,
+        "ratio": 1.0005273549404778,
+        "per_axis_var": {
+          "delta_I": 1.1510994615282173,
+          "delta_M": 0.6519398479717625,
+          "delta_N": 0.9353566221608348,
+          "delta_F": 22.043922309692
+        },
+        "n": 181
+      }
+    }
+  },
+  "inchianti_random_panel": {
+    "hdr_observed_ratio": 18.82059875969661,
+    "null_mean": 2.476408221565059,
+    "null_sd": 1.288686614582982,
+    "null_median": 2.0683855057273557,
+    "null_p025": 1.1855620740221402,
+    "null_p975": 5.007573163021763,
+    "null_percentile_rank": 1.0,
+    "p_value": 0.0,
+    "n_panels_run": 70,
+    "n_valid": 70,
+    "n_candidates": 8,
+    "effective_panel_size": 4,
+    "fallback_used": false,
+    "usable_candidates": [
+      "crp_hs",
+      "fibrinogen",
+      "hdl",
+      "ldl",
+      "triglycerides",
+      "albumin_pct",
+      "grip",
+      "gait_speed"
+    ],
+    "panels": [
+      {
+        "axes": [
+          "crp_hs",
+          "fibrinogen",
+          "hdl",
+          "ldl"
+        ],
+        "ratio": 4.997291239115397
+      },
+      {
+        "axes": [
+          "crp_hs",
+          "fibrinogen",
+          "hdl",
+          "triglycerides"
+        ],
+        "ratio": 3.7803605610779174
+      },
+      {
+        "axes": [
+          "crp_hs",
+          "fibrinogen",
+          "hdl",
+          "albumin_pct"
+        ],
+        "ratio": 2.9313820660997707
+      },
+      {
+        "axes": [
+          "crp_hs",
+          "fibrinogen",
+          "hdl",
+          "grip"
+        ],
+        "ratio": 4.9193772370540705
+      },
+      {
+        "axes": [
+          "crp_hs",
+          "fibrinogen",
+          "hdl",
+          "gait_speed"
+        ],
+        "ratio": 4.2076288979602126
+      },
+      {
+        "axes": [
+          "crp_hs",
+          "fibrinogen",
+          "ldl",
+          "triglycerides"
+        ],
+        "ratio": 3.895446048481921
+      },
+      {
+        "axes": [
+          "crp_hs",
+          "fibrinogen",
+          "ldl",
+          "albumin_pct"
+        ],
+        "ratio": 2.9118608398967347
+      },
+      {
+        "axes": [
+          "crp_hs",
+          "fibrinogen",
+          "ldl",
+          "grip"
+        ],
+        "ratio": 4.843757967204765
+      },
+      {
+        "axes": [
+          "crp_hs",
+          "fibrinogen",
+          "ldl",
+          "gait_speed"
+        ],
+        "ratio": 4.080838550816439
+      },
+      {
+        "axes": [
+          "crp_hs",
+          "fibrinogen",
+          "triglycerides",
+          "albumin_pct"
+        ],
+        "ratio": 2.9574042223596626
+      },
+      {
+        "axes": [
+          "crp_hs",
+          "fibrinogen",
+          "triglycerides",
+          "grip"
+        ],
+        "ratio": 3.5604173476705
+      },
+      {
+        "axes": [
+          "crp_hs",
+          "fibrinogen",
+          "triglycerides",
+          "gait_speed"
+        ],
+        "ratio": 3.0737332806914366
+      },
+      {
+        "axes": [
+          "crp_hs",
+          "fibrinogen",
+          "albumin_pct",
+          "grip"
+        ],
+        "ratio": 2.870002099945089
+      },
+      {
+        "axes": [
+          "crp_hs",
+          "fibrinogen",
+          "albumin_pct",
+          "gait_speed"
+        ],
+        "ratio": 2.4705534990707845
+      },
+      {
+        "axes": [
+          "crp_hs",
+          "fibrinogen",
+          "grip",
+          "gait_speed"
+        ],
+        "ratio": 4.2688029424750935
+      },
+      {
+        "axes": [
+          "crp_hs",
+          "hdl",
+          "ldl",
+          "triglycerides"
+        ],
+        "ratio": 3.5529507709768726
+      },
+      {
+        "axes": [
+          "crp_hs",
+          "hdl",
+          "ldl",
+          "albumin_pct"
+        ],
+        "ratio": 2.93512538145288
+      },
+      {
+        "axes": [
+          "crp_hs",
+          "hdl",
+          "ldl",
+          "grip"
+        ],
+        "ratio": 5.034680053320366
+      },
+      {
+        "axes": [
+          "crp_hs",
+          "hdl",
+          "ldl",
+          "gait_speed"
+        ],
+        "ratio": 4.058801592888215
+      },
+      {
+        "axes": [
+          "crp_hs",
+          "hdl",
+          "triglycerides",
+          "albumin_pct"
+        ],
+        "ratio": 2.9917046136168706
+      },
+      {
+        "axes": [
+          "crp_hs",
+          "hdl",
+          "triglycerides",
+          "grip"
+        ],
+        "ratio": 5.108390998685769
+      },
+      {
+        "axes": [
+          "crp_hs",
+          "hdl",
+          "triglycerides",
+          "gait_speed"
+        ],
+        "ratio": 4.204171020012352
+      },
+      {
+        "axes": [
+          "crp_hs",
+          "hdl",
+          "albumin_pct",
+          "grip"
+        ],
+        "ratio": 2.7125822283929395
+      },
+      {
+        "axes": [
+          "crp_hs",
+          "hdl",
+          "albumin_pct",
+          "gait_speed"
+        ],
+        "ratio": 2.2858935143841554
+      },
+      {
+        "axes": [
+          "crp_hs",
+          "hdl",
+          "grip",
+          "gait_speed"
+        ],
+        "ratio": 4.457141634452067
+      },
+      {
+        "axes": [
+          "crp_hs",
+          "ldl",
+          "triglycerides",
+          "albumin_pct"
+        ],
+        "ratio": 2.967303001719611
+      },
+      {
+        "axes": [
+          "crp_hs",
+          "ldl",
+          "triglycerides",
+          "grip"
+        ],
+        "ratio": 4.546225992094954
+      },
+      {
+        "axes": [
+          "crp_hs",
+          "ldl",
+          "triglycerides",
+          "gait_speed"
+        ],
+        "ratio": 3.960674958849309
+      },
+      {
+        "axes": [
+          "crp_hs",
+          "ldl",
+          "albumin_pct",
+          "grip"
+        ],
+        "ratio": 2.699208664349146
+      },
+      {
+        "axes": [
+          "crp_hs",
+          "ldl",
+          "albumin_pct",
+          "gait_speed"
+        ],
+        "ratio": 2.2841917491066956
+      },
+      {
+        "axes": [
+          "crp_hs",
+          "ldl",
+          "grip",
+          "gait_speed"
+        ],
+        "ratio": 4.217664862073353
+      },
+      {
+        "axes": [
+          "crp_hs",
+          "triglycerides",
+          "albumin_pct",
+          "grip"
+        ],
+        "ratio": 2.7726417863334216
+      },
+      {
+        "axes": [
+          "crp_hs",
+          "triglycerides",
+          "albumin_pct",
+          "gait_speed"
+        ],
+        "ratio": 2.332390635417177
+      },
+      {
+        "axes": [
+          "crp_hs",
+          "triglycerides",
+          "grip",
+          "gait_speed"
+        ],
+        "ratio": 4.250628083371104
+      },
+      {
+        "axes": [
+          "crp_hs",
+          "albumin_pct",
+          "grip",
+          "gait_speed"
+        ],
+        "ratio": 2.387304150861094
+      },
+      {
+        "axes": [
+          "fibrinogen",
+          "hdl",
+          "ldl",
+          "triglycerides"
+        ],
+        "ratio": 1.2905483528217554
+      },
+      {
+        "axes": [
+          "fibrinogen",
+          "hdl",
+          "ldl",
+          "albumin_pct"
+        ],
+        "ratio": 1.4037765682762156
+      },
+      {
+        "axes": [
+          "fibrinogen",
+          "hdl",
+          "ldl",
+          "grip"
+        ],
+        "ratio": 1.8525792623480155
+      },
+      {
+        "axes": [
+          "fibrinogen",
+          "hdl",
+          "ldl",
+          "gait_speed"
+        ],
+        "ratio": 1.6620314353830536
+      },
+      {
+        "axes": [
+          "fibrinogen",
+          "hdl",
+          "triglycerides",
+          "albumin_pct"
+        ],
+        "ratio": 1.4255755438636335
+      },
+      {
+        "axes": [
+          "fibrinogen",
+          "hdl",
+          "triglycerides",
+          "grip"
+        ],
+        "ratio": 1.3390476869491472
+      },
+      {
+        "axes": [
+          "fibrinogen",
+          "hdl",
+          "triglycerides",
+          "gait_speed"
+        ],
+        "ratio": 1.2256947040189266
+      },
+      {
+        "axes": [
+          "fibrinogen",
+          "hdl",
+          "albumin_pct",
+          "grip"
+        ],
+        "ratio": 1.414013921057637
+      },
+      {
+        "axes": [
+          "fibrinogen",
+          "hdl",
+          "albumin_pct",
+          "gait_speed"
+        ],
+        "ratio": 1.3447043046312146
+      },
+      {
+        "axes": [
+          "fibrinogen",
+          "hdl",
+          "grip",
+          "gait_speed"
+        ],
+        "ratio": 1.787495643571446
+      },
+      {
+        "axes": [
+          "fibrinogen",
+          "ldl",
+          "triglycerides",
+          "albumin_pct"
+        ],
+        "ratio": 1.402831934760186
+      },
+      {
+        "axes": [
+          "fibrinogen",
+          "ldl",
+          "triglycerides",
+          "grip"
+        ],
+        "ratio": 1.2307741281957112
+      },
+      {
+        "axes": [
+          "fibrinogen",
+          "ldl",
+          "triglycerides",
+          "gait_speed"
+        ],
+        "ratio": 1.1539644255047252
+      },
+      {
+        "axes": [
+          "fibrinogen",
+          "ldl",
+          "albumin_pct",
+          "grip"
+        ],
+        "ratio": 1.3688464954929538
+      },
+      {
+        "axes": [
+          "fibrinogen",
+          "ldl",
+          "albumin_pct",
+          "gait_speed"
+        ],
+        "ratio": 1.3193145852842956
+      },
+      {
+        "axes": [
+          "fibrinogen",
+          "ldl",
+          "grip",
+          "gait_speed"
+        ],
+        "ratio": 1.5947705208126126
+      },
+      {
+        "axes": [
+          "fibrinogen",
+          "triglycerides",
+          "albumin_pct",
+          "grip"
+        ],
+        "ratio": 1.4133639968804534
+      },
+      {
+        "axes": [
+          "fibrinogen",
+          "triglycerides",
+          "albumin_pct",
+          "gait_speed"
+        ],
+        "ratio": 1.3460327257090148
+      },
+      {
+        "axes": [
+          "fibrinogen",
+          "triglycerides",
+          "grip",
+          "gait_speed"
+        ],
+        "ratio": 1.1367888476424861
+      },
+      {
+        "axes": [
+          "fibrinogen",
+          "albumin_pct",
+          "grip",
+          "gait_speed"
+        ],
+        "ratio": 1.3298982389251153
+      },
+      {
+        "axes": [
+          "hdl",
+          "ldl",
+          "triglycerides",
+          "albumin_pct"
+        ],
+        "ratio": 1.2113935143306245
+      },
+      {
+        "axes": [
+          "hdl",
+          "ldl",
+          "triglycerides",
+          "grip"
+        ],
+        "ratio": 1.386654611713525
+      },
+      {
+        "axes": [
+          "hdl",
+          "ldl",
+          "triglycerides",
+          "gait_speed"
+        ],
+        "ratio": 1.3775790484087889
+      },
+      {
+        "axes": [
+          "hdl",
+          "ldl",
+          "albumin_pct",
+          "grip"
+        ],
+        "ratio": 1.2754216479732197
+      },
+      {
+        "axes": [
+          "hdl",
+          "ldl",
+          "albumin_pct",
+          "gait_speed"
+        ],
+        "ratio": 1.2797826733653708
+      },
+      {
+        "axes": [
+          "hdl",
+          "ldl",
+          "grip",
+          "gait_speed"
+        ],
+        "ratio": 1.5086580046574039
+      },
+      {
+        "axes": [
+          "hdl",
+          "triglycerides",
+          "albumin_pct",
+          "grip"
+        ],
+        "ratio": 1.1975473889770218
+      },
+      {
+        "axes": [
+          "hdl",
+          "triglycerides",
+          "albumin_pct",
+          "gait_speed"
+        ],
+        "ratio": 1.2048990638805162
+      },
+      {
+        "axes": [
+          "hdl",
+          "triglycerides",
+          "grip",
+          "gait_speed"
+        ],
+        "ratio": 1.651536220291014
+      },
+      {
+        "axes": [
+          "hdl",
+          "albumin_pct",
+          "grip",
+          "gait_speed"
+        ],
+        "ratio": 1.2268971286987072
+      },
+      {
+        "axes": [
+          "ldl",
+          "triglycerides",
+          "albumin_pct",
+          "grip"
+        ],
+        "ratio": 1.2476704600926096
+      },
+      {
+        "axes": [
+          "ldl",
+          "triglycerides",
+          "albumin_pct",
+          "gait_speed"
+        ],
+        "ratio": 1.2404109255672944
+      },
+      {
+        "axes": [
+          "ldl",
+          "triglycerides",
+          "grip",
+          "gait_speed"
+        ],
+        "ratio": 1.4587849088960807
+      },
+      {
+        "axes": [
+          "ldl",
+          "albumin_pct",
+          "grip",
+          "gait_speed"
+        ],
+        "ratio": 1.2983401588808618
+      },
+      {
+        "axes": [
+          "triglycerides",
+          "albumin_pct",
+          "grip",
+          "gait_speed"
+        ],
+        "ratio": 1.212413939414311
+      }
+    ]
+  },
+  "elsa_age_permutation": {
+    "observed_ratio": 1.2444804827218865,
+    "observed_trajectory": {
+      "50-59": 0.7056427284950866,
+      "60-69": 0.6951861571597434,
+      "70-79": 0.7748167418131512,
+      "80+": 0.8651456044437307
+    },
+    "null_mean": 1.1121814567071973,
+    "null_sd": 0.056216394064301956,
+    "null_median": 1.103773021851397,
+    "null_p025": 1.0306740993368726,
+    "null_p975": 1.261312599538862,
+    "null_percentile_rank": 0.968,
+    "p_value": 0.032,
+    "n_permutations": 1000,
+    "n_valid": 1000,
+    "n_change_vectors": 10849
+  }
+}

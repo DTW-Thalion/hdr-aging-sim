@@ -45,6 +45,52 @@ Note: RMSSD was unavailable in the standard InCHIANTI release; Cystatin C and CT
 | B->M | +0.016 | <0.05 | -1 | NO |
 | B->N | +0.017 | <0.05 | -1 | NO |
 
+### Lead-lag FDR correction (two-cohort, Convention B)
+
+Source: [`results/lead_lag_fdr_combined.json`](lead_lag_fdr_combined.json)
+(Benjamini-Hochberg FDR applied independently within each cohort, produced
+by `scripts/elsa_lead_lag.py`).
+
+**ELSA (3-axis, N = 10,849 consecutive-wave pairs, 6,245 subjects):
+4 / 6 pairs survive FDR < 0.05.**
+
+| Pair | beta | p (raw) | q (FDR) | FDR<0.05 |
+|------|-----:|--------:|--------:|:--------:|
+| I→M | +0.0646 | 3.2e-20 | 1.9e-19 | ✓ |
+| M→I | +0.0276 | 1.0e-4  | 3.0e-4  | ✓ |
+| F→I | +0.0251 | 2.3e-3  | 4.6e-3  | ✓ |
+| I→F | +0.0137 | 4.2e-3  | 6.3e-3  | ✓ |
+| F→M | −0.0140 | 0.043   | 0.051   | ✗ (discordant) |
+| M→F | +0.0074 | 0.071   | 0.071   | ✗ |
+
+**InCHIANTI (4-axis, N = 1,523 consecutive-wave pairs): 0 / 12 pairs
+survive FDR < 0.05** (strongest: F→I raw p = 0.0085 → q = 0.102; I→M
+q = 0.123). The InCHIANTI per-pair significance story dissolves under
+multiple-comparison correction; the defensible manuscript claim is
+*directional concordance* (9/12 Conv-B concordant, binomial p = 0.073),
+not individual-pair significance. ELSA carries the per-pair FDR-level
+evidence (I→M, M→I, F→I, I→F all survive FDR<0.05).
+
+### Lambda_max age-trajectory null tests
+
+Source: [`results/lambda_max_null_tests.json`](lambda_max_null_tests.json)
+(produced by `scripts/lambda_max_null_tests.py`, seed 42).
+
+| Null | Observed ratio | Null median [95%] | p | Interpretation |
+|------|---------------:|-------------------|--:|----------------|
+| InCHIANTI age-permutation (n=1000) | 18.82×       | 1.54 [1.17, 2.32] | <0.001 | Amplification is age-specific, not a marginal artefact |
+| InCHIANTI random-panel (all C(8,4)=70) | 18.82× (HDR) | 2.07 [1.19, 5.01] | <0.001 | HDR 4-axis selection matters: ~9× the median random panel |
+| ELSA age-permutation (n=1000) | 1.24×           | 1.10 [1.03, 1.26] | 0.032  | Significant but marginal; ELSA magnitude supports direction only |
+
+**Univariate-variance control (InCHIANTI; counterintuitive):** the ratio
+lambda_max / max-single-axis-variance is 1.008 at ages 20-49, 1.018 at
+50-59, then collapses to ~1.001 at 60-69, 70-79, and 80+. At old ages the
+multivariate lambda_max is essentially the biggest individual-axis variance
+— coupling contribution to lambda_max growth is negligible and the 19×
+amplification is driven by single-axis variance growth (primarily F/SPPB
+decline). The manuscript should note this caveat when attributing
+lambda_max amplification to "coupling tightening".
+
 ### Survival analysis (Cox C-indices)
 
 Source of truth: [`results/inchianti_cox_frozen.json`](inchianti_cox_frozen.json)
@@ -73,6 +119,25 @@ ELSA comparison (source: [`results/elsa_cox_frozen.json`](elsa_cox_frozen.json))
 deltaC(M5-M4) = +0.009 (full, N=5,431; Mahalanobis and z-sum benchmarks both
 also +0.009, so SWDS-Gamma adds no measurable signal over isotropic distance
 in ELSA) and +0.013 (med-naive, N=3,233).
+
+#### Bootstrap 95% confidence intervals for deltaC
+
+Source: [`results/bootstrap_delta_c.json`](bootstrap_delta_c.json)
+(event-stratified paired bootstrap, n=2000 resamples, produced by
+`scripts/run_bootstrap_delta_c.py`).
+
+| Comparison | deltaC | 95% CI | p | N / events |
+|------------|-------:|--------|---:|-----------|
+| InCHIANTI M5 - M4             | +0.0140 | [+0.0082, +0.0226] | <0.001  | 923 / 698  |
+| InCHIANTI M4a - M4 (biomarkers alone) | +0.0141 | [+0.0080, +0.0227] | <0.001  | 923 / 698  |
+| InCHIANTI M4b - M4 (SWDS-Gamma alone) | +0.0071 | [+0.0024, +0.0133] | 0.001   | 923 / 698  |
+| ELSA M5 - M4 (full matched)   | +0.0087 | [+0.0030, +0.0191] | 0.0005  | 5,431 / 1,122 |
+| ELSA M5 - M4 (med-naive)      | +0.0131 | [+0.0032, +0.0319] | 0.005   | 3,233 / 618 |
+
+All five 95% CIs **exclude zero** (significant vs null), but **none exclude
+0.01** (the Pencina/Steyerberg prognostic-biomarker threshold). SWDS-Gamma
+adds signal above Fried frailty / Rockwood FI, but cannot be declared to
+reliably clear the 0.01 threshold in either cohort.
 
 ## 3. InCHIANTI vs ELSA Comparison
 
@@ -167,3 +232,9 @@ test and remains a separate open question.
 - **NLR is a poor I-axis substitute**: Replacing IL-6 with NLR reduced concordance to 4/12 (33%). The neutrophil/lymphocyte ratio captures a different aspect of immune function (innate/adaptive balance) than the IL-6 inflammatory resolution axis.
 
 - **Survival deltaC, with decomposition**: deltaC(M5-M4) = +0.014 for both subgroups, slightly exceeding ELSA's values. The M4a/M4b decomposition clarifies the attribution: biomarkers alone contribute +0.014 above Fried frailty, while SWDS-Gamma alone contributes +0.007-0.010. Combined M5-M4 does not exceed biomarker-only M4a-M4, so the coupling-weighted score overlaps substantially with raw biomarker information rather than adding an independent signal.
+
+- **deltaC significance, with caveat (added 2026-04-19)**: Event-stratified paired bootstrap (n=2000, `results/bootstrap_delta_c.json`) gives 95% CIs for deltaC(M5-M4) that exclude zero in all three cohorts (InCHIANTI age65+ +0.014 [+0.008,+0.023]; ELSA full +0.009 [+0.003,+0.019]; ELSA med-naive +0.013 [+0.003,+0.032]) but **none exclude 0.01**. The Pencina/Steyerberg prognostic-biomarker threshold is not reliably cleared by SWDS-Gamma above frailty-adjusted models.
+
+- **Lead-lag under FDR (added 2026-04-19)**: Benjamini-Hochberg FDR within each cohort (`results/lead_lag_fdr_combined.json`) shows ELSA retains 4/6 pairs (I→M q=1.9e-19, M→I, F→I, I→F) but **InCHIANTI retains 0/12 pairs**. The InCHIANTI claim is *directional concordance* (9/12 Conv-B, binomial p=0.073), not per-pair significance. ELSA carries the FDR-level evidence.
+
+- **Lambda_max single-axis dominance (added 2026-04-19)**: Null-test analysis (`results/lambda_max_null_tests.json`) shows InCHIANTI's 19× amplification is statistically real (age-permutation p<0.001; random-panel p<0.001). However, the ratio lambda_max / max-individual-variance collapses to ~1.001 at ages 70+, meaning the biggest eigenvalue is essentially dominated by single-axis (F/SPPB) variance at old ages — coupling contribution to lambda_max growth is negligible. The manuscript should distinguish "lambda_max amplifies with age" (true) from "coupling tightens with age" (not supported by this control).

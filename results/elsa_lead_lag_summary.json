@@ -129,7 +129,9 @@
       "j_sign": 1,
       "predicted_sign": 1,
       "observed_sign": 1,
-      "concordant": true
+      "concordant": true,
+      "p_fdr": 0.0003035669032601653,
+      "fdr_reject": true
     },
     {
       "subgroup": "full",
@@ -145,7 +147,9 @@
       "j_sign": 1,
       "predicted_sign": 1,
       "observed_sign": 1,
-      "concordant": true
+      "concordant": true,
+      "p_fdr": 1.9377705079664434e-19,
+      "fdr_reject": true
     },
     {
       "subgroup": "full",
@@ -161,7 +165,9 @@
       "j_sign": -1,
       "predicted_sign": 1,
       "observed_sign": 1,
-      "concordant": true
+      "concordant": true,
+      "p_fdr": 0.0045623634687241245,
+      "fdr_reject": true
     },
     {
       "subgroup": "full",
@@ -177,7 +183,9 @@
       "j_sign": 1,
       "predicted_sign": 1,
       "observed_sign": 1,
-      "concordant": true
+      "concordant": true,
+      "p_fdr": 0.0062661232691892535,
+      "fdr_reject": true
     },
     {
       "subgroup": "full",
@@ -193,7 +201,9 @@
       "j_sign": -1,
       "predicted_sign": 1,
       "observed_sign": -1,
-      "concordant": false
+      "concordant": false,
+      "p_fdr": 0.051105908457752564,
+      "fdr_reject": false
     },
     {
       "subgroup": "full",
@@ -209,7 +219,9 @@
       "j_sign": 1,
       "predicted_sign": 1,
       "observed_sign": 1,
-      "concordant": true
+      "concordant": true,
+      "p_fdr": 0.07098150326506399,
+      "fdr_reject": false
     },
     {
       "subgroup": "med_naive",

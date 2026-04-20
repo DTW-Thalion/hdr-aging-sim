@@ -581,6 +581,18 @@ Pipeline C-indices (authoritative — both cohorts):
 
 In ELSA, the ΔC from SWDS-Γ (+0.009) is indistinguishable from the Mahalanobis and z-sum benchmarks (both +0.009): the eigenvalue weighting contributes no measurable additional information over isotropic distance. In InCHIANTI age65+ the M4a/M4b decomposition shows that biomarkers alone carry the dominant incremental signal above Fried frailty (+0.014) and SWDS-Γ alone captures about half of that (+0.007); the combined M5−M4 (+0.014) does not exceed the biomarker-only increment, indicating substantial overlap between the coupling-weighted score and raw biomarker information. The manuscript text and figure caption should reference these frozen JSONs for any quoted C-index.
 
+**Bootstrap 95% CIs for ΔC(M5−M4)** (source: [`results/bootstrap_delta_c.json`](results/bootstrap_delta_c.json), n=2000 event-stratified resamples, `scripts/run_bootstrap_delta_c.py`):
+
+| Cohort | ΔC | 95% CI | p | N / events |
+|--------|---:|--------|---:|-----------|
+| InCHIANTI M5−M4         | +0.0140 | [+0.0082, +0.0226] | <0.001  | 923 / 698 |
+| InCHIANTI M4a−M4 (bio)  | +0.0141 | [+0.0080, +0.0227] | <0.001  | 923 / 698 |
+| InCHIANTI M4b−M4 (SWDS) | +0.0071 | [+0.0024, +0.0133] | 0.001   | 923 / 698 |
+| ELSA full M5−M4         | +0.0087 | [+0.0030, +0.0191] | 0.0005  | 5,431 / 1,122 |
+| ELSA med-naive M5−M4    | +0.0131 | [+0.0032, +0.0319] | 0.005   | 3,233 / 618 |
+
+All five 95% CIs **exclude zero** (significant vs null), but **none exclude 0.01** (the Pencina/Steyerberg threshold). The SWDS-Γ increment above frailty-adjusted models is reliably > 0 but cannot be declared to clear 0.01 in either cohort.
+
 #### Biomarker Specification
 
 Definitive biomarker definitions are documented in `outputs/biomarker_specification.txt`:
@@ -880,11 +892,13 @@ python scripts/inchianti_manuscript_summary.py
 
 | Analysis | Result | Interpretation |
 |----------|--------|----------------|
-| **Lambda_max trajectory** | 1.17 (20–49) → 22.1 (80+) [4-axis]; 3.28 → 28.7 [5-axis], monotonically increasing | ✅ Replicates ELSA coupling-tightening |
+| **Lambda_max trajectory** | 1.17 (20–49) → 22.1 (80+) [4-axis]; 3.28 → 28.7 [5-axis], monotonically increasing | ✅ Replicates ELSA coupling-tightening; permutation null p<0.001, random-panel null p<0.001 (see below) |
+| **Lambda_max single-axis check** | λ_max / max-univariate-variance ≈ 1.001 at ages 70+ | ⚠️ Amplification is driven by single-axis (F/SPPB) growth at old ages, not by coupling tightening |
 | **Lead-lag concordance** | 4-axis HR: 9/12 (75%, p=0.073, Conv B); 5-axis: 12/20 (60%); see concordance audit | Convention B (biological direction) recommended |
+| **Lead-lag FDR (BH within cohort)** | ELSA: 4/6 pairs FDR<0.05 (I→M q=1.9e-19); InCHIANTI: 0/12 pairs FDR<0.05 | ELSA carries per-pair significance; InCHIANTI carries directional-concordance claim |
 | **Medication dose-response** | Within-decade CIs overlap; SWDS-Gamma n_meds p = 0.35; HTN matched: treated > untreated | Confounding by indication, not genuine compression |
 | **Pi trajectory** | Slope = −0.019/yr (D-dominated) | ⚠️ Divergent from ELSA (+0.001/yr) |
-| **Survival** | deltaC(M5-M4) = +0.014 (age 65+), +0.014 (med-naive) | ✅ Comparable to ELSA (+0.009/+0.013) |
+| **Survival** | deltaC(M5-M4) = +0.014 [+0.008,+0.023] (age 65+), +0.014 (med-naive); ELSA full +0.009 [+0.003,+0.019]; ELSA med-naive +0.013 [+0.003,+0.032] | ✅ All CIs exclude 0; none exclude 0.01 (see bootstrap section above) |
 
 **Lead-lag concordance audit:** A 3-convention comparison (`scripts/verify_lead_lag_concordance.py`) resolves the concordance discrepancy between the original (9/12) and expanded (6/12) analyses. Convention B (biological direction: all beta > 0 predicted) gives 9/12 (75%, p=0.073) for the 4-axis HR model. Convention A (naive J sign) gives 8/12 (67%). The discrepancy arose because the expanded script incorrectly applied a sign-flip adjustment for protective F-axis entries. Convention B is recommended because cross-lagged regressions in declining systems measure co-decline direction, not individual coupling signs. See `results/lead_lag_concordance_audit.md`.
 
@@ -937,6 +951,9 @@ python scripts/inchianti_manuscript_summary.py
 | `inchianti_6axis_analysis.py` | `results/inchianti_6axis_results.json` | 5-axis, 4 config comparison (lambda, lead-lag, Pi) |
 | `inchianti_survival.py` | `results/inchianti_survival_analysis.json` | Cox models: SWDS-Gamma vs mortality |
 | `inchianti_figures_6axis.py` | `outputs/figure_inchianti_*_6axis.pdf` | 6-axis figures (comparison, 5x5 heatmap, N-axis, survival) |
+| `run_bootstrap_delta_c.py` | `results/bootstrap_delta_c.json` | Event-stratified paired bootstrap (n=2000) for ΔC(M5−M4) 95% CIs in both cohorts; utility in `src/hdr_sim/bootstrap.py` |
+| `lambda_max_null_tests.py` | `results/lambda_max_null_tests.json`, `outputs/figure_lambda_max_null.pdf` | 4 null tests for the λ_max age-trajectory: InCHIANTI age-permutation, random 4-biomarker panels, univariate-variance control, ELSA age-permutation |
+| `elsa_lead_lag.py` | `results/elsa_lead_lag_summary.json`, `results/lead_lag_fdr_combined.json`, `outputs/figure_elsa_lead_lag.pdf` | ELSA 3-axis cross-lagged lead-lag + BH-FDR within each cohort |
 | `inchianti_manuscript_summary.py` | `results/inchianti_summary_for_manuscript.md` | Consolidated manuscript-ready results |
 
 ### Dependencies
