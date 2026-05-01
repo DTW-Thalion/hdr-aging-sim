@@ -1,0 +1,125 @@
+# ===========================================================
+#  HDR Recovery Dynamics Analysis -- Configuration
+# ===========================================================
+
+# --- Data source ---
+# Set ONE of these. The other should be null.
+mimic_dir: null                  # MIMIC-IV base directory (e.g. /data/mimic-iv-2.2/)
+isaric_file: null                # Path to ISARIC CSV/Parquet
+
+# --- Axis biomarker definitions (MIMIC-IV itemid mappings) ---
+axes:
+  I:  # Inflammatory resolution
+    label: "Inflammatory resolution"
+    biomarkers:
+      - name: CRP
+        itemid: 50889
+        transform: log
+        sign: positive
+        source: labevents
+        ref_low: 0.0
+        ref_high: 5.0           # mg/L upper normal
+      - name: WBC
+        itemid: 51301
+        transform: log
+        sign: positive
+        source: labevents
+        ref_low: 4.0
+        ref_high: 11.0          # K/uL
+      - name: NLR
+        derived_from: [neutrophils, lymphocytes]
+        neutrophil_itemid: 51256
+        lymphocyte_itemid: 51245
+        transform: log
+        sign: positive
+        source: derived
+        ref_low: 1.0
+        ref_high: 3.0
+    primary: CRP
+
+  M:  # Metabolic regulatory gain
+    label: "Metabolic gain"
+    biomarkers:
+      - name: glucose
+        itemid: 50931
+        transform: none
+        sign: positive
+        source: labevents
+        ref_low: 70.0
+        ref_high: 110.0          # mg/dL
+      - name: lactate
+        itemid: 50813
+        transform: log
+        sign: positive
+        source: labevents
+        ref_low: 0.5
+        ref_high: 2.0           # mmol/L
+    primary: glucose
+
+  N:  # Neuroautonomic balance
+    label: "Autonomic balance"
+    biomarkers:
+      - name: heart_rate
+        itemid: 220045
+        transform: none
+        sign: positive
+        source: chartevents
+        aggregation: daily_median
+        ref_low: 60.0
+        ref_high: 80.0           # bpm
+      - name: MAP
+        itemid: 220052
+        transform: none
+        sign: negative
+        source: chartevents
+        aggregation: daily_median
+        ref_low: 70.0
+        ref_high: 105.0          # mmHg
+    primary: heart_rate
+
+  renal:  # Renal clearance (proxy for P-axis -- clearance capacity)
+    label: "Renal clearance"
+    biomarkers:
+      - name: creatinine
+        itemid: 50912
+        transform: log
+        sign: positive
+        source: labevents
+        ref_low: 0.6
+        ref_high: 1.2            # mg/dL
+      - name: BUN
+        itemid: 51006
+        transform: log
+        sign: positive
+        source: labevents
+        ref_low: 7.0
+        ref_high: 20.0           # mg/dL
+    primary: creatinine
+
+# --- Episode definitions ---
+episodes:
+  min_measurements_per_axis: 4
+  min_los_days: 3
+  max_los_days: 30
+  peak_window_days: 3
+  recovery_window_days: 21
+  exclude_deaths_from_recovery: true
+
+  cohorts:
+    all_icu: true
+    infection:
+      icd_prefixes: [A, B, J09, J10, J11, J12, J13, J14, J15, J16, J17, J18,
+                     J20, J21, J22, J80, J96, U07]
+    surgical:
+      admission_type: [ELECTIVE, "SURGICAL SAME DAY"]
+    sepsis:
+      use_sepsis3: true
+
+# --- Analysis parameters ---
+analysis:
+  age_strata: [[18, 39], [40, 49], [50, 59], [60, 69], [70, 79], [80, 100]]
+  n_bootstrap: 2000
+  seed: 42
+
+# --- Output ---
+output_dir: ./results
