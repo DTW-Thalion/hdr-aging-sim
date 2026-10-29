@@ -1,0 +1,389 @@
+{
+  "generated_utc": "2026-10-29T17:53:19+00:00",
+  "generated_by": "scripts/run_task_1_3_recalibration.py",
+  "task": "Task 1.3 single-anchor recalibration under Convention G",
+  "decision_provenance": {
+    "convention": "G (gains) -- docs/units_convention.md, confirmed 2026-10-29",
+    "tau": "data/tau_registry.json",
+    "protective_entries": "moved to kappa -- protective_coupling_formulation Sec 3",
+    "regime_dependent": "N->I, N->B, C->I zeroed in the healthy basin -- Sec 4",
+    "scale": "compiled level, unscaled (decision of 2026-10-29)"
+  },
+  "anchor": {
+    "age": 120.0,
+    "alpha_fast": -0.004,
+    "source": "Pyrkov et al. 2021 DOSI autocorrelation"
+  },
+  "published_for_comparison": {
+    "c": 0.89,
+    "alpha_fast_25": -0.19,
+    "free_parameters": 2,
+    "note": "the published alpha_fast(25) was FITTED (the objective maximised |alpha(25)|) and lies below the uncoupled abscissa of -0.1667, so it is unreachable with G >= 0"
+  },
+  "rho_G_healthy_adopted": 0.4696565096854178,
+  "scale_invariance_check": {
+    "rows": [
+      {
+        "s": 0.25,
+        "c_star": 8.005211848258204,
+        "c_star_times_s": 2.001302962064551,
+        "alpha_fast_25": -0.030574440601273217,
+        "rho_sG": 0.11741412742135444
+      },
+      {
+        "s": 0.5,
+        "c_star": 4.002605924129064,
+        "c_star_times_s": 2.001302962064532,
+        "alpha_fast_25": -0.030574440601276984,
+        "rho_sG": 0.2348282548427089
+      },
+      {
+        "s": 1.0,
+        "c_star": 2.0013029620645533,
+        "c_star_times_s": 2.0013029620645533,
+        "alpha_fast_25": -0.03057444060127255,
+        "rho_sG": 0.4696565096854178
+      },
+      {
+        "s": 2.0,
+        "c_star": 1.0006514810322766,
+        "c_star_times_s": 2.0013029620645533,
+        "alpha_fast_25": -0.03057444060127255,
+        "rho_sG": 0.9393130193708356
+      }
+    ],
+    "conclusion": "c*s is constant and alpha_fast is unchanged: a global rescaling of G is not identified by the alpha calibration, so the scale decision affects rho(G) and the loop gain only."
+  },
+  "status": "PARAMETERISATION UNDECIDED -- all three computed, none chosen. See the module docstring.",
+  "variants": {
+    "scalar": {
+      "variant": "scalar",
+      "c": 2.0013029620645533,
+      "tau_I_120": 44.99999999999999,
+      "tau_I_120_is_calibrated": false,
+      "rho_cG_healthy": 0.9399249639863262,
+      "alpha_fast": {
+        "25": {
+          "alpha": -0.03057444060127255,
+          "recovery_timescale_days": 32.70705793251304,
+          "alpha_uncoupled": -0.16666666666666666,
+          "tau_I": 4.0,
+          "slowest_fast_axis": "C"
+        },
+        "40": {
+          "alpha": -0.023003899710997273,
+          "recovery_timescale_days": 43.470890264833606,
+          "alpha_uncoupled": -0.14499216848956636,
+          "tau_I": 5.935246907853036,
+          "slowest_fast_axis": "C"
+        },
+        "55": {
+          "alpha": -0.01697987304821155,
+          "recovery_timescale_days": 58.89325539482333,
+          "alpha_uncoupled": -0.11354876380645504,
+          "tau_I": 8.806788964294755,
+          "slowest_fast_axis": "I"
+        },
+        "70": {
+          "alpha": -0.012321093570436774,
+          "recovery_timescale_days": 81.16162695163679,
+          "alpha_uncoupled": -0.0765250481197111,
+          "tau_I": 13.067616742111174,
+          "slowest_fast_axis": "I"
+        },
+        "80": {
+          "alpha": -0.009867411065783644,
+          "recovery_timescale_days": 101.34370538870245,
+          "alpha_uncoupled": -0.058823529411764705,
+          "tau_I": 17.0,
+          "slowest_fast_axis": "I"
+        },
+        "100": {
+          "alpha": -0.006305806097382566,
+          "recovery_timescale_days": 158.58400727150223,
+          "alpha_uncoupled": -0.036155076303109365,
+          "tau_I": 27.65863337187866,
+          "slowest_fast_axis": "I"
+        },
+        "120": {
+          "alpha": -0.003999999999999979,
+          "recovery_timescale_days": 250.0000000000013,
+          "alpha_uncoupled": -0.022222222222222227,
+          "tau_I": 44.99999999999999,
+          "slowest_fast_axis": "I"
+        }
+      },
+      "alpha_fast_25_OUTPUT": -0.03057444060127255,
+      "alpha_fast_120": -0.003999999999999979,
+      "anchor_met": true,
+      "coupling_share_of_margin_at_120": 0.820000000000001,
+      "monotonicity": {
+        "n_age_points": 7001,
+        "criterion": "alpha_fast non-decreasing in age",
+        "violations": 0,
+        "stable_at_all_ages": true,
+        "n_ages_unstable": 0,
+        "fold_change_25_to_120": 7.643610150318177
+      },
+      "monte_carlo_alpha": {
+        "spec": "lognormal multiplicative noise per non-zero entry, CV by confidence grade (A 0.20, B 0.40, C 0.70); no grade-C sign flip, G must stay non-negative",
+        "n": 20000,
+        "seed": 2026,
+        "by_age": {
+          "25": {
+            "mean": -0.015083709869066092,
+            "ci95": [
+              -0.06682027461676535,
+              0.053558999810383735
+            ],
+            "P_alpha_ge_0": 0.2828
+          },
+          "55": {
+            "mean": -0.008543614640963454,
+            "ci95": [
+              -0.03771170069403112,
+              0.029308367471277092
+            ],
+            "P_alpha_ge_0": 0.2828
+          },
+          "80": {
+            "mean": -0.0049466173448772756,
+            "ci95": [
+              -0.021814751372383374,
+              0.017319113332321966
+            ],
+            "P_alpha_ge_0": 0.2828
+          },
+          "120": {
+            "mean": -0.0019850841762098555,
+            "ci95": [
+              -0.008805304250181643,
+              0.007153631973209756
+            ],
+            "P_alpha_ge_0": 0.2828
+          }
+        }
+      }
+    },
+    "compiled": {
+      "variant": "compiled",
+      "c": 1.0,
+      "tau_I_120": 44.99999999999999,
+      "tau_I_120_is_calibrated": false,
+      "rho_cG_healthy": 0.4696565096854178,
+      "alpha_fast": {
+        "25": {
+          "alpha": -0.1524894885905581,
+          "recovery_timescale_days": 6.557829062467708,
+          "alpha_uncoupled": -0.16666666666666666,
+          "tau_I": 4.0,
+          "slowest_fast_axis": "C"
+        },
+        "40": {
+          "alpha": -0.12867029345057265,
+          "recovery_timescale_days": 7.771801658198126,
+          "alpha_uncoupled": -0.14499216848956636,
+          "tau_I": 5.935246907853036,
+          "slowest_fast_axis": "C"
+        },
+        "55": {
+          "alpha": -0.09637880190657763,
+          "recovery_timescale_days": 10.375725576764534,
+          "alpha_uncoupled": -0.11354876380645504,
+          "tau_I": 8.806788964294755,
+          "slowest_fast_axis": "I"
+        },
+        "70": {
+          "alpha": -0.0663578305432249,
+          "recovery_timescale_days": 15.06981153262099,
+          "alpha_uncoupled": -0.0765250481197111,
+          "tau_I": 13.067616742111174,
+          "slowest_fast_axis": "I"
+        },
+        "80": {
+          "alpha": -0.05131355389277423,
+          "recovery_timescale_days": 19.488028486384298,
+          "alpha_uncoupled": -0.058823529411764705,
+          "tau_I": 17.0,
+          "slowest_fast_axis": "I"
+        },
+        "100": {
+          "alpha": -0.03167541579008532,
+          "recovery_timescale_days": 31.5702248907182,
+          "alpha_uncoupled": -0.036155076303109365,
+          "tau_I": 27.65863337187866,
+          "slowest_fast_axis": "I"
+        },
+        "120": {
+          "alpha": -0.01952264772750718,
+          "recovery_timescale_days": 51.222560277569926,
+          "alpha_uncoupled": -0.022222222222222227,
+          "tau_I": 44.99999999999999,
+          "slowest_fast_axis": "I"
+        }
+      },
+      "alpha_fast_25_OUTPUT": -0.1524894885905581,
+      "alpha_fast_120": -0.01952264772750718,
+      "anchor_met": false,
+      "coupling_share_of_margin_at_120": 0.12148085226217709,
+      "monotonicity": {
+        "n_age_points": 7001,
+        "criterion": "alpha_fast non-decreasing in age",
+        "violations": 0,
+        "stable_at_all_ages": true,
+        "n_ages_unstable": 0,
+        "fold_change_25_to_120": 7.810902021025674
+      },
+      "monte_carlo_alpha": {
+        "spec": "lognormal multiplicative noise per non-zero entry, CV by confidence grade (A 0.20, B 0.40, C 0.70); no grade-C sign flip, G must stay non-negative",
+        "n": 20000,
+        "seed": 2026,
+        "by_age": {
+          "25": {
+            "mean": -0.1512418681835246,
+            "ci95": [
+              -0.15696252918114337,
+              -0.1432617610348586
+            ],
+            "P_alpha_ge_0": 0.0
+          },
+          "55": {
+            "mean": -0.09491196874445612,
+            "ci95": [
+              -0.1006043336021239,
+              -0.08739907254560875
+            ],
+            "P_alpha_ge_0": 0.0
+          },
+          "80": {
+            "mean": -0.05065291233691789,
+            "ci95": [
+              -0.0534364706186122,
+              -0.046790811974987474
+            ],
+            "P_alpha_ge_0": 0.0
+          },
+          "120": {
+            "mean": -0.019288077557138694,
+            "ci95": [
+              -0.02030477270909007,
+              -0.01785902586674166
+            ],
+            "P_alpha_ge_0": 0.0
+          }
+        }
+      }
+    },
+    "tau_anchor": {
+      "variant": "tau_anchor",
+      "c": 1.0,
+      "tau_I_120": 221.82557049971768,
+      "tau_I_120_is_calibrated": true,
+      "rho_cG_healthy": 0.4696565096854178,
+      "alpha_fast": {
+        "25": {
+          "alpha": -0.1524894885905581,
+          "recovery_timescale_days": 6.557829062467708,
+          "alpha_uncoupled": -0.16666666666666666,
+          "tau_I": 4.0,
+          "slowest_fast_axis": "C"
+        },
+        "40": {
+          "alpha": -0.12867029345057265,
+          "recovery_timescale_days": 7.771801658198126,
+          "alpha_uncoupled": -0.14499216848956636,
+          "tau_I": 5.935246907853036,
+          "slowest_fast_axis": "C"
+        },
+        "55": {
+          "alpha": -0.09637880190657763,
+          "recovery_timescale_days": 10.375725576764534,
+          "alpha_uncoupled": -0.11354876380645504,
+          "tau_I": 8.806788964294755,
+          "slowest_fast_axis": "I"
+        },
+        "70": {
+          "alpha": -0.0663578305432249,
+          "recovery_timescale_days": 15.06981153262099,
+          "alpha_uncoupled": -0.0765250481197111,
+          "tau_I": 13.067616742111174,
+          "slowest_fast_axis": "I"
+        },
+        "80": {
+          "alpha": -0.05131355389277423,
+          "recovery_timescale_days": 19.488028486384298,
+          "alpha_uncoupled": -0.058823529411764705,
+          "tau_I": 17.0,
+          "slowest_fast_axis": "I"
+        },
+        "100": {
+          "alpha": -0.014397826701895836,
+          "recovery_timescale_days": 69.45492682366603,
+          "alpha_uncoupled": -0.01628432403904966,
+          "tau_I": 61.408750992795845,
+          "slowest_fast_axis": "I"
+        },
+        "120": {
+          "alpha": -0.004000000000000005,
+          "recovery_timescale_days": 249.99999999999966,
+          "alpha_uncoupled": -0.004508046559949104,
+          "tau_I": 221.8255704997177,
+          "slowest_fast_axis": "I"
+        }
+      },
+      "alpha_fast_25_OUTPUT": -0.1524894885905581,
+      "alpha_fast_120": -0.004000000000000005,
+      "anchor_met": true,
+      "coupling_share_of_margin_at_120": 0.11269771800112793,
+      "implied_gompertz_gamma_25_to_120": 0.04226944203625377,
+      "declared_gompertz_gamma_25_to_80": 0.02630761787156955,
+      "monotonicity": {
+        "n_age_points": 7001,
+        "criterion": "alpha_fast non-decreasing in age",
+        "violations": 0,
+        "stable_at_all_ages": true,
+        "n_ages_unstable": 0,
+        "fold_change_25_to_120": 38.122372147639474
+      },
+      "monte_carlo_alpha": {
+        "spec": "lognormal multiplicative noise per non-zero entry, CV by confidence grade (A 0.20, B 0.40, C 0.70); no grade-C sign flip, G must stay non-negative",
+        "n": 20000,
+        "seed": 2026,
+        "by_age": {
+          "25": {
+            "mean": -0.1512418681835246,
+            "ci95": [
+              -0.15696252918114337,
+              -0.1432617610348586
+            ],
+            "P_alpha_ge_0": 0.0
+          },
+          "55": {
+            "mean": -0.09491196874445612,
+            "ci95": [
+              -0.1006043336021239,
+              -0.08739907254560875
+            ],
+            "P_alpha_ge_0": 0.0
+          },
+          "80": {
+            "mean": -0.05065291233691789,
+            "ci95": [
+              -0.0534364706186122,
+              -0.046790811974987474
+            ],
+            "P_alpha_ge_0": 0.0
+          },
+          "120": {
+            "mean": -0.003956681703331362,
+            "ci95": [
+              -0.004150179335717896,
+              -0.0036821070304151994
+            ],
+            "P_alpha_ge_0": 0.0
+          }
+        }
+      }
+    }
+  }
+}
