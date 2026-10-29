@@ -106,7 +106,10 @@ def augment_panel(panel):
     """Add new axis columns to the panel."""
     import pyreadstat
 
-    DATA_ROOT = os.path.join(os.path.expanduser("~"), "Downloads", "inCHIANTI", "InCHIANTI_CD_Share")
+    DATA_ROOT = os.environ.get(
+        "INCHIANTI_DATA_ROOT",
+        os.path.join(os.path.expanduser("~"), "Downloads", "inCHIANTI",
+                     "InCHIANTI_CD_Share"))
 
     # Wave configs for new variables
     wave_labs = [

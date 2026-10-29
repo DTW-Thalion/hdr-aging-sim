@@ -21,8 +21,10 @@ import pandas as pd
 import pyreadstat
 
 # ── Default data root ──────────────────────────────────────────────
-_DEFAULT_DATA_ROOT = os.path.join(
-    os.path.expanduser("~"), "Downloads", "inCHIANTI", "InCHIANTI_CD_Share"
+_DEFAULT_DATA_ROOT = os.environ.get(
+    "INCHIANTI_DATA_ROOT",
+    os.path.join(os.path.expanduser("~"), "Downloads", "inCHIANTI",
+                 "InCHIANTI_CD_Share")
 )
 
 # ── Wave prefix configuration ─────────────────────────────────────

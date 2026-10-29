@@ -1,0 +1,553 @@
+{
+  "generated_by": "scripts/units_convention_numerics.py",
+  "inputs": {
+    "J": "data/J_matrix_compiled_9x9.csv",
+    "tau": "data/tau_registry.json",
+    "phi": "results/lead_lag_phi_table.json"
+  },
+  "monte_carlo_spec": {
+    "grade_cv": {
+      "A": 0.2,
+      "B": 0.4,
+      "C": 0.7,
+      "": 0.4
+    },
+    "n": 20000,
+    "seed": 2026,
+    "source": "scripts/run_figure_uncertainty.py (Supplementary Note 1)"
+  },
+  "rho_G": {
+    "healthy": {
+      "rho_G_fast": 0.749035488499098,
+      "rho_G_fast_F_row_removed": 0.5179994267819731,
+      "loop_gain_I_M": 0.045,
+      "n_nonzero_fast_entries": 31,
+      "mc_mean": 0.7739947946748682,
+      "mc_ci95": [
+        0.6982498974653305,
+        0.8581818653441876
+      ],
+      "mc_P_rho_ge_1": 0.0,
+      "mc_n": 20000
+    },
+    "pre_disease": {
+      "rho_G_fast": 0.9692268441362635,
+      "rho_G_fast_F_row_removed": 0.7525513395058271,
+      "loop_gain_I_M": 0.098,
+      "n_nonzero_fast_entries": 31,
+      "mc_mean": 1.0019961721969262,
+      "mc_ci95": [
+        0.9034115942498032,
+        1.1089488147330206
+      ],
+      "mc_P_rho_ge_1": 0.5031,
+      "mc_n": 20000
+    },
+    "disease": {
+      "rho_G_fast": 1.3108719370276511,
+      "rho_G_fast_F_row_removed": 1.1267743687859888,
+      "loop_gain_I_M": 0.21,
+      "n_nonzero_fast_entries": 33,
+      "mc_mean": 1.3568548631882458,
+      "mc_ci95": [
+        1.2273034594456191,
+        1.4990342882400143
+      ],
+      "mc_P_rho_ge_1": 1.0,
+      "mc_n": 20000
+    }
+  },
+  "alpha_fast_rate_reading": {
+    "25": {
+      "tau": {
+        "I": 4.0,
+        "M": 0.07999999999999999,
+        "mito": 1.0,
+        "P": 1.5,
+        "C": 6.0,
+        "N": 0.002999999999999999,
+        "F": 2.0
+      },
+      "slowest_fast_axis": "C",
+      "alpha_uncoupled": -0.16666666666666666,
+      "alpha_healthy_c089": -0.18892951441364528,
+      "alpha_disease_c089": -0.17607081235398525
+    },
+    "55": {
+      "tau": {
+        "I": 8.806788964294755,
+        "M": 0.13542722296656529,
+        "mito": 1.4594801056814461,
+        "P": 2.18922015852217,
+        "C": 7.927927305474226,
+        "N": 0.00396396365273711,
+        "F": 2.7139147664986814
+      },
+      "slowest_fast_axis": "I",
+      "alpha_uncoupled": -0.11354876380645504,
+      "alpha_healthy_c089": -0.15415547846124808,
+      "alpha_disease_c089": -0.06379798064818215
+    },
+    "80": {
+      "tau": {
+        "I": 17.0,
+        "M": 0.21,
+        "mito": 2.0,
+        "P": 3.0000000000000004,
+        "C": 10.000000000000002,
+        "N": 0.005000000000000002,
+        "F": 3.5
+      },
+      "slowest_fast_axis": "I",
+      "alpha_uncoupled": -0.058823529411764705,
+      "alpha_healthy_c089": -0.11541804834671524,
+      "alpha_disease_c089": 0.023967575193777218
+    },
+    "120": {
+      "tau": {
+        "I": 44.99999999999999,
+        "M": 0.3499999999999999,
+        "mito": 4.999999999999999,
+        "P": 4.0,
+        "C": 17.999999999999996,
+        "N": 0.007999999999999997,
+        "F": 6.0
+      },
+      "slowest_fast_axis": "I",
+      "alpha_uncoupled": -0.022222222222222227,
+      "alpha_healthy_c089": -0.01499552298736237,
+      "alpha_disease_c089": 0.13813043596139896
+    }
+  },
+  "recalibration": {
+    "F_row_removed": {
+      "c_star": 0.20946943333557524,
+      "alpha_fast_120_healthy": -0.003999999999992844,
+      "alpha_fast_80_healthy": -0.04562798654765605,
+      "alpha_fast_25_healthy": -0.16149829278912753,
+      "at_published_c": {
+        "alpha_fast_25_healthy": -0.09169472503452264,
+        "alpha_fast_120_healthy": 0.15428122968794195
+      }
+    },
+    "F_and_B_rows_removed": {
+      "c_star": 0.20946943333557524,
+      "alpha_fast_120_healthy": -0.003999999999992844,
+      "alpha_fast_80_healthy": -0.04562798654765605,
+      "alpha_fast_25_healthy": -0.16149829278912753,
+      "at_published_c": {
+        "alpha_fast_25_healthy": -0.09169472503452264,
+        "alpha_fast_120_healthy": 0.15428122968794195
+      }
+    },
+    "F_and_B_rows_removed_plus_regime_dependent_zeroed": {
+      "c_star": 0.2807456189706739,
+      "alpha_fast_120_healthy": -0.003999999999985672,
+      "alpha_fast_80_healthy": -0.04930369856084463,
+      "alpha_fast_25_healthy": -0.16656610168600472,
+      "at_published_c": {
+        "alpha_fast_25_healthy": -0.16204523928839187,
+        "alpha_fast_120_healthy": 0.12828908437484834
+      }
+    }
+  },
+  "tau_sensitivity": {
+    "25": {
+      "adopted": {
+        "alpha_healthy_c089": -0.18892951441364528,
+        "alpha_healthy_F_removed_c_star": -0.16149829278912753
+      },
+      "N_hpa_sub_channel_1d": {
+        "alpha_healthy_c089": -0.15278342336967798,
+        "alpha_healthy_F_removed_c_star": -0.1583389217303558
+      },
+      "C_mechanistic_2d": {
+        "alpha_healthy_c089": -0.3393747993991978,
+        "alpha_healthy_F_removed_c_star": -0.24530127015743547
+      },
+      "F_mechanistic_25d": {
+        "alpha_healthy_c089": -0.08856616209045455,
+        "alpha_healthy_F_removed_c_star": -0.04
+      }
+    },
+    "80": {
+      "adopted": {
+        "alpha_healthy_c089": -0.11541804834671524,
+        "alpha_healthy_F_removed_c_star": -0.04562798654765605
+      },
+      "N_hpa_sub_channel_1d": {
+        "alpha_healthy_c089": -0.0983296174906881,
+        "alpha_healthy_F_removed_c_star": -0.04387880728022432
+      },
+      "C_mechanistic_2d": {
+        "alpha_healthy_c089": -0.12882529638790363,
+        "alpha_healthy_F_removed_c_star": -0.05274514423861181
+      },
+      "F_mechanistic_25d": {
+        "alpha_healthy_c089": 0.010751682861287214,
+        "alpha_healthy_F_removed_c_star": -0.04
+      }
+    },
+    "120": {
+      "adopted": {
+        "alpha_healthy_c089": -0.01499552298736237,
+        "alpha_healthy_F_removed_c_star": -0.003999999999992844
+      },
+      "N_hpa_sub_channel_1d": {
+        "alpha_healthy_c089": -0.006822837227298418,
+        "alpha_healthy_F_removed_c_star": -0.0022966345735493782
+      },
+      "C_mechanistic_2d": {
+        "alpha_healthy_c089": -0.0300191149321877,
+        "alpha_healthy_F_removed_c_star": -0.011484090096794915
+      },
+      "F_mechanistic_25d": {
+        "alpha_healthy_c089": 0.049616619171995634,
+        "alpha_healthy_F_removed_c_star": -0.003999999999992844
+      }
+    },
+    "c_star_used": 0.20946943333557524
+  },
+  "empirical_gains": [
+    {
+      "model": "inchianti_4axis_hr",
+      "pair": "I->M",
+      "beta": 0.032762,
+      "p_beta": 0.0308596,
+      "phi_jj": 0.758145,
+      "empirical_long_run_gain": 0.135461,
+      "se_empirical_long_run_gain": 0.0620449,
+      "compiled_as_gain_healthy": 0.18,
+      "compiled_as_gain_disease": 0.42,
+      "rate_implied_gain_25_healthy": 0.014399999999999998,
+      "rate_implied_gain_80_disease": 0.08819999999999999
+    },
+    {
+      "model": "inchianti_4axis_hr",
+      "pair": "I->N",
+      "beta": -0.0426728,
+      "p_beta": 0.0255804,
+      "phi_jj": 0.53692,
+      "empirical_long_run_gain": -0.09215,
+      "se_empirical_long_run_gain": 0.0417631,
+      "compiled_as_gain_healthy": 0.12,
+      "compiled_as_gain_disease": 0.25,
+      "rate_implied_gain_25_healthy": 0.0003599999999999999,
+      "rate_implied_gain_80_disease": 0.0012500000000000005
+    },
+    {
+      "model": "inchianti_4axis_hr",
+      "pair": "F->I",
+      "beta": 0.0143282,
+      "p_beta": 0.00847203,
+      "phi_jj": 0.336592,
+      "empirical_long_run_gain": 0.0215978,
+      "se_empirical_long_run_gain": 0.00816315,
+      "compiled_as_gain_healthy": -0.35,
+      "compiled_as_gain_disease": -0.25,
+      "rate_implied_gain_25_healthy": -1.4,
+      "rate_implied_gain_80_disease": -4.25
+    },
+    {
+      "model": "inchianti_5axis_IMNFB",
+      "pair": "I->M",
+      "beta": 0.0303478,
+      "p_beta": 0.037044,
+      "phi_jj": 0.772005,
+      "empirical_long_run_gain": 0.133107,
+      "se_empirical_long_run_gain": 0.0632008,
+      "compiled_as_gain_healthy": 0.18,
+      "compiled_as_gain_disease": 0.42,
+      "rate_implied_gain_25_healthy": 0.014399999999999998,
+      "rate_implied_gain_80_disease": 0.08819999999999999
+    },
+    {
+      "model": "inchianti_5axis_IMNFB",
+      "pair": "I->B",
+      "beta": 0.114353,
+      "p_beta": 0.00426921,
+      "phi_jj": 0.549394,
+      "empirical_long_run_gain": 0.253775,
+      "se_empirical_long_run_gain": 0.0872903,
+      "compiled_as_gain_healthy": 0.1,
+      "compiled_as_gain_disease": 0.25,
+      "rate_implied_gain_25_healthy": 13.500000000000004,
+      "rate_implied_gain_80_disease": 62.49999999999997
+    },
+    {
+      "model": "inchianti_5axis_IMNFB",
+      "pair": "F->I",
+      "beta": 0.0154414,
+      "p_beta": 8.9509e-05,
+      "phi_jj": 0.341742,
+      "empirical_long_run_gain": 0.023458,
+      "se_empirical_long_run_gain": 0.00591775,
+      "compiled_as_gain_healthy": -0.35,
+      "compiled_as_gain_disease": -0.25,
+      "rate_implied_gain_25_healthy": -1.4,
+      "rate_implied_gain_80_disease": -4.25
+    },
+    {
+      "model": "inchianti_5axis_IMNFB",
+      "pair": "F->M",
+      "beta": -0.00641372,
+      "p_beta": 0.0340934,
+      "phi_jj": 0.776677,
+      "empirical_long_run_gain": -0.0287194,
+      "se_empirical_long_run_gain": 0.013704,
+      "compiled_as_gain_healthy": -0.3,
+      "compiled_as_gain_disease": -0.2,
+      "rate_implied_gain_25_healthy": -0.023999999999999997,
+      "rate_implied_gain_80_disease": -0.042
+    },
+    {
+      "model": "inchianti_5axis_IMNFB",
+      "pair": "F->B",
+      "beta": 0.0240025,
+      "p_beta": 0.00385678,
+      "phi_jj": 0.553392,
+      "empirical_long_run_gain": 0.053744,
+      "se_empirical_long_run_gain": 0.0184472,
+      "compiled_as_gain_healthy": -0.3,
+      "compiled_as_gain_disease": -0.18,
+      "rate_implied_gain_25_healthy": -40.50000000000001,
+      "rate_implied_gain_80_disease": -44.99999999999998
+    },
+    {
+      "model": "inchianti_5axis_IMNFB",
+      "pair": "B->M",
+      "beta": 0.0157059,
+      "p_beta": 0.028154,
+      "phi_jj": 0.775814,
+      "empirical_long_run_gain": 0.0700572,
+      "se_empirical_long_run_gain": 0.0321654,
+      "compiled_as_gain_healthy": -0.1,
+      "compiled_as_gain_disease": -0.05,
+      "rate_implied_gain_25_healthy": -0.007999999999999998,
+      "rate_implied_gain_80_disease": -0.0105
+    },
+    {
+      "model": "inchianti_5axis_IMNFB",
+      "pair": "B->N",
+      "beta": 0.0165288,
+      "p_beta": 0.0266007,
+      "phi_jj": 0.516342,
+      "empirical_long_run_gain": 0.0341745,
+      "se_empirical_long_run_gain": 0.0154482,
+      "compiled_as_gain_healthy": null,
+      "compiled_as_gain_disease": null
+    },
+    {
+      "model": "elsa_3axis_IMF",
+      "pair": "I->M",
+      "beta": 0.06457858592335344,
+      "p_beta": 3.2296175132775186e-20,
+      "phi_jj": 0.8629146433482815,
+      "empirical_long_run_gain": 0.4710830354216676,
+      "se_empirical_long_run_gain": 0.04888746010547551,
+      "compiled_as_gain_healthy": 0.18,
+      "compiled_as_gain_disease": 0.42,
+      "rate_implied_gain_25_healthy": 0.014399999999999998,
+      "rate_implied_gain_80_disease": 0.08819999999999999
+    },
+    {
+      "model": "elsa_3axis_IMF",
+      "pair": "I->F",
+      "beta": 0.01372689280655393,
+      "p_beta": 0.004177415512792919,
+      "phi_jj": 0.8088701573056272,
+      "empirical_long_run_gain": 0.0718197253398256,
+      "se_empirical_long_run_gain": 0.024968735845984236,
+      "compiled_as_gain_healthy": 0.25,
+      "compiled_as_gain_disease": 0.5,
+      "rate_implied_gain_25_healthy": 0.5,
+      "rate_implied_gain_80_disease": 1.75
+    },
+    {
+      "model": "elsa_3axis_IMF",
+      "pair": "M->I",
+      "beta": 0.027600037094411813,
+      "p_beta": 0.00010118896775340437,
+      "phi_jj": 0.6026061011247875,
+      "empirical_long_run_gain": 0.06945259394402185,
+      "se_empirical_long_run_gain": 0.01747163678012572,
+      "compiled_as_gain_healthy": 0.25,
+      "compiled_as_gain_disease": 0.5,
+      "rate_implied_gain_25_healthy": 1.0,
+      "rate_implied_gain_80_disease": 8.5
+    },
+    {
+      "model": "elsa_3axis_IMF",
+      "pair": "F->I",
+      "beta": 0.02505856086590764,
+      "p_beta": 0.002281181734361777,
+      "phi_jj": 0.6102376905524985,
+      "empirical_long_run_gain": 0.06429190370261513,
+      "se_empirical_long_run_gain": 0.02099027722246029,
+      "compiled_as_gain_healthy": -0.35,
+      "compiled_as_gain_disease": -0.25,
+      "rate_implied_gain_25_healthy": -1.4,
+      "rate_implied_gain_80_disease": -4.25
+    },
+    {
+      "model": "elsa_3axis_IMF",
+      "pair": "F->M",
+      "beta": -0.014022751075096422,
+      "p_beta": 0.042588257048125536,
+      "phi_jj": 0.8795484675568923,
+      "empirical_long_run_gain": -0.11641820399188137,
+      "se_empirical_long_run_gain": 0.05760625786911825,
+      "compiled_as_gain_healthy": -0.3,
+      "compiled_as_gain_disease": -0.2,
+      "rate_implied_gain_25_healthy": -0.023999999999999997,
+      "rate_implied_gain_80_disease": -0.042
+    }
+  ],
+  "entries": {
+    "move_to_kappa": [
+      {
+        "source": "F",
+        "target": "I",
+        "sign": "-",
+        "tier": "S",
+        "grade": "A",
+        "J_healthy": "-0.35",
+        "J_pre_disease": "-0.3",
+        "J_disease": "-0.25"
+      },
+      {
+        "source": "B",
+        "target": "I",
+        "sign": "-",
+        "tier": "W",
+        "grade": "C",
+        "J_healthy": "qual_only",
+        "J_pre_disease": "qual_only",
+        "J_disease": "qual_only"
+      },
+      {
+        "source": "F",
+        "target": "M",
+        "sign": "-",
+        "tier": "S",
+        "grade": "A",
+        "J_healthy": "-0.3",
+        "J_pre_disease": "-0.25",
+        "J_disease": "-0.2"
+      },
+      {
+        "source": "B",
+        "target": "M",
+        "sign": "-",
+        "tier": "M",
+        "grade": "B",
+        "J_healthy": "-0.1",
+        "J_pre_disease": "-0.08",
+        "J_disease": "-0.05"
+      },
+      {
+        "source": "F",
+        "target": "E",
+        "sign": "-",
+        "tier": "M",
+        "grade": "B",
+        "J_healthy": "-0.12",
+        "J_pre_disease": "-0.1",
+        "J_disease": "-0.08"
+      },
+      {
+        "source": "F",
+        "target": "mito",
+        "sign": "-",
+        "tier": "M",
+        "grade": "A",
+        "J_healthy": "-0.15",
+        "J_pre_disease": "-0.12",
+        "J_disease": "-0.1"
+      },
+      {
+        "source": "F",
+        "target": "P",
+        "sign": "-",
+        "tier": "W",
+        "grade": "B",
+        "J_healthy": "qual_only",
+        "J_pre_disease": "qual_only",
+        "J_disease": "qual_only"
+      },
+      {
+        "source": "F",
+        "target": "C",
+        "sign": "-",
+        "tier": "M",
+        "grade": "B",
+        "J_healthy": "-0.12",
+        "J_pre_disease": "-0.1",
+        "J_disease": "-0.08"
+      },
+      {
+        "source": "F",
+        "target": "N",
+        "sign": "-",
+        "tier": "M",
+        "grade": "B",
+        "J_healthy": "-0.18",
+        "J_pre_disease": "-0.15",
+        "J_disease": "-0.12"
+      },
+      {
+        "source": "B",
+        "target": "N",
+        "sign": "-",
+        "tier": "W",
+        "grade": "C",
+        "J_healthy": "qual_only",
+        "J_pre_disease": "qual_only",
+        "J_disease": "qual_only"
+      },
+      {
+        "source": "F",
+        "target": "B",
+        "sign": "-",
+        "tier": "S",
+        "grade": "A",
+        "J_healthy": "-0.3",
+        "J_pre_disease": "-0.25",
+        "J_disease": "-0.18"
+      }
+    ],
+    "regime_dependent": [
+      {
+        "source": "C",
+        "target": "I",
+        "sign": "+",
+        "tier": "M",
+        "grade": "A",
+        "J_healthy": "0.1",
+        "J_pre_disease": "0.15",
+        "J_disease": "0.22"
+      },
+      {
+        "source": "N",
+        "target": "I",
+        "sign": "+",
+        "tier": "M",
+        "grade": "B",
+        "J_healthy": "0.12",
+        "J_pre_disease": "0.18",
+        "J_disease": "0.25"
+      },
+      {
+        "source": "N",
+        "target": "B",
+        "sign": "+",
+        "tier": "S",
+        "grade": "A",
+        "J_healthy": "0.15",
+        "J_pre_disease": "0.25",
+        "J_disease": "0.45"
+      }
+    ],
+    "n_move_to_kappa": 11
+  }
+}
