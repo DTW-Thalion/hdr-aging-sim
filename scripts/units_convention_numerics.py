@@ -45,9 +45,15 @@ ALL9 = ("I", "M", "E", "mito", "P", "C", "N", "F", "B")
 FAST7 = ("I", "M", "mito", "P", "C", "N", "F")
 BASINS = ("healthy", "pre_disease", "disease")
 
-# Monte Carlo spec, identical to scripts/run_figure_uncertainty.py
-# (Supplementary Note 1): lognormal multiplicative noise with a CV set by
-# the confidence grade, plus a 5% sign-flip probability on grade-C entries.
+# Monte Carlo spec, following scripts/run_figure_uncertainty.py
+# (Supplementary Note 1): lognormal multiplicative noise with a CV set by the
+# confidence grade.
+# NOT carried over: that script also flips the sign of a grade-C entry with
+# probability 0.05. Under the adopted convention G is non-negative by
+# construction (the protective entries move to kappa), so a sign flip would
+# produce a matrix the convention does not admit and rho(G) would stop being
+# a stability condition. The band below therefore propagates magnitude
+# uncertainty only. Any claim of identity with that script is wrong.
 GRADE_CV = {"A": 0.20, "B": 0.40, "C": 0.70, "": 0.40}
 N_MC = 20000
 MC_SEED = 2026
@@ -141,35 +147,56 @@ def alpha_rate(tau, J, c=1.0):
 # sections
 # ---------------------------------------------------------------------------
 
-def section_rho(rows):
-    """rho(G_fast) per basin, with the Monte Carlo band."""
-    grades = grade_matrix(rows)
-    rng = np.random.default_rng(MC_SEED)
-    cv = np.array([[GRADE_CV.get(grades[i, j], 0.40) for j in range(7)]
-                   for i in range(7)])
-    out = {}
-    for basin in BASINS:
-        G = np.abs(basin_matrix(rows, basin))
-        point = rho(G)
-        mask = G > 0
-        samples = np.empty(N_MC)
-        for k in range(N_MC):
-            Gk = G * np.exp(cv * rng.standard_normal((7, 7)))
-            Gk[~mask] = 0.0
-            np.fill_diagonal(Gk, 0.0)
-            samples[k] = rho(Gk)
-        lo, hi = np.percentile(samples, [2.5, 97.5])
-        out[basin] = {
-            "rho_G_fast": point,
-            "rho_G_fast_F_row_removed": rho(np.abs(drop_sources(G, ("F",)))),
-            "loop_gain_I_M": float(G[FAST7.index("I"), FAST7.index("M")]
-                                   * G[FAST7.index("M"), FAST7.index("I")]),
+def _mc_band(G, cv, seed):
+    """Monte Carlo band on rho for a fixed non-negative G."""
+    rng = np.random.default_rng(seed)
+    mask = G > 0
+    samples = np.empty(N_MC)
+    for k in range(N_MC):
+        Gk = G * np.exp(cv * rng.standard_normal(G.shape))
+        Gk[~mask] = 0.0
+        np.fill_diagonal(Gk, 0.0)
+        samples[k] = rho(Gk)
+    lo, hi = np.percentile(samples, [2.5, 97.5])
+    return {"rho": rho(G),
             "n_nonzero_fast_entries": int(mask.sum()),
             "mc_mean": float(samples.mean()),
             "mc_ci95": [float(lo), float(hi)],
             "mc_P_rho_ge_1": float((samples >= 1.0).mean()),
-            "mc_n": N_MC,
-        }
+            "mc_n": N_MC}
+
+
+def section_rho(rows):
+    """rho(G_fast) per basin, under two different matrices.
+
+    adopted/  -- THE convention-correct object. The protective entries move to
+                 the damping modulation (docs/protective_coupling_formulation.md),
+                 so they are REMOVED from G, leaving G >= 0 and rho(G) < 1 an
+                 exact stability condition. This is what may be quoted.
+
+    abs_diagnostic/ -- the pre-decision diagnostic reproduced from
+                 HDR-mechanistic/results/units_evidence_package.md Section 4,
+                 which takes |J| over every compiled entry including the
+                 protective ones. Retained ONLY so that document's numbers
+                 remain traceable. Taking |-0.35| as a gain of +0.35 asserts
+                 the opposite sign to the compiled entry, so this is not a
+                 quantity the adopted convention defines. Do not quote it.
+    """
+    grades = grade_matrix(rows)
+    cv = np.array([[GRADE_CV.get(grades[i, j], 0.40) for j in range(7)]
+                   for i in range(7)])
+    out = {}
+    for n, basin in enumerate(BASINS):
+        M = basin_matrix(rows, basin)
+        G_adopted = drop_sources(M, KAPPA_SOURCES)     # protective rows -> kappa
+        assert (G_adopted >= 0).all(), f"{basin}: G still signed after kappa removal"
+        G_abs = np.abs(M)
+        rec = {"adopted": _mc_band(G_adopted, cv, MC_SEED + n),
+               "abs_diagnostic": _mc_band(G_abs, cv, MC_SEED + n)}
+        rec["loop_gain_I_M"] = float(
+            G_adopted[FAST7.index("I"), FAST7.index("M")]
+            * G_adopted[FAST7.index("M"), FAST7.index("I")])
+        out[basin] = rec
     return out
 
 
@@ -301,6 +328,81 @@ def section_empirical_gains(rows, reg):
     return out
 
 
+def section_j_signs_audit():
+    """Audit the hard-coded sign predictions in scripts/inchianti_lead_lag.py.
+
+    That module defines J_SIGNS with comments written (source, target) but
+    consumes the keys as (target, source):
+
+        for (to_name, from_name), predicted_sign in J_SIGNS.items():
+
+    so an entry's prediction lands on the reverse of the pair its comment
+    describes. This recomputes the 12-pair concordance count three ways:
+    as shipped, with the key order corrected, and reading the predicted sign
+    from the compiled CSV (which under the adopted convention is +1 for every
+    channel = J entry).
+    """
+    import csv as _csv
+    import importlib.util as _ilu
+
+    spec = _ilu.spec_from_file_location(
+        "_ill", os.path.join(ROOT, "scripts", "inchianti_lead_lag.py"))
+    mod = _ilu.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    J_SIGNS = mod.J_SIGNS
+
+    rows = {(r["axis_from"].strip(), r["axis_to"].strip()): r
+            for r in load_J_csv(os.path.join(ROOT, "data",
+                                             "J_matrix_compiled_9x9.csv"))}
+    path = os.path.join(ROOT, "results", "inchianti_lead_lag_matrix.csv")
+    if not os.path.exists(path):
+        return {"note": "results/inchianti_lead_lag_matrix.csv not present"}
+    obs = {}
+    with open(path) as f:
+        for r in _csv.DictReader(f):
+            obs[(r["from_axis"], r["to_axis"])] = (
+                float(r["beta"]), int(r["predicted_sign"]))
+
+    pairs, n_ship = [], 0
+    n_keyfix = n_csv = 0
+    for (k0, k1), sgn in J_SIGNS.items():
+        to_, from_ = k0, k1                       # as consumed
+        beta, pred = obs[(from_, to_)]
+        intended = J_SIGNS.get((from_, to_))      # what the comment order means
+        compiled = rows[(from_, to_)]["sign"].strip()
+        comp_s = 1 if compiled == "+" else -1
+        obs_s = 1 if beta > 0 else -1
+        shipped_ok = obs_s == pred
+        keyfix_ok = (obs_s == intended) if intended is not None else None
+        csv_ok = obs_s == comp_s
+        n_ship += bool(shipped_ok)
+        n_keyfix += bool(keyfix_ok)
+        n_csv += bool(csv_ok)
+        pairs.append({
+            "pair": f"{from_}->{to_}", "beta": beta,
+            "sign_applied_as_shipped": pred,
+            "sign_the_comment_order_intends": intended,
+            "compiled_sign": compiled,
+            "concordant_as_shipped": bool(shipped_ok),
+            "concordant_key_order_corrected": keyfix_ok,
+            "concordant_compiled_sign": bool(csv_ok),
+            "verdict_flips_on_key_fix": intended is not None and intended != pred,
+        })
+    flipped = [p["pair"] for p in pairs if p["verdict_flips_on_key_fix"]]
+    return {
+        "pairs": pairs,
+        "n_pairs_affected_by_key_order": len(flipped),
+        "pairs_affected": flipped,
+        "concordance_as_shipped": f"{n_ship}/12",
+        "concordance_key_order_corrected": f"{n_keyfix}/12",
+        "concordance_compiled_sign": f"{n_csv}/12",
+        "net_effect_on_count": (
+            "none: the same number of verdicts flip each way, so the published "
+            "9/12 is numerically unaffected by the bug. What changes is WHICH "
+            "pairs are counted discordant."),
+    }
+
+
 def section_scale_diagnostic(rows, reg):
     """Is the compiled level consistent with the measured gains?
 
@@ -396,6 +498,7 @@ def main():
         "tau_sensitivity": section_tau_sensitivity(rows, reg),
         "empirical_gains": section_empirical_gains(rows, reg),
         "scale_diagnostic": section_scale_diagnostic(rows, reg),
+        "j_signs_audit": section_j_signs_audit(),
         "entries": section_entries_moving(rows),
     }
 
@@ -405,12 +508,13 @@ def main():
         json.dump(result, f, indent=2)
 
     r = result["rho_G"]
-    print("rho(G_fast), compiled numeric entries, |values|")
-    print(f"  {'basin':<13}{'rho':>7}{'F-row out':>11}{'MC 95%':>20}{'P(rho>=1)':>11}")
+    print("rho(G_fast)  [adopted = protective entries moved to kappa, G >= 0]")
+    print(f"  {'basin':<13}{'rho':>7}{'MC 95%':>20}{'P(rho>=1)':>11}   "
+          f"{'(abs diag.)':>12}")
     for b in BASINS:
-        d = r[b]
-        print(f"  {b:<13}{d['rho_G_fast']:>7.3f}{d['rho_G_fast_F_row_removed']:>11.3f}"
-              f"   [{d['mc_ci95'][0]:.3f}, {d['mc_ci95'][1]:.3f}]{d['mc_P_rho_ge_1']:>11.3f}")
+        a, x = r[b]["adopted"], r[b]["abs_diagnostic"]
+        print(f"  {b:<13}{a['rho']:>7.3f}   [{a['mc_ci95'][0]:.3f}, "
+              f"{a['mc_ci95'][1]:.3f}]{a['mc_P_rho_ge_1']:>11.4f}   {x['rho']:>12.3f}")
 
     print("\nalpha_fast, rate reading, unified tau, c = 0.89")
     print(f"  {'age':>5}{'slowest':>9}{'uncoupled':>11}{'healthy':>10}{'disease':>10}")
@@ -431,6 +535,15 @@ def main():
           f"95% CI [{sd['geometric_mean_ratio_ci95'][0]:.2f}, "
           f"{sd['geometric_mean_ratio_ci95'][1]:.2f}]  "
           f"p = {sd['t_test_log_ratio_vs_zero']['p']:.3f}")
+
+    ja = result["j_signs_audit"]
+    if "pairs" in ja:
+        print(f"\nJ_SIGNS key-order audit (scripts/inchianti_lead_lag.py)")
+        print(f"  pairs affected: {ja['n_pairs_affected_by_key_order']} "
+              f"({', '.join(ja['pairs_affected'])})")
+        print(f"  as shipped {ja['concordance_as_shipped']}   "
+              f"key-order corrected {ja['concordance_key_order_corrected']}   "
+              f"compiled-sign {ja['concordance_compiled_sign']}")
 
     print(f"\nentries moving to kappa: {result['entries']['n_move_to_kappa']}")
     print(f"wrote {out}")

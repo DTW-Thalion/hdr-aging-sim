@@ -18,43 +18,79 @@
   },
   "rho_G": {
     "healthy": {
-      "rho_G_fast": 0.749035488499098,
-      "rho_G_fast_F_row_removed": 0.5179994267819731,
-      "loop_gain_I_M": 0.045,
-      "n_nonzero_fast_entries": 31,
-      "mc_mean": 0.7739947946748682,
-      "mc_ci95": [
-        0.6982498974653305,
-        0.8581818653441876
-      ],
-      "mc_P_rho_ge_1": 0.0,
-      "mc_n": 20000
+      "adopted": {
+        "rho": 0.5179994267819731,
+        "n_nonzero_fast_entries": 26,
+        "mc_mean": 0.5354130839528464,
+        "mc_ci95": [
+          0.4731224262670325,
+          0.6067891812339128
+        ],
+        "mc_P_rho_ge_1": 0.0,
+        "mc_n": 20000
+      },
+      "abs_diagnostic": {
+        "rho": 0.749035488499098,
+        "n_nonzero_fast_entries": 31,
+        "mc_mean": 0.7739947946748682,
+        "mc_ci95": [
+          0.6982498974653305,
+          0.8581818653441876
+        ],
+        "mc_P_rho_ge_1": 0.0,
+        "mc_n": 20000
+      },
+      "loop_gain_I_M": 0.045
     },
     "pre_disease": {
-      "rho_G_fast": 0.9692268441362635,
-      "rho_G_fast_F_row_removed": 0.7525513395058271,
-      "loop_gain_I_M": 0.098,
-      "n_nonzero_fast_entries": 31,
-      "mc_mean": 1.0019961721969262,
-      "mc_ci95": [
-        0.9034115942498032,
-        1.1089488147330206
-      ],
-      "mc_P_rho_ge_1": 0.5031,
-      "mc_n": 20000
+      "adopted": {
+        "rho": 0.7525513395058271,
+        "n_nonzero_fast_entries": 26,
+        "mc_mean": 0.7782028385358075,
+        "mc_ci95": [
+          0.6852437398793968,
+          0.8838729682458036
+        ],
+        "mc_P_rho_ge_1": 0.00015,
+        "mc_n": 20000
+      },
+      "abs_diagnostic": {
+        "rho": 0.9692268441362635,
+        "n_nonzero_fast_entries": 31,
+        "mc_mean": 1.0020188295489054,
+        "mc_ci95": [
+          0.9046528790895194,
+          1.1124253305288938
+        ],
+        "mc_P_rho_ge_1": 0.49945,
+        "mc_n": 20000
+      },
+      "loop_gain_I_M": 0.098
     },
     "disease": {
-      "rho_G_fast": 1.3108719370276511,
-      "rho_G_fast_F_row_removed": 1.1267743687859888,
-      "loop_gain_I_M": 0.21,
-      "n_nonzero_fast_entries": 33,
-      "mc_mean": 1.3568548631882458,
-      "mc_ci95": [
-        1.2273034594456191,
-        1.4990342882400143
-      ],
-      "mc_P_rho_ge_1": 1.0,
-      "mc_n": 20000
+      "adopted": {
+        "rho": 1.1267743687859888,
+        "n_nonzero_fast_entries": 28,
+        "mc_mean": 1.1667157799016028,
+        "mc_ci95": [
+          1.0357965852805375,
+          1.3154388800768038
+        ],
+        "mc_P_rho_ge_1": 0.99365,
+        "mc_n": 20000
+      },
+      "abs_diagnostic": {
+        "rho": 1.3108719370276511,
+        "n_nonzero_fast_entries": 33,
+        "mc_mean": 1.3569569168276212,
+        "mc_ci95": [
+          1.2282687699194406,
+          1.500655339669643
+        ],
+        "mc_P_rho_ge_1": 1.0,
+        "mc_n": 20000
+      },
+      "loop_gain_I_M": 0.21
     }
   },
   "alpha_fast_rate_reading": {
@@ -337,6 +373,84 @@
   },
   "empirical_gains": [
     {
+      "model": "elsa_3axis_IMF",
+      "pair": "F->I",
+      "beta": 0.02505856086590764,
+      "p_beta": 0.002281181734361777,
+      "phi_jj": 0.6102376905524985,
+      "empirical_long_run_gain": 0.06429190370261513,
+      "se_empirical_long_run_gain": 0.02099027722246029,
+      "compiled_as_gain_healthy": -0.35,
+      "compiled_as_gain_disease": -0.25,
+      "rate_implied_gain_25_healthy": -1.4,
+      "rate_implied_gain_80_disease": -4.25
+    },
+    {
+      "model": "elsa_3axis_IMF",
+      "pair": "F->M",
+      "beta": -0.014022751075096422,
+      "p_beta": 0.042588257048125536,
+      "phi_jj": 0.8795484675568923,
+      "empirical_long_run_gain": -0.11641820399188137,
+      "se_empirical_long_run_gain": 0.05760625786911825,
+      "compiled_as_gain_healthy": -0.3,
+      "compiled_as_gain_disease": -0.2,
+      "rate_implied_gain_25_healthy": -0.023999999999999997,
+      "rate_implied_gain_80_disease": -0.042
+    },
+    {
+      "model": "elsa_3axis_IMF",
+      "pair": "I->F",
+      "beta": 0.01372689280655393,
+      "p_beta": 0.004177415512792919,
+      "phi_jj": 0.8088701573056272,
+      "empirical_long_run_gain": 0.0718197253398256,
+      "se_empirical_long_run_gain": 0.024968735845984236,
+      "compiled_as_gain_healthy": 0.25,
+      "compiled_as_gain_disease": 0.5,
+      "rate_implied_gain_25_healthy": 0.5,
+      "rate_implied_gain_80_disease": 1.75
+    },
+    {
+      "model": "elsa_3axis_IMF",
+      "pair": "I->M",
+      "beta": 0.06457858592335344,
+      "p_beta": 3.2296175132775186e-20,
+      "phi_jj": 0.8629146433482815,
+      "empirical_long_run_gain": 0.4710830354216676,
+      "se_empirical_long_run_gain": 0.04888746010547551,
+      "compiled_as_gain_healthy": 0.18,
+      "compiled_as_gain_disease": 0.42,
+      "rate_implied_gain_25_healthy": 0.014399999999999998,
+      "rate_implied_gain_80_disease": 0.08819999999999999
+    },
+    {
+      "model": "elsa_3axis_IMF",
+      "pair": "M->I",
+      "beta": 0.027600037094411813,
+      "p_beta": 0.00010118896775340437,
+      "phi_jj": 0.6026061011247875,
+      "empirical_long_run_gain": 0.06945259394402185,
+      "se_empirical_long_run_gain": 0.01747163678012572,
+      "compiled_as_gain_healthy": 0.25,
+      "compiled_as_gain_disease": 0.5,
+      "rate_implied_gain_25_healthy": 1.0,
+      "rate_implied_gain_80_disease": 8.5
+    },
+    {
+      "model": "inchianti_4axis_hr",
+      "pair": "F->I",
+      "beta": 0.0143282,
+      "p_beta": 0.00847203,
+      "phi_jj": 0.336592,
+      "empirical_long_run_gain": 0.0215978,
+      "se_empirical_long_run_gain": 0.00816315,
+      "compiled_as_gain_healthy": -0.35,
+      "compiled_as_gain_disease": -0.25,
+      "rate_implied_gain_25_healthy": -1.4,
+      "rate_implied_gain_80_disease": -4.25
+    },
+    {
       "model": "inchianti_4axis_hr",
       "pair": "I->M",
       "beta": 0.032762,
@@ -363,43 +477,41 @@
       "rate_implied_gain_80_disease": 0.0012500000000000005
     },
     {
-      "model": "inchianti_4axis_hr",
-      "pair": "F->I",
-      "beta": 0.0143282,
-      "p_beta": 0.00847203,
-      "phi_jj": 0.336592,
-      "empirical_long_run_gain": 0.0215978,
-      "se_empirical_long_run_gain": 0.00816315,
-      "compiled_as_gain_healthy": -0.35,
-      "compiled_as_gain_disease": -0.25,
-      "rate_implied_gain_25_healthy": -1.4,
-      "rate_implied_gain_80_disease": -4.25
+      "model": "inchianti_5axis_IMNFB",
+      "pair": "B->M",
+      "beta": 0.0157059,
+      "p_beta": 0.028154,
+      "phi_jj": 0.775814,
+      "empirical_long_run_gain": 0.0700572,
+      "se_empirical_long_run_gain": 0.0321654,
+      "compiled_as_gain_healthy": -0.1,
+      "compiled_as_gain_disease": -0.05,
+      "rate_implied_gain_25_healthy": -0.007999999999999998,
+      "rate_implied_gain_80_disease": -0.0105
     },
     {
       "model": "inchianti_5axis_IMNFB",
-      "pair": "I->M",
-      "beta": 0.0303478,
-      "p_beta": 0.037044,
-      "phi_jj": 0.772005,
-      "empirical_long_run_gain": 0.133107,
-      "se_empirical_long_run_gain": 0.0632008,
-      "compiled_as_gain_healthy": 0.18,
-      "compiled_as_gain_disease": 0.42,
-      "rate_implied_gain_25_healthy": 0.014399999999999998,
-      "rate_implied_gain_80_disease": 0.08819999999999999
+      "pair": "B->N",
+      "beta": 0.0165288,
+      "p_beta": 0.0266007,
+      "phi_jj": 0.516342,
+      "empirical_long_run_gain": 0.0341745,
+      "se_empirical_long_run_gain": 0.0154482,
+      "compiled_as_gain_healthy": null,
+      "compiled_as_gain_disease": null
     },
     {
       "model": "inchianti_5axis_IMNFB",
-      "pair": "I->B",
-      "beta": 0.114353,
-      "p_beta": 0.00426921,
-      "phi_jj": 0.549394,
-      "empirical_long_run_gain": 0.253775,
-      "se_empirical_long_run_gain": 0.0872903,
-      "compiled_as_gain_healthy": 0.1,
-      "compiled_as_gain_disease": 0.25,
-      "rate_implied_gain_25_healthy": 13.500000000000004,
-      "rate_implied_gain_80_disease": 62.49999999999997
+      "pair": "F->B",
+      "beta": 0.0240025,
+      "p_beta": 0.00385678,
+      "phi_jj": 0.553392,
+      "empirical_long_run_gain": 0.053744,
+      "se_empirical_long_run_gain": 0.0184472,
+      "compiled_as_gain_healthy": -0.3,
+      "compiled_as_gain_disease": -0.18,
+      "rate_implied_gain_25_healthy": -40.50000000000001,
+      "rate_implied_gain_80_disease": -44.99999999999998
     },
     {
       "model": "inchianti_5axis_IMNFB",
@@ -429,129 +541,39 @@
     },
     {
       "model": "inchianti_5axis_IMNFB",
-      "pair": "F->B",
-      "beta": 0.0240025,
-      "p_beta": 0.00385678,
-      "phi_jj": 0.553392,
-      "empirical_long_run_gain": 0.053744,
-      "se_empirical_long_run_gain": 0.0184472,
-      "compiled_as_gain_healthy": -0.3,
-      "compiled_as_gain_disease": -0.18,
-      "rate_implied_gain_25_healthy": -40.50000000000001,
-      "rate_implied_gain_80_disease": -44.99999999999998
+      "pair": "I->B",
+      "beta": 0.114353,
+      "p_beta": 0.00426921,
+      "phi_jj": 0.549394,
+      "empirical_long_run_gain": 0.253775,
+      "se_empirical_long_run_gain": 0.0872903,
+      "compiled_as_gain_healthy": 0.1,
+      "compiled_as_gain_disease": 0.25,
+      "rate_implied_gain_25_healthy": 13.500000000000004,
+      "rate_implied_gain_80_disease": 62.49999999999997
     },
     {
       "model": "inchianti_5axis_IMNFB",
-      "pair": "B->M",
-      "beta": 0.0157059,
-      "p_beta": 0.028154,
-      "phi_jj": 0.775814,
-      "empirical_long_run_gain": 0.0700572,
-      "se_empirical_long_run_gain": 0.0321654,
-      "compiled_as_gain_healthy": -0.1,
-      "compiled_as_gain_disease": -0.05,
-      "rate_implied_gain_25_healthy": -0.007999999999999998,
-      "rate_implied_gain_80_disease": -0.0105
-    },
-    {
-      "model": "inchianti_5axis_IMNFB",
-      "pair": "B->N",
-      "beta": 0.0165288,
-      "p_beta": 0.0266007,
-      "phi_jj": 0.516342,
-      "empirical_long_run_gain": 0.0341745,
-      "se_empirical_long_run_gain": 0.0154482,
-      "compiled_as_gain_healthy": null,
-      "compiled_as_gain_disease": null
-    },
-    {
-      "model": "elsa_3axis_IMF",
       "pair": "I->M",
-      "beta": 0.06457858592335344,
-      "p_beta": 3.2296175132775186e-20,
-      "phi_jj": 0.8629146433482815,
-      "empirical_long_run_gain": 0.4710830354216676,
-      "se_empirical_long_run_gain": 0.04888746010547551,
+      "beta": 0.0303478,
+      "p_beta": 0.037044,
+      "phi_jj": 0.772005,
+      "empirical_long_run_gain": 0.133107,
+      "se_empirical_long_run_gain": 0.0632008,
       "compiled_as_gain_healthy": 0.18,
       "compiled_as_gain_disease": 0.42,
       "rate_implied_gain_25_healthy": 0.014399999999999998,
       "rate_implied_gain_80_disease": 0.08819999999999999
-    },
-    {
-      "model": "elsa_3axis_IMF",
-      "pair": "I->F",
-      "beta": 0.01372689280655393,
-      "p_beta": 0.004177415512792919,
-      "phi_jj": 0.8088701573056272,
-      "empirical_long_run_gain": 0.0718197253398256,
-      "se_empirical_long_run_gain": 0.024968735845984236,
-      "compiled_as_gain_healthy": 0.25,
-      "compiled_as_gain_disease": 0.5,
-      "rate_implied_gain_25_healthy": 0.5,
-      "rate_implied_gain_80_disease": 1.75
-    },
-    {
-      "model": "elsa_3axis_IMF",
-      "pair": "M->I",
-      "beta": 0.027600037094411813,
-      "p_beta": 0.00010118896775340437,
-      "phi_jj": 0.6026061011247875,
-      "empirical_long_run_gain": 0.06945259394402185,
-      "se_empirical_long_run_gain": 0.01747163678012572,
-      "compiled_as_gain_healthy": 0.25,
-      "compiled_as_gain_disease": 0.5,
-      "rate_implied_gain_25_healthy": 1.0,
-      "rate_implied_gain_80_disease": 8.5
-    },
-    {
-      "model": "elsa_3axis_IMF",
-      "pair": "F->I",
-      "beta": 0.02505856086590764,
-      "p_beta": 0.002281181734361777,
-      "phi_jj": 0.6102376905524985,
-      "empirical_long_run_gain": 0.06429190370261513,
-      "se_empirical_long_run_gain": 0.02099027722246029,
-      "compiled_as_gain_healthy": -0.35,
-      "compiled_as_gain_disease": -0.25,
-      "rate_implied_gain_25_healthy": -1.4,
-      "rate_implied_gain_80_disease": -4.25
-    },
-    {
-      "model": "elsa_3axis_IMF",
-      "pair": "F->M",
-      "beta": -0.014022751075096422,
-      "p_beta": 0.042588257048125536,
-      "phi_jj": 0.8795484675568923,
-      "empirical_long_run_gain": -0.11641820399188137,
-      "se_empirical_long_run_gain": 0.05760625786911825,
-      "compiled_as_gain_healthy": -0.3,
-      "compiled_as_gain_disease": -0.2,
-      "rate_implied_gain_25_healthy": -0.023999999999999997,
-      "rate_implied_gain_80_disease": -0.042
     }
   ],
   "scale_diagnostic": {
     "pairs_used": [
       {
-        "model": "inchianti_4axis_hr",
-        "pair": "I->M",
-        "empirical_gain": 0.135461,
-        "compiled_gain_midpoint": 0.3,
-        "ratio": 2.2146595699131115
-      },
-      {
-        "model": "inchianti_5axis_IMNFB",
-        "pair": "I->M",
-        "empirical_gain": 0.133107,
-        "compiled_gain_midpoint": 0.3,
-        "ratio": 2.253825869413329
-      },
-      {
-        "model": "inchianti_5axis_IMNFB",
-        "pair": "I->B",
-        "empirical_gain": 0.253775,
-        "compiled_gain_midpoint": 0.175,
-        "ratio": 0.6895872327849474
+        "model": "elsa_3axis_IMF",
+        "pair": "I->F",
+        "empirical_gain": 0.0718197253398256,
+        "compiled_gain_midpoint": 0.375,
+        "ratio": 5.221406768483621
       },
       {
         "model": "elsa_3axis_IMF",
@@ -562,20 +584,41 @@
       },
       {
         "model": "elsa_3axis_IMF",
-        "pair": "I->F",
-        "empirical_gain": 0.0718197253398256,
-        "compiled_gain_midpoint": 0.375,
-        "ratio": 5.221406768483621
-      },
-      {
-        "model": "elsa_3axis_IMF",
         "pair": "M->I",
         "empirical_gain": 0.06945259394402185,
         "compiled_gain_midpoint": 0.375,
         "ratio": 5.399366369271197
+      },
+      {
+        "model": "inchianti_4axis_hr",
+        "pair": "I->M",
+        "empirical_gain": 0.135461,
+        "compiled_gain_midpoint": 0.3,
+        "ratio": 2.2146595699131115
+      },
+      {
+        "model": "inchianti_5axis_IMNFB",
+        "pair": "I->B",
+        "empirical_gain": 0.253775,
+        "compiled_gain_midpoint": 0.175,
+        "ratio": 0.6895872327849474
+      },
+      {
+        "model": "inchianti_5axis_IMNFB",
+        "pair": "I->M",
+        "empirical_gain": 0.133107,
+        "compiled_gain_midpoint": 0.3,
+        "ratio": 2.253825869413329
       }
     ],
     "pairs_excluded_protective": [
+      {
+        "model": "elsa_3axis_IMF",
+        "pair": "F->I",
+        "empirical_gain": 0.06429190370261513,
+        "compiled_gain_midpoint": 0.3,
+        "ratio": 4.666217404102116
+      },
       {
         "model": "inchianti_4axis_hr",
         "pair": "F->I",
@@ -585,10 +628,10 @@
       },
       {
         "model": "inchianti_5axis_IMNFB",
-        "pair": "F->I",
-        "empirical_gain": 0.023458,
-        "compiled_gain_midpoint": 0.3,
-        "ratio": 12.788814050643703
+        "pair": "B->M",
+        "empirical_gain": 0.0700572,
+        "compiled_gain_midpoint": 0.07500000000000001,
+        "ratio": 1.070553776057279
       },
       {
         "model": "inchianti_5axis_IMNFB",
@@ -599,17 +642,10 @@
       },
       {
         "model": "inchianti_5axis_IMNFB",
-        "pair": "B->M",
-        "empirical_gain": 0.0700572,
-        "compiled_gain_midpoint": 0.07500000000000001,
-        "ratio": 1.070553776057279
-      },
-      {
-        "model": "elsa_3axis_IMF",
         "pair": "F->I",
-        "empirical_gain": 0.06429190370261513,
+        "empirical_gain": 0.023458,
         "compiled_gain_midpoint": 0.3,
-        "ratio": 4.666217404102116
+        "ratio": 12.788814050643703
       }
     ],
     "n": 6,
@@ -629,6 +665,153 @@
       "p": 0.13179550190843706
     },
     "interpretation": "A geometric-mean ratio of 1 means the compiled level agrees with the measured gains. The CI is what matters: it bounds how far the level of G is identified by the data we have."
+  },
+  "j_signs_audit": {
+    "pairs": [
+      {
+        "pair": "M->I",
+        "beta": 0.002841204210629455,
+        "sign_applied_as_shipped": 1,
+        "sign_the_comment_order_intends": 1,
+        "compiled_sign": "+",
+        "concordant_as_shipped": true,
+        "concordant_key_order_corrected": true,
+        "concordant_compiled_sign": true,
+        "verdict_flips_on_key_fix": false
+      },
+      {
+        "pair": "I->M",
+        "beta": 0.03276197635509705,
+        "sign_applied_as_shipped": 1,
+        "sign_the_comment_order_intends": 1,
+        "compiled_sign": "+",
+        "concordant_as_shipped": true,
+        "concordant_key_order_corrected": true,
+        "concordant_compiled_sign": true,
+        "verdict_flips_on_key_fix": false
+      },
+      {
+        "pair": "N->I",
+        "beta": -0.0030356243978018962,
+        "sign_applied_as_shipped": 1,
+        "sign_the_comment_order_intends": -1,
+        "compiled_sign": "+",
+        "concordant_as_shipped": false,
+        "concordant_key_order_corrected": true,
+        "concordant_compiled_sign": false,
+        "verdict_flips_on_key_fix": true
+      },
+      {
+        "pair": "I->N",
+        "beta": -0.04267282991411731,
+        "sign_applied_as_shipped": -1,
+        "sign_the_comment_order_intends": 1,
+        "compiled_sign": "+",
+        "concordant_as_shipped": true,
+        "concordant_key_order_corrected": false,
+        "concordant_compiled_sign": false,
+        "verdict_flips_on_key_fix": true
+      },
+      {
+        "pair": "F->I",
+        "beta": 0.014328186877137225,
+        "sign_applied_as_shipped": 1,
+        "sign_the_comment_order_intends": 1,
+        "compiled_sign": "-",
+        "concordant_as_shipped": true,
+        "concordant_key_order_corrected": true,
+        "concordant_compiled_sign": false,
+        "verdict_flips_on_key_fix": false
+      },
+      {
+        "pair": "I->F",
+        "beta": 0.06963091633656668,
+        "sign_applied_as_shipped": 1,
+        "sign_the_comment_order_intends": 1,
+        "compiled_sign": "+",
+        "concordant_as_shipped": true,
+        "concordant_key_order_corrected": true,
+        "concordant_compiled_sign": true,
+        "verdict_flips_on_key_fix": false
+      },
+      {
+        "pair": "N->M",
+        "beta": 0.01379146779564704,
+        "sign_applied_as_shipped": 1,
+        "sign_the_comment_order_intends": -1,
+        "compiled_sign": "+",
+        "concordant_as_shipped": true,
+        "concordant_key_order_corrected": false,
+        "concordant_compiled_sign": true,
+        "verdict_flips_on_key_fix": true
+      },
+      {
+        "pair": "M->N",
+        "beta": 0.0015702768484256342,
+        "sign_applied_as_shipped": -1,
+        "sign_the_comment_order_intends": 1,
+        "compiled_sign": "+",
+        "concordant_as_shipped": false,
+        "concordant_key_order_corrected": true,
+        "concordant_compiled_sign": true,
+        "verdict_flips_on_key_fix": true
+      },
+      {
+        "pair": "F->M",
+        "beta": -0.0022385962977225903,
+        "sign_applied_as_shipped": 1,
+        "sign_the_comment_order_intends": 1,
+        "compiled_sign": "-",
+        "concordant_as_shipped": false,
+        "concordant_key_order_corrected": false,
+        "concordant_compiled_sign": true,
+        "verdict_flips_on_key_fix": false
+      },
+      {
+        "pair": "M->F",
+        "beta": 0.05965050183514325,
+        "sign_applied_as_shipped": 1,
+        "sign_the_comment_order_intends": 1,
+        "compiled_sign": "+",
+        "concordant_as_shipped": true,
+        "concordant_key_order_corrected": true,
+        "concordant_compiled_sign": true,
+        "verdict_flips_on_key_fix": false
+      },
+      {
+        "pair": "F->N",
+        "beta": 0.0005774935904564659,
+        "sign_applied_as_shipped": 1,
+        "sign_the_comment_order_intends": 1,
+        "compiled_sign": "-",
+        "concordant_as_shipped": true,
+        "concordant_key_order_corrected": true,
+        "concordant_compiled_sign": false,
+        "verdict_flips_on_key_fix": false
+      },
+      {
+        "pair": "N->F",
+        "beta": 0.06318436880007987,
+        "sign_applied_as_shipped": 1,
+        "sign_the_comment_order_intends": 1,
+        "compiled_sign": "+",
+        "concordant_as_shipped": true,
+        "concordant_key_order_corrected": true,
+        "concordant_compiled_sign": true,
+        "verdict_flips_on_key_fix": false
+      }
+    ],
+    "n_pairs_affected_by_key_order": 4,
+    "pairs_affected": [
+      "N->I",
+      "I->N",
+      "N->M",
+      "M->N"
+    ],
+    "concordance_as_shipped": "9/12",
+    "concordance_key_order_corrected": "9/12",
+    "concordance_compiled_sign": "8/12",
+    "net_effect_on_count": "none: the same number of verdicts flip each way, so the published 9/12 is numerically unaffected by the bug. What changes is WHICH pairs are counted discordant."
   },
   "entries": {
     "move_to_kappa": [

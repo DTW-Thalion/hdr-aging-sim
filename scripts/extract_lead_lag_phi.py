@@ -168,7 +168,10 @@ def run_elsa():
     merged = build_analysis_panel(panel, harm_long, mort, supp)
     trip = build_triplets(merged)
 
-    # ELSA nurse-visit waves are 2 calendar years apart per wave index.
+    # ELSA nurse-visit waves are 2 calendar years apart per wave index, so this
+    # is a NOMINAL interval derived from the wave index, not a realised age gap
+    # (the InCHIANTI path uses the real age difference). Recorded as such in
+    # interval_basis so the two cohorts are not silently compared.
     gap = (trip["wave_t1"].astype(float) - trip["wave_t"].astype(float)) * 2.0
     trip = trip.assign(_interval_years=gap)
 
@@ -270,7 +273,18 @@ def _pairs_from_triplets(trip, axes, id_col, age_col, cohort, model,
                 subj=trip[id_col].values)
 
             iv = trip["_interval_years"].astype(float)
+            # 95% normal-approximation CIs; the prompt asks for an interval on
+            # every pair and SEs alone are not one.
+            if fit.get("beta") is not None:
+                for k in ("beta", "phi_jj", "long_run_gain"):
+                    v, se = fit.get(k), fit.get("se_" + k)
+                    fit[k + "_ci95"] = (
+                        [float(v - 1.959964 * se), float(v + 1.959964 * se)]
+                        if v is not None and se is not None else None)
             fit.update({
+                "interval_basis": ("nominal, from wave index"
+                                   if cohort.startswith("ELSA")
+                                   else "realised age difference"),
                 "cohort": cohort,
                 "model": model,
                 "source": source,

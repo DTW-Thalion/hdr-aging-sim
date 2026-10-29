@@ -127,14 +127,47 @@ def _fast(rows, basin):
 
 
 @pytest.mark.parametrize("basin,expected,n_nonzero", [
+    ("healthy", 0.518, 26),
+    ("pre_disease", 0.753, 26),
+    ("disease", 1.127, 28),
+])
+def test_rho_G_fast_per_basin_adopted(rows, basin, expected, n_nonzero):
+    """The convention-correct G: protective entries REMOVED (they move to kappa),
+    not absolute-valued. This is what docs/units_convention.md Section 6.4
+    requires a compliant loader to reproduce."""
+    G = _fast(rows, basin)
+    G[:, FAST7.index("F")] = 0.0          # F-row -> kappa; B is not in the fast block
+    assert (G >= 0).all()
+    assert rho(G) == pytest.approx(expected, abs=0.001)
+    assert int((G > 0).sum()) == n_nonzero
+
+
+@pytest.mark.parametrize("basin,expected,n_nonzero", [
     ("healthy", 0.749, 31),
     ("pre_disease", 0.969, 31),
     ("disease", 1.311, 33),
 ])
-def test_rho_G_fast_per_basin(rows, basin, expected, n_nonzero):
+def test_rho_G_fast_abs_diagnostic_matches_evidence_package(rows, basin,
+                                                            expected, n_nonzero):
+    """The pre-decision |J| diagnostic from HDR-mechanistic
+    results/units_evidence_package.md Section 4. Kept only so that document
+    stays traceable -- it is NOT a quantity the adopted convention defines,
+    because it assigns the protective entries the opposite of their compiled
+    sign. Never use it as an acceptance target."""
     G = np.abs(_fast(rows, basin))
     assert rho(G) == pytest.approx(expected, abs=0.001)
     assert int((G > 0).sum()) == n_nonzero
+
+
+def test_adopted_and_abs_diagnostic_are_different_objects():
+    """Guard against the two being conflated again."""
+    r = load_J_csv(os.path.join(ROOT, "data", "J_matrix_compiled_9x9.csv"))
+    G = _fast(r, "pre_disease")
+    Gk = G.copy()
+    Gk[:, FAST7.index("F")] = 0.0
+    assert rho(np.abs(G)) > rho(Gk) + 0.2, (
+        "the |J| diagnostic should be materially larger than the adopted G; "
+        "if these have converged, the protective entries are no longer negative")
 
 
 def test_protective_entries_are_exactly_the_documented_eleven(rows):

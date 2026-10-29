@@ -82,8 +82,8 @@ for E and 16.88 for B**.  The E row reaches 440 SD/SD at age 80 (`J_E_I`,
 `J_E_M`); the B row reaches 112.50 (`J_N_B`).
 
 A steady-state gain of 440 is not a strong coupling, it is a unit error.  Under
-G the same compiled numbers are bounded by construction and the E and B rows
-read as 0.10–0.25 SD/SD.
+G the same compiled numbers are bounded by construction: the E and B rows
+read as 0.08–0.30 SD/SD in the healthy basin.
 
 ### 2.2 The pipeline that produced the magnitudes already denominates them as gains
 
@@ -122,8 +122,10 @@ The specification in `scripts/elsa_lead_lag.py` and
 
 so `x_target(t+1) = (1+γ)·x_target(t) + β·x_source(t) + …`, giving
 `φ_jj = 1 + γ` and an implied steady-state gain of `β/(1−φ_jj) = −β/γ`.  The
-evidence package could only bracket this over assumed φ; it is now a point
-estimate with a standard error.
+evidence package could only bracket this over assumed φ; φ is now estimated
+rather than assumed.  What that buys is a *bound*, not an identified gain —
+§3(b) explains why `β/(1−φ)` is not a clean estimate of `g_ij`, and that
+objection is not answered anywhere in this document.
 
 For the significant pairs whose compiled entry is numeric:
 
@@ -137,20 +139,33 @@ For the significant pairs whose compiled entry is numeric:
 | ELSA | I→F | +0.0137 | 0.809 | 0.072 (0.025) | 0.25 → 0.50 | 0.50 → 1.75 |
 | ELSA / InCHIANTI | F→I | +0.0251 / +0.0143 | 0.610 / 0.337 | 0.064 / 0.022 | −0.35 → −0.25 | −1.40 → −4.25 |
 
-The decisive rows are the B-axis pairs, because they are the only directly
-measured pairs where the two readings differ by orders of magnitude.  `I→B` has
-an empirical steady-state gain of 0.254 ± 0.087; the compiled disease value read
-as a gain is 0.25.  The rate reading requires 13.5–62.5 — between 50× and 250×
-the measured value, and outside what any standardised regression can produce.
-`F→B` gives 0.054 ± 0.018 against a rate-implied 40–45, an 800× discrepancy.
+The decisive rows are the B-axis pairs — the only directly measured pairs where
+the two readings differ by orders of magnitude.  `I→B` gives 0.254 (SE 0.087)
+against a rate reading that requires 13.5–62.5, between 50× and 250× the
+measured co-movement; `F→B` gives 0.054 (SE 0.018) against a rate-implied 40–45.
+The compiled disease value for `I→B` read as a gain is 0.25, close to 0.254 —
+but see §3(b): that agreement is not evidence and is not relied on below.  What
+carries the argument is that the rate reading demands co-movement no
+standardised regression can produce.
 
-The argument is a **bound**, not a point identification, and it should be stated
-that way.  Because `|β| ≤ 1` for standardised variables and `φ_jj < 1`, a
-long-run gain of 440 would require `φ_jj ≥ 1 − 1/440 = 0.9977`.  The largest
-`φ_jj` anywhere in the table is 0.941 (`model inchianti_5axis_IMNFB`, target F),
-and the E and B rows' targets sit at 0.549–0.560.  **No admissible φ makes the
-rate reading of the quasi-static rows compatible with the measured co-movement.
-Every compiled value read as a gain is admissible.**
+The argument is a **bound**, not a point identification.  Because `|β| ≤ 1` for
+standardised variables and `φ_jj < 1`, a long-run gain of 440 would require
+`φ_jj ≥ 1 − 1/440 = 0.9977`.  The largest `φ_jj` anywhere in the table is 0.941
+(`inchianti_5axis_IMNFB`, target F).
+
+Two limits on how far this reaches, both of which matter:
+
+- The 440 figure is an **E-row** entry (`J_E_I`, `J_E_M`).  There is **no E axis
+  in the φ table** — the measured targets are B, F, I, M and N only.  For E the
+  bound rests on `φ < 1` alone, which is enough to exclude 440 but is not a
+  measurement.
+- B is therefore the only quasi-static row with a measured φ (its targets sit at
+  0.549–0.560).  Read "the B row, plus an unmeasured bound on E" wherever the
+  slow rows are discussed in the plural.
+
+With those caveats: **no admissible φ makes the rate reading of the slow rows
+compatible with the measured co-movement, and every compiled value read as a
+gain is admissible.**
 
 ### 2.4 τ cannot rescue the rate reading
 
@@ -267,9 +282,20 @@ Rationale in one line per claim, each with its source:
    quasi-static rows with the measured cross-lagged coefficients: a gain of 440
    needs φ ≥ 0.9977, and the largest φ observed is 0.941
    (`results/lead_lag_phi_table.json`).
-5. The directly measured B-axis pairs land on the gain reading and are 50–800×
-   from the rate reading (`I→B` 0.254 ± 0.087 vs 13.5–62.5; `F→B` 0.054 ± 0.018
-   vs 40–45).
+5. The directly measured B-axis pairs are 50–800× from the rate reading
+   (`I→B` 0.254, SE 0.087, against 13.5–62.5; `F→B` 0.054, SE 0.018, against
+   40–45). The rationale is the *distance from the rate reading*, which only
+   needs `φ < 1`; it is **not** the proximity to the compiled value, which
+   §3(b) rules out as evidence.
+
+**What the decision does not buy.**  It fixes the units and nothing else.  The
+*level* of `G` is identified only to within roughly a factor of two by the data
+available (§3(c): geometric-mean compiled/empirical ratio 1.99, 95% CI
+[0.75, 5.31], n = 6), an uncertainty an order of magnitude wider than the Monte
+Carlo band in §5.  Every `ρ(G)` computed from the compiled tiers inherits that,
+and Task 1.3 must carry the scale explicitly rather than treat the compiled
+values as measurements.  This is the single most consequential constraint in
+this document and it governs how every downstream `ρ` claim may be worded.
 
 **Falsifiability.** The decision is falsified if a longitudinal design sampled at
 or below the axis recovery timescales — the planned MIMIC-IV perturbation-recovery
@@ -301,34 +327,47 @@ sharper than the manuscript currently states:
   monitored without knowing anybody's recovery timescales.  The wording
   "exceeds the product of self-restoring capacities" becomes wrong and must go.
 
-**On ρ(G_pre-disease).** From `results/units_convention_numerics.json`, the
-compiled tiers give, for the 7-axis fast subsystem using numerically compiled
-entries only (31 / 31 / 33 non-zero):
+**On ρ(G).** There are two different matrices in play and the distinction is
+not cosmetic.
 
-| Basin | ρ(G_fast) | ρ with the F row removed | Monte Carlo 95% | P(ρ ≥ 1) |
-|---|---|---|---|---|
-| healthy | 0.749 | 0.518 | [0.698, 0.858] | 0.000 |
-| pre-disease | 0.969 | 0.753 | [0.903, 1.109] | 0.503 |
-| disease | 1.311 | 1.127 | [1.227, 1.499] | 1.000 |
+The evidence package's §4 took `|J|` over every compiled entry, protective ones
+included, as a pre-decision diagnostic. Under the adopted convention that object
+does not exist: the 11 protective entries move to κ
+(`docs/protective_coupling_formulation.md`), and taking `|−0.35|` as a gain of
+`+0.35` asserts the opposite sign to the compiled entry. **The
+convention-correct `G` has those entries removed, not absolute-valued.**
+
+From `results/units_convention_numerics.json`, key `rho_G`, 7-axis fast
+subsystem, numerically compiled entries only:
+
+| Basin | **ρ(G) adopted** | Monte Carlo 95% | **P(ρ ≥ 1)** | non-zero | (abs diagnostic) |
+|---|---|---|---|---|---|
+| healthy | **0.518** | [0.473, 0.607] | 0.0000 | 26 | 0.749 |
+| pre-disease | **0.753** | [0.685, 0.884] | 0.0001 | 26 | 0.969 |
+| disease | **1.127** | [1.036, 1.315] | 0.9937 | 28 | 1.311 |
 
 Monte Carlo: 20 000 draws, lognormal multiplicative noise with CV by confidence
-grade (A 0.20, B 0.40, C 0.70), the specification already used in
-`scripts/run_figure_uncertainty.py` for Supplementary Note 1.  Note what this
-band does and does not cover: it propagates per-entry grade uncertainty around
-the compiled values, holding their overall level fixed.
+grade (A 0.20, B 0.40, C 0.70). This follows the Supplementary Note 1
+specification in `scripts/run_figure_uncertainty.py` but is **not identical to
+it**: that script also flips the sign of a grade-C entry with probability 0.05,
+which is not carried over, because under this convention `G` is non-negative by
+construction and a sign flip would produce a matrix for which `ρ(G) < 1` is no
+longer a stability condition. The band propagates magnitude uncertainty only,
+holding the overall level fixed.
 
-**This is a property of the compiled tiers, not a result.**  `ρ(pre-disease) =
-0.969` is a restatement of the tier values and the tier→basin map; the 95% band
-[0.903, 1.109] straddles unity and `P(ρ ≥ 1) = 0.50` is, precisely, a coin flip.
-Taken with §3(c) — the level of `G` is pinned only to within a factor of ~2,
-95% CI [0.75, 5.31], which is far wider than this band — the honest reading is
-that the point estimate's proximity to 1 carries no information about where the
-real pre-disease basin sits.  It must not be presented as confirmation that the pre-disease state is
-near-critical, must not be used as a calibration target, and must not appear in
-the manuscript as a finding.  What *is* reportable is the ordering and its
-robustness: healthy is inside the boundary with P(ρ ≥ 1) = 0.000 and disease is
-outside it with P(ρ ≥ 1) = 1.000, under the compiled uncertainty.
+**The near-critical pre-disease basin is an artefact of the absolute value.**
+Under the convention-correct matrix `ρ(pre-disease) = 0.753` with
+`P(ρ ≥ 1) = 0.0001` — not 0.969, and not a coin flip. The earlier reading was
+obtained by assigning the protective entries the sign opposite to the one
+compiled for them. It must not be presented as confirmation that the pre-disease
+state is near-critical, must not be used as a calibration target, and must not
+appear in the manuscript as a finding. Nor should the corrected 0.753 be read as
+a measurement: §3(c) pins the *level* of `G` only to within a factor of ~2
+(95% CI [0.75, 5.31]), far wider than the band above.
 
+What *is* reportable is the ordering and its robustness: healthy sits inside the
+boundary with `P(ρ ≥ 1) = 0.0000`, disease outside it with `P(ρ ≥ 1) = 0.9937`,
+under the compiled uncertainty and at the compiled level.
 ---
 
 ## 6. How the compiled CSV must be re-expressed
@@ -404,9 +443,14 @@ from a stored rate.
 
 ### 6.4 Acceptance for the re-expression
 
-- `G_basin` reproduces, from the re-expressed CSV, `ρ(G_fast)` = 0.749 /
-  0.969 / 1.311 and 31 / 31 / 33 non-zero fast entries
-  (`results/units_convention_numerics.json`, key `rho_G`).
+- `G_basin`, skipping `channel = kappa` rows per §6.2(2), reproduces
+  `ρ(G_fast)` = **0.518 / 0.753 / 1.127** with **26 / 26 / 28** non-zero fast
+  entries (`results/units_convention_numerics.json`, key `rho_G.*.adopted`).
+  These are the convention-correct values and are what a compliant loader must
+  produce. Do **not** target 0.749 / 0.969 / 1.311 with 31 / 31 / 33 — those
+  come from the pre-decision `|J|` diagnostic, which includes the κ rows with
+  their signs discarded; a loader reproducing them is not skipping the κ rows.
+- `G_basin` output satisfies `(G >= 0).all()` in every basin.
 - `A_from_G(G_healthy, tau(25))` and `-D + J_from_G(G_healthy, tau(25))` agree
   to machine precision.
 - No column named `J_*` survives in the CSV.
@@ -420,8 +464,9 @@ from a stored rate.
 - τ_B and τ_E are turnover rather than perturbation-recovery timescales
   (`data/tau_registry.json`, `open_issues`). Neither enters the fast-subsystem
   margin, but neither can support a dynamical claim about its axis.
-- The axis-I trajectory in `src/hdr_sim/csv_loader.py` overshoots its own
-  declared 120-day anchor (48.60 d against 45.0 d). Phase 2.
+- The axis-I trajectory in `src/hdr_sim/csv_loader.py` misses its own declared
+  anchors at both ends: 48.60 d against 45.0 d at age 120, and 3.995 d against
+  4.0 d at age 25. Phase 2.
 - Whether the 3-year cross-lagged persistence can be decomposed into regulatory
   and between-person components at all. If it cannot, the gain calibration stays
   bounded rather than identified.

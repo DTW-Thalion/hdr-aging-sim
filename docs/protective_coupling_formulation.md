@@ -110,6 +110,13 @@ which **vanishes at the reference**, because `x_i = 0` there. Therefore:
 > `G ≥ 0`, and stability is governed by `ρ(G) < 1` alone
 > (`docs/units_convention.md` §1, condition G2).
 
+Two qualifications. The `max(0, ·)` kink makes the system piecewise-smooth, so
+(4) is a one-sided-consistent linearisation evaluated where both branches agree,
+not a statement that the κ terms are globally absent from the Jacobian. And `f`
+is C¹ but not C²: `f″(0⁺) = 2κ²/τ_i` against `f″(0⁻) = 0`, so the two branches
+are not two halves of one smooth function. Neither affects the result at the
+reference.
+
 The protective couplings are second-order by construction: they matter only when
 the target is already displaced, which is precisely when recovery rate is the
 thing that matters. They shape the recovery trajectory and the basin geometry;
@@ -160,11 +167,24 @@ redundant for `channel = J` rows and is retained only as provenance.
 
 ## 4. Regime-dependent entries
 
-Three compiled entries are recorded in
-`HDR-mechanistic/docs/sign_convention_reconciliation.md` as weakly negative in
-the healthy regime and positive in disease. The compiled CSV currently carries
+`HDR-mechanistic/docs/sign_convention_reconciliation.md` records **seven**
+state-conditioned couplings, not three. For all seven the compiled CSV carries
 the **disease-regime value in all three basin columns**, which is why they read
-as positive everywhere:
+as positive everywhere.
+
+They split into two kinds, and only one kind is treated here:
+
+- **Sign-reversing (3):** `N→I`, `N→B`, `C→I` — the source doc describes these
+  as *weakly negative* in the healthy regime. These are handled below.
+- **Near-zero (4):** `I→mito`, `M→I`, `C→M`, `mito→E` — described as
+  *near-zero* in the healthy regime, not sign-reversing. They are **not**
+  treated here. Zeroing them in the healthy basin as well would take healthy
+  `ρ(G)` from 0.518 to a lower value still, and the source doc gives no
+  threshold at which "near-zero" becomes zero. Recorded as an open item for
+  Task 1.3 rather than decided here, because the choice would move a headline
+  number and there is no stated criterion to decide it on.
+
+The three sign-reversing entries:
 
 | Entry | Healthy biology | Disease biology | Compiled now (h / p / d) |
 |---|---|---|---|
@@ -205,37 +225,51 @@ sizes already in `HDR-mechanistic/data/inputs/effect_size_bounds.json`, not
 against the compiled tier values.**
 
 The mapping is identification, not rescaling. An exercise RCT reports a
-*steady-state* effect: `J_F_I = 0.2–0.4 SD CRP reduction per exercise
-intervention` (meta-analysis of exercise RCTs), `J_F_M = 0.3–0.5 SD HOMA-IR
-improvement` (DPP), `J_B_F = 0.05–0.15` (MR). Under the damping form, holding
-`Δx_F` at a sustained value `−δ` scales `τ_i` by `1/(1 + κ_iF δ)`, and the
-steady-state displacement of target `i` under a fixed exogenous drive scales
-with `τ_i`. So a measured steady-state fractional improvement `ε_is` in target
-`i` for a sustained 1 SD protective displacement of `s` gives
+*steady-state* effect. Under the damping form, holding `Δx_F` at a sustained
+value `−δ` scales `τ_i` by `1/(1 + κ_iF δ)`, and the steady-state displacement
+of target `i` under a fixed exogenous drive scales with `τ_i`. So a measured
+steady-state fractional improvement `ε_is` for a sustained 1 SD protective
+displacement of `s` gives
 
 ```
 κ_is  =  ε_is / (1 − ε_is)                                               (5)
 ```
 
-Worked, for the two grade-A anchors (midpoints):
+The τ-proportionality premise holds exactly only for a decoupled axis
+(`x_ss = τ·u`); with `G ≠ 0` the steady state carries a `(I − G)⁻¹` factor and
+(5) is the single-axis limit. At the compiled `ρ(G) = 0.518` in the healthy
+basin that correction is not negligible and the κ table should carry it.
 
-| Entry | ε from effect_size_bounds.json | κ by (5) |
-|---|---|---|
-| F→I | 0.30 | 0.43 |
-| F→M | 0.40 | 0.67 |
-| F→B | 0.10 | 0.11 |
+**Only two entries have an interventional effect size.** From
+`HDR-mechanistic/data/inputs/effect_size_bounds.json`:
 
-Entries without an RCT-derived effect size take the tier band from
-`effect_size_bounds.json` (strong ≥ 0.5, moderate 0.2–0.5, weak 0.05–0.2 SD per
-SD) through (5), with the confidence grade carried into the Monte Carlo CV as in
-`scripts/run_figure_uncertainty.py`. The `qual_only` entries (F→P, B→I, B→N)
-stay `qual_only`; they are weak/grade-C and (5) would manufacture precision.
+| Entry | ε (stated range) | estimate_type | κ range by (5) |
+|---|---|---|---|
+| F→I | 0.2–0.4 SD CRP reduction per exercise intervention (Fedewa 2017 meta-analysis) | `meta_analytic`, C2 | 0.25 – 0.67 |
+| F→M | 0.3–0.5 SD HOMA-IR improvement per exercise intervention (Knowler 2002 DPP) | `meta_analytic`, C3 | 0.43 – 1.00 |
 
-**Constraint the κ table must satisfy:** `κ_is` is identified by an
-*interventional* effect size, so an entry whose only evidence is cross-sectional
-or observational must not be promoted to a numeric κ. Of the eleven, only F→I,
-F→M and F→B have interventional or MR support. The other eight are tier-derived
-and should be marked as such in the κ table.
+κ is a **range**, not a point: the midpoints (0.43 and 0.67) have no more claim
+than the endpoints, and quoting them alone manufactures precision the source
+does not have.
+
+**F→B has no interventional effect size and must not be given a numeric κ.**
+An earlier draft of this document cited `J_F_B = 0.05–0.15 (MR)`. There is no
+`J_F_B` in `effect_size_bounds.json`. The entry that exists is **`J_B_F`** —
+the *reverse* direction, "0.05–0.15 SD grip strength per 1 SD BMD", with
+`estimate_type: mr_estimate`, `causal_level: C4`, `confidence_in_bound: low`,
+and a `quantitative_estimate` that describes itself as cross-sectional
+(sclerostin–muscle associations). Using it for F→B transposed the pair and
+promoted a low-confidence cross-sectional association to an interventional
+anchor, inside the section that forbids exactly that.
+
+Everything else takes the tier band from `effect_size_bounds.json` (strong
+≥ 0.5, moderate 0.2–0.5, weak 0.05–0.2 SD per SD) through (5), marked
+`tier_derived`, with the confidence grade carried into the Monte Carlo CV. The
+`qual_only` entries (F→P, B→I, B→N) stay `qual_only`.
+
+**Constraint the κ table must satisfy:** a numeric κ requires an
+*interventional* effect size for that ordered pair. Of the eleven, **two**
+qualify. The other nine are tier-derived and must be marked as such.
 
 ---
 
@@ -370,11 +404,35 @@ compiled matrix the pair is **discordant**. The same inversion affects `M→N`
 from the other side: it lists I→N among the pairs discordant under the
 all-positive definition.
 
+**Four pairs are affected, not two, and the published count does not change.**
+Regenerated in `results/units_convention_numerics.json`, key `j_signs_audit`.
+Because `J_SIGNS` contains both orderings of each asymmetric pair, the swap hits
+all four of `I→N`, `N→I`, `N→M`, `M→N`:
+
+| Executed pair | applied | comment order intends | β | recorded | flips |
+|---|---|---|---|---|---|
+| I→N | −1 | +1 | −0.0427 | concordant | yes |
+| N→I | +1 | −1 | −0.0030 | discordant | yes |
+| N→M | +1 | −1 | +0.0138 | concordant | yes |
+| M→N | −1 | +1 | +0.0016 | discordant | yes |
+
+Two verdicts flip each way, so:
+
+| | 12-pair concordance |
+|---|---|
+| as shipped (buggy `J_SIGNS`) | 9/12 |
+| key order corrected | 9/12 |
+| predicted sign read from the compiled CSV | 8/12 |
+
+**The published 9/12 is numerically unaffected.** What the bug changes is
+*which* pairs are counted discordant: as shipped `{N→I, M→N, F→M}`; reading the
+compiled sign `{I→N, N→I, F→I, F→N}`. Any sentence in the manuscript that names
+the discordant pairs, or attributes the discordance to the N-axis proxy being
+noisy, is wrong and must be rewritten. The headline number stays.
+
 **Action.** Delete `J_SIGNS` from `scripts/inchianti_lead_lag.py` and read the
 predicted sign from the CSV, which under this document is `+1` for every
-`channel = J` entry. Correct the two affected pairs wherever the 9/12 and
-5/6 counts appear in the manuscript; the counts above already use the corrected
-definition.
+`channel = J` entry. Do not change the 9/12 or 5/6 counts.
 
 ---
 
@@ -386,14 +444,22 @@ definition.
 - [x] Concordance definition under all-positive `G` (§7), with the I→N question
       answered (§7.1).
 - [x] Tier→κ principle tied to `effect_size_bounds.json` (§5), with the
-      interventional-evidence constraint.
+      interventional-evidence constraint. Note the constraint bites harder than
+      first drafted: **two** entries qualify for a numeric κ (F→I, F→M), not
+      three — `J_F_B` does not exist in that file.
 - [x] Numerical check: `α_fast(25)` and `α_fast(120)` at the published and
       recalibrated scales (§6).
 
 ## 9. Handover to HDR-mechanistic
 
-Build the κ table with: equation (5) as the identification rule; the eleven
-entries of §3; interventional evidence required for a numeric κ; tier bands and
-grade-CVs from `effect_size_bounds.json`. Return it as
-`data/exports/kappa_table.json` with per-entry `kappa`, `evidence_type`,
-`confidence_grade` and the effect size it was identified from.
+Build the κ table with: equation (5) as the identification rule, carrying the
+`(I − G)⁻¹` correction noted in §5 rather than the single-axis limit; the eleven
+entries of §3; interventional evidence required for a numeric κ, which **only
+F→I and F→M satisfy**; tier bands and grade-CVs from `effect_size_bounds.json`.
+Return it as `data/exports/kappa_table.json` with per-entry `kappa_range` (not a
+point), `evidence_type`, `confidence_grade`, `identified_from` naming the exact
+`effect_size_bounds.json` key, and a boolean `tier_derived`.
+
+Check the key direction before using any entry: that file is indexed
+`J_<source>_<target>`, and `J_B_F` and `J_F_B` are different couplings. Only one
+of them exists.

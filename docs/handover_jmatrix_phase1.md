@@ -88,9 +88,12 @@ changes which axis sets the margin (F throughout, vs C then I).
 - Re-derive `TIER_DEFAULTS` against `effect_size_bounds.json` (≥0.5 / 0.2–0.5 /
   0.05–0.2 SD per SD); flag, do not silently change, any compiled value outside
   its own tier band.
-- Acceptance: `G_basin` reproduces ρ(G_fast) = 0.749 / 0.969 / 1.311 with
-  31 / 31 / 33 non-zero fast entries; `A_from_G` and `−D + J_from_G` agree to
-  machine precision; no `J_*` column survives.
+- Acceptance: `G_basin`, **skipping `channel = kappa` rows**, reproduces
+  ρ(G_fast) = **0.518 / 0.753 / 1.127** with **26 / 26 / 28** non-zero fast
+  entries, and `(G >= 0).all()` in every basin; `A_from_G` and `−D + J_from_G`
+  agree to machine precision; no `J_*` column survives. Do not target
+  0.749 / 0.969 / 1.311 — those come from the pre-decision `|J|` diagnostic
+  that keeps the κ rows with their signs discarded.
 
 ## 4. Entries that move to κ
 
@@ -103,14 +106,20 @@ F→C (−0.12/−0.10/−0.08), F→N (−0.18/−0.15/−0.12), F→B (−0.30
 
 **B row (3):** B→I (qual_only), B→M (−0.10/−0.08/−0.05), B→N (qual_only).
 
-**Regime-dependent (3), not κ:** N→I, N→B, C→I — set `g_healthy = 0`,
-`regime_dependent = true`, pre-disease and disease unchanged.
+**Regime-dependent, not κ:** the source doc records **seven** state-conditioned
+couplings. Three are sign-reversing — N→I, N→B, C→I — and get `g_healthy = 0`,
+`regime_dependent = true`, pre-disease and disease unchanged. Four are
+"near-zero" rather than sign-reversing — I→mito, M→I, C→M, mito→E — and are
+**left alone** here; there is no stated threshold at which near-zero becomes
+zero, and deciding it would move a headline number. Open item for Task 1.3.
 
 κ identification rule (`docs/protective_coupling_formulation.md` §5):
 `κ_is = ε_is / (1 − ε_is)` where `ε` is the interventional steady-state
-fractional improvement from `effect_size_bounds.json`. Only F→I, F→M and F→B
-have interventional or MR support and may take a numeric κ; the rest are
-tier-derived and must be marked as such. Return as
+fractional improvement from `effect_size_bounds.json`. **Only F→I and F→M** may
+take a numeric κ, as ranges not points (κ ∈ [0.25, 0.67] and [0.43, 1.00]); the
+other nine are tier-derived and must be marked as such. There is no `J_F_B` in
+that file — the entry is `J_B_F`, the reverse direction, cross-sectional and
+low-confidence; check the key direction before using any entry. Return as
 `data/exports/kappa_table.json`.
 
 ## 5. Also fix while you are in there
