@@ -1,0 +1,392 @@
+{
+ "schema_version": "1.0",
+ "name": "HDR unified recovery-timescale registry",
+ "created": "2026-10-29",
+ "task": "HDR formalism repair Phase 1, deliverable B (Task 1.1 prerequisite)",
+ "description": "Single recovery-timescale registry for both hdr-aging-sim and HDR-mechanistic. Reconciles the framework manuscript's Supplementary Table 1 (transcribed in HDR-mechanistic data/inputs/tau_registry_framework_paper.json) with HDR-mechanistic's tau_reference (docs/tau_reconciliation.md), axis by axis. Supersedes TAU_REGISTRY_V2 in src/hdr_sim/csv_loader.py and tau_reference in HDR-mechanistic.",
+ "units": "days",
+ "admission_criterion": "Every tau_i is a PERTURBATION-RECOVERY timescale: the e-folding time of the regulatory variable's return to its set-point after a single acute displacement, under self-restoration alone. Capacity-rebuilding and structural-turnover timescales are excluded (criterion stated in HDR-mechanistic docs/tau_reconciliation.md and applied here to both repositories' values, including the framework's own).",
+ "interpolation": {
+  "method": "geometric (log-linear) between the 25/80/120 anchors",
+  "note": "This registry declares anchors only. Callers must interpolate from the anchors; they must NOT fit a trajectory shape that overshoots a declared anchor. See open_issues.tau_I_120_trajectory_conflict."
+ },
+ "subsystem_partition": {
+  "fast": [
+   "I",
+   "M",
+   "mito",
+   "P",
+   "C",
+   "N",
+   "F"
+  ],
+  "quasi_static": [
+   "E",
+   "B"
+  ],
+  "basis": "tau separation of ~2 orders of magnitude between F (2-6 d) and B (135-500 d)"
+ },
+ "axes": {
+  "I": {
+   "process": "Inflammatory resolution",
+   "regulatory_variable": "IL-6 / CRP return to set-point after an acute inflammatory insult",
+   "tau25": 4.0,
+   "tau80": 17.0,
+   "tau120": 45.0,
+   "tau120_extrapolated": true,
+   "range": [
+    4.0,
+    25.0
+   ],
+   "interpretation": "perturbation-recovery",
+   "pmids": [
+    "27467771"
+   ],
+   "dynamical_role": "fast",
+   "confidence": "B",
+   "reconciliation": {
+    "framework": "4.0 / 17.0 / 45.0",
+    "mechanistic": "14 [7, 25]",
+    "adopted": "4.0 / 17.0 / 45.0, range widened to [4, 25]",
+    "reason": "Compatible. The mechanistic value is a single mid-life point that falls inside the framework's 25->80 span; the framework resolves the age trajectory, which the dynamics need. Range widened to cover the mechanistic interval."
+   },
+   "anchor_span": [
+    4.0,
+    45.0
+   ]
+  },
+  "M": {
+   "process": "Metabolic regulatory gain",
+   "regulatory_variable": "post-OGTT glucose return to baseline",
+   "tau25": 0.08,
+   "tau80": 0.21,
+   "tau120": 0.35,
+   "tau120_extrapolated": true,
+   "range": [
+    0.08,
+    0.35
+   ],
+   "interpretation": "perturbation-recovery",
+   "pmids": [
+    "18268070",
+    "30355075"
+   ],
+   "dynamical_role": "fast",
+   "confidence": "A",
+   "reconciliation": {
+    "framework": "0.08 / 0.21 / 0.35",
+    "mechanistic": "0.2 [0.1, 0.3]",
+    "adopted": "0.08 / 0.21 / 0.35",
+    "reason": "Compatible; the two agree to within the mechanistic range. Both repositories already rejected the capacity reading (HOMA-IR recovery after acute illness, 14 d)."
+   },
+   "anchor_span": [
+    0.08,
+    0.35
+   ]
+  },
+  "E": {
+   "process": "Epigenetic maintenance fidelity",
+   "regulatory_variable": "methylation maintenance cycle",
+   "tau25": 500.0,
+   "tau80": 2000.0,
+   "tau120": 5000.0,
+   "tau120_extrapolated": true,
+   "range": [
+    500.0,
+    2000.0
+   ],
+   "interpretation": "perturbation-recovery (WEAK: see flag)",
+   "flag": "The declared process is a maintenance cycle, which is closer to a turnover timescale than to the recovery of a displaced regulatory variable. No acute-perturbation-recovery experiment is cited. Treat tau_E as provisional. This does not affect the fast-subsystem stability margin (E is quasi-static), but it does bound any claim about E dynamics.",
+   "pmids": [
+    "15509558",
+    "22672542"
+   ],
+   "dynamical_role": "quasi_static",
+   "confidence": "C",
+   "reconciliation": {
+    "framework": "500 / 2000 / 5000",
+    "mechanistic": "1000 [500, 2000]",
+    "adopted": "500 / 2000 / 5000",
+    "reason": "Compatible; the mechanistic point value is the midpoint of the framework's 25->80 span. Framework retained for age resolution. Both are flagged as provisional under the admission criterion."
+   },
+   "anchor_span": [
+    500.0,
+    5000.0
+   ]
+  },
+  "mito": {
+   "process": "Mitochondrial bioenergetic balance",
+   "regulatory_variable": "bioenergetic functional recovery (PGC-1alpha signalling cycle); NOT mitochondrial protein pool half-life",
+   "tau25": 1.0,
+   "tau80": 2.0,
+   "tau120": 5.0,
+   "tau120_extrapolated": true,
+   "range": [
+    1.0,
+    3.0
+   ],
+   "interpretation": "perturbation-recovery",
+   "pmids": [
+    "12563009",
+    "18653753",
+    "23187721"
+   ],
+   "dynamical_role": "fast",
+   "confidence": "B",
+   "reconciliation": {
+    "framework": "1.0 / 2.0 / 5.0",
+    "mechanistic": "2 [1, 3]",
+    "adopted": "1.0 / 2.0 / 5.0, range [1, 3]",
+    "reason": "Compatible. Both repositories already corrected away from mtDNA-copy-number turnover (30 d), which is capacity rebuilding."
+   },
+   "anchor_span": [
+    1.0,
+    5.0
+   ]
+  },
+  "P": {
+   "process": "Proteostatic clearance capacity",
+   "regulatory_variable": "clearance of a misfolded-protein bolus",
+   "tau25": 1.5,
+   "tau80": 3.0,
+   "tau120": 4.0,
+   "tau120_extrapolated": true,
+   "range": [
+    0.5,
+    4.0
+   ],
+   "interpretation": "perturbation-recovery",
+   "pmids": [
+    "24437518",
+    "17460208"
+   ],
+   "dynamical_role": "fast",
+   "confidence": "B",
+   "reconciliation": {
+    "framework": "1.5 / 3.0 / 4.0",
+    "mechanistic": "1 [0.5, 2]",
+    "adopted": "1.5 / 3.0 / 4.0, range widened to [0.5, 4]",
+    "reason": "Near-compatible: the framework's age-25 value (1.5) sits inside the mechanistic range [0.5, 2]. Framework retained for age resolution; range widened to span both."
+   },
+   "anchor_span": [
+    1.5,
+    4.0
+   ]
+  },
+  "C": {
+   "process": "Circadian oscillator fidelity",
+   "regulatory_variable": "re-entrainment of the circadian phase after a phase shift",
+   "tau25": 6.0,
+   "tau80": 10.0,
+   "tau120": 18.0,
+   "tau120_extrapolated": true,
+   "range": [
+    6.0,
+    18.0
+   ],
+   "interpretation": "perturbation-recovery",
+   "pmids": [
+    "1557592",
+    "8325349"
+   ],
+   "dynamical_role": "fast",
+   "confidence": "B",
+   "reconciliation": {
+    "framework": "6.0 / 10.0 / 18.0 (re-entrainment)",
+    "mechanistic": "2 [1, 3] (re-entrainment after shift)",
+    "adopted": "6.0 / 10.0 / 18.0",
+    "reason": "CONTESTED, resolved for the framework. Both cited sources are 6-hour phase-shift studies: Moline 1992 (PMID 1557592) isolated young and middle-aged men for 15 days and followed adjustment over multi-day intervals after a single 6-h advance; Monk 1993 (PMID 8325349) ran the same 6-h advance in subjects aged 71-91 over 15 days. Multi-day adjustment to a 6-h shift is consistent with the standard ~1 day per hour of phase advance, i.e. ~6 d, and is not consistent with 1-3 d. HDR-mechanistic's 2 [1,3] carries the same descriptor ('re-entrainment after shift') but no supporting phase-shift citation; it appears to be carried over from the 1 d entrainment value it was meant to replace."
+   },
+   "anchor_span": [
+    6.0,
+    18.0
+   ]
+  },
+  "N": {
+   "process": "Autonomic / HPA balance",
+   "regulatory_variable": "TWO SUB-CHANNELS: see sub_channels",
+   "tau25": 0.003,
+   "tau80": 0.005,
+   "tau120": 0.008,
+   "tau120_extrapolated": true,
+   "range": [
+    0.003,
+    0.008
+   ],
+   "interpretation": "perturbation-recovery (vagal sub-channel)",
+   "pmids": [
+    "29581219",
+    "10536127"
+   ],
+   "dynamical_role": "fast",
+   "confidence": "B",
+   "sub_channels": {
+    "vagal": {
+     "regulatory_variable": "heart-rate recovery / RMSSD after an exercise or orthostatic challenge",
+     "tau25": 0.003,
+     "tau80": 0.005,
+     "tau120": 0.008,
+     "range": [
+      0.003,
+      0.008
+     ],
+     "pmids": [
+      "10536127",
+      "29581219"
+     ],
+     "note": "Cole 1999 (PMID 10536127) defines heart-rate recovery as the fall in HR in the first minute after symptom-limited exercise, attributed to vagal reactivation; Sydo 2018 (PMID 29581219) uses the same 1-minute index in a primary-prevention cohort. tau = 0.003 d (~4 min) is the e-folding time of that return.",
+     "anchor_span": [
+      0.003,
+      0.008
+     ]
+    },
+    "hpa": {
+     "regulatory_variable": "cortisol return to set-point after an acute stressor; dexamethasone-suppression feedback",
+     "tau25": 1.0,
+     "tau80": 2.0,
+     "tau120": 3.0,
+     "range": [
+      0.5,
+      2.0
+     ],
+     "pmids": [
+      "22859941",
+      "20399022"
+     ],
+     "confidence": "C",
+     "note": "Maruyama 2012 (PMID 22859941) found salivary cortisol still significantly elevated 20 min after the Trier Social Stress Test while salivary alpha-amylase had already returned to baseline, establishing that the HPA channel is slower than the sympathetic one but not pinning its e-folding time; Harris 2010 (PMID 20399022) reports cortisol-rhythm readaptation after night shift on a ~1-week scale, which is rhythm re-entrainment rather than acute feedback recovery. The ~1 d figure is therefore an estimate without a dedicated perturbation-recovery experiment. Flagged for Phase 2.",
+     "anchor_span": [
+      1.0,
+      3.0
+     ]
+    }
+   },
+   "fast_subsystem_uses": "vagal",
+   "reconciliation": {
+    "framework": "0.003 / 0.005 / 0.008 (heart-rate recovery)",
+    "mechanistic": "1 [0.5, 2] (HPA axis recovery)",
+    "adopted": "two sub-channels recorded; the fast subsystem uses the vagal channel (0.003 / 0.005 / 0.008)",
+    "reason": "NOT a disagreement about one quantity. Supplementary Note 4 defines axis N by two regulatory signals, RMSSD (vagal) and dexamethasone suppression (HPA), whose recovery timescales differ by ~300x. Both are legitimate perturbation-recovery timescales of the same axis. The fast subsystem uses the vagal channel because (i) it is the channel the published calibration used, and (ii) it is the channel the empirical validation measures: the InCHIANTI N proxy is resting heart rate from ECG (see results/lead_lag_phi_table.json, model inchianti_4axis_hr). The HPA sub-channel is recorded so that any analysis keyed to cortisol/DHEAS (model inchianti_5axis_IMNFB) uses the matching tau. Sensitivity (substituting the HPA sub-channel as its own trajectory, 0.5 -> 2 d): alpha_fast(25, healthy) moves from -0.1889 to -0.1722 and alpha_fast(120, healthy) from -0.0150 to +0.0023 at the published c = 0.89, so the choice flips the sign of the margin at age 120, though not at any age the cohorts cover (scripts/units_convention_numerics.py, section_tau_sensitivity)."
+   },
+   "anchor_span": [
+    0.003,
+    0.008
+   ]
+  },
+  "F": {
+   "process": "Skeletal muscle anabolic-catabolic balance",
+   "regulatory_variable": "muscle protein synthesis / net protein balance return to baseline after a resistance-exercise bout",
+   "tau25": 2.0,
+   "tau80": 3.5,
+   "tau120": 6.0,
+   "tau120_extrapolated": true,
+   "range": [
+    2.0,
+    6.0
+   ],
+   "interpretation": "perturbation-recovery",
+   "pmids": [
+    "9252485",
+    "19001042"
+   ],
+   "dynamical_role": "fast",
+   "confidence": "B",
+   "reconciliation": {
+    "framework": "2.0 / 3.5 / 6.0 (MPS return to baseline)",
+    "mechanistic": "25 [8, 42] (grip-strength recovery)",
+    "adopted": "2.0 / 3.5 / 6.0",
+    "reason": "CONTESTED, resolved for the framework, on the admission criterion. The F axis is a regulatory balance, so its perturbation-recovery variable is the anabolic-catabolic signal, not contractile capacity. Phillips 1997 (PMID 9252485) measured mixed-muscle fractional synthesis and breakdown after a single resistance bout: breakdown returned to resting levels by 48 h and net balance was still displaced at 48 h, giving an e-folding time of order 2 d in young adults; Kumar 2009 (PMID 19001042) shows the same return in both young and old men with a blunted amplitude in the old, which is the age effect the 2.0 -> 3.5 -> 6.0 trajectory encodes. Grip-strength recovery after eccentric damage (Zainuddin 2005, PMID 16284641: ~40% MVC loss still incompletely recovered at 7 days) is recovery of contractile capacity after structural injury, which the admission criterion excludes. This decision determines whether the PUBLISHED CALIBRATION is admissible, but not the framework's central claim. Substituting the mechanistic trajectory (8 -> 42 d) makes the published model cross zero at about age 70 and unstable at 80: alpha_fast(80, healthy) = +0.0190 and alpha_fast(120, healthy) = +0.0578 at c = 0.89, versus -0.1154 and -0.0150 under the adopted value. It also makes F the slowest fast axis at every age up to ~100, where the adopted value gives C then I. The age trajectory itself survives either choice: the recalibrated margin erodes 40.4x from age 25 to 120 under the adopted value and 31.3x under the mechanistic one. An earlier draft of this note substituted a constant 25 d rather than the trajectory and reported that the age dependence was erased; that was an artefact of the substitution."
+   },
+   "anchor_span": [
+    2.0,
+    6.0
+   ]
+  },
+  "B": {
+   "process": "Bone remodelling regulatory balance",
+   "regulatory_variable": "BMU remodelling cycle",
+   "tau25": 135.0,
+   "tau80": 250.0,
+   "tau120": 500.0,
+   "tau120_extrapolated": true,
+   "range": [
+    90.0,
+    500.0
+   ],
+   "interpretation": "structural turnover (NOT perturbation-recovery) -- see flag",
+   "flag": "FLAGGED UNDER THE ADMISSION CRITERION. Recker 1988 (PMID 3213608) is tetracycline-based histomorphometry of the bone remodelling period in postmenopausal women, i.e. the duration of a structural turnover unit, not the e-folding time of a displaced regulatory signal. Both repositories' values are of this kind, so they agree for the wrong reason. The regulatory variable of axis B as validated empirically is PTH (results/lead_lag_phi_table.json, model inchianti_5axis_IMNFB), whose own perturbation-recovery time is far shorter. Carried forward unchanged because B is quasi-static and does not enter the fast-subsystem stability margin, but a PTH-based perturbation-recovery tau is required before any claim about B dynamics. Phase 2.",
+   "pmids": [
+    "3213608"
+   ],
+   "dynamical_role": "quasi_static",
+   "confidence": "C",
+   "reconciliation": {
+    "framework": "135 / 250 / 500 (BMU remodelling cycle)",
+    "mechanistic": "105 [90, 120] (BMU cycle, same concept)",
+    "adopted": "135 / 250 / 500, range widened to [90, 500]",
+    "reason": "Numerically compatible and conceptually identical -- both are the BMU cycle. Framework retained for age resolution. Flagged above because the shared concept is a turnover timescale that the admission criterion excludes; this is the one axis where applying the criterion evenly counts against the framework as well as against HDR-mechanistic."
+   },
+   "anchor_span": [
+    135.0,
+    500.0
+   ]
+  }
+ },
+ "open_issues": {
+  "tau_I_120_trajectory_conflict": "src/hdr_sim/csv_loader.py fits axis I with a Gompertz trajectory through the 25 and 80 anchors and ignores the declared 120 anchor: tau_I(120) evaluates to 48.60 d, not the declared 45.0 d. Every other axis honours its 120 anchor. Consumers of this registry must interpolate from the anchors as declared. Fix in csv_loader is Phase 2.",
+  "N_hpa_citation": "The HPA sub-channel tau (~1 d) has no dedicated perturbation-recovery experiment behind it; see axes.N.sub_channels.hpa.note.",
+  "B_and_E_criterion_violations": "tau_B and, more weakly, tau_E are turnover rather than perturbation-recovery timescales. Both are quasi-static so neither enters the fast-subsystem margin, but neither should be used to support a dynamical claim about its axis."
+ },
+ "consumers": {
+  "hdr-aging-sim": "src/hdr_sim/csv_loader.py (TAU_REGISTRY_V2 to be replaced by a loader reading this file)",
+  "HDR-mechanistic": "tau_reference (to be replaced by a reference to this file)"
+ },
+ "attribution": {
+  "verified_against_pubmed": "The PMIDs below were retrieved from PubMed and their abstracts read to confirm they support the value and interpretation recorded here.",
+  "verified_pmids": [
+   "10536127",
+   "1557592",
+   "16284641",
+   "19001042",
+   "20399022",
+   "22859941",
+   "27467771",
+   "29581219",
+   "3213608",
+   "8325349",
+   "9252485"
+  ],
+  "dois": {
+   "27467771": "10.1371/journal.pone.0159412",
+   "1557592": "10.1093/sleep/15.1.28",
+   "8325349": "10.1016/0531-5565(93)90002-u",
+   "10536127": "10.1056/NEJM199910283411804",
+   "29581219": "10.1161/JAHA.117.008143",
+   "9252485": "10.1152/ajpendo.1997.273.1.E99",
+   "19001042": "10.1113/jphysiol.2008.164483",
+   "3213608": "10.1002/jbmr.5650030203",
+   "22859941": "10.1371/journal.pone.0039375",
+   "20399022": "10.1016/j.psyneuen.2010.03.006",
+   "16284641": "no registered DOI (J Athl Train 40:197-202)"
+  },
+  "NOT_verified_carried_over_from_the_source_registries": [
+   "12563009",
+   "15509558",
+   "17460208",
+   "18268070",
+   "18653753",
+   "22672542",
+   "23187721",
+   "24437518",
+   "30355075"
+  ],
+  "note": "The PMIDs in the second list were inherited from the framework Supplementary Table 1 and HDR-mechanistic tau_reference and were NOT independently checked in this pass. They sit on the uncontested axes (M, E, mito, P), so they did not bear on any decision made here, but they should not be cited as verified."
+ },
+ "field_semantics": {
+  "tau25_tau80_tau120": "declared age anchors; callers interpolate geometrically between them",
+  "range": "literature uncertainty interval for the value AT THE REFERENCE AGE (the band the cited sources support), NOT a bound on the age trajectory. On several axes the age-120 anchor lies outside it by design: tau lengthens with age beyond anything the source literature measured. Use anchor_span for the trajectory bound.",
+  "anchor_span": "[min, max] over the three declared anchors; this does bound the trajectory",
+  "interpretation": "perturbation-recovery | structural turnover; see admission_criterion",
+  "dynamical_role": "fast | quasi_static"
+ }
+}
