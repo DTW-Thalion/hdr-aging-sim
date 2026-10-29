@@ -198,18 +198,47 @@ is why §2.3 is framed as a bound: the bound (`no φ < 1 can produce a gain of
 comparison between 0.254 and 0.25 does not survive it and should not be quoted
 as a validation of the compiled magnitude.
 
-**(c) Adopting G does not vindicate the compiled magnitudes — it indicts
-several of them.**  For most significant pairs the empirical long-run gain is
-*well below* the compiled value read as a gain: `M→I` 0.069 vs 0.25–0.50, `I→F`
-0.072 vs 0.25–0.50, `F→I` 0.022–0.064 vs 0.25–0.35.  The compiled tiers look
-3–7× too large on the pairs we can measure.  Consequences, which must be carried
-into Task 1.3 and the manuscript amendments:
+**(c) Adopting G says nothing about whether the compiled magnitudes are
+right, and the data cannot yet settle it.**  Comparing each significant
+cross-lagged pair's empirical steady-state gain against the midpoint of its
+compiled value read as a gain gives, with protective sources excluded (their
+compiled values move to κ and are no longer gains, so including them compares
+two different quantities):
 
-- every `ρ(G)` computed from the compiled tiers is an **upper bound**, not an estimate;
-- the ordering healthy < pre-disease < disease is robust (it is driven by the
-  tier structure), but the absolute position of the bifurcation is not;
-- `ρ(G_pre-disease) ≈ 0.97` must not be reported as evidence that the
-  pre-disease basin sits at the edge of stability. See §5.
+| Pair | empirical gain | compiled midpoint | ratio |
+|---|---|---|---|
+| I→M (InCHIANTI 4-axis) | 0.136 | 0.300 | 2.21 |
+| I→M (InCHIANTI 5-axis) | 0.133 | 0.300 | 2.25 |
+| I→B (InCHIANTI 5-axis) | 0.254 | 0.175 | 0.69 |
+| I→M (ELSA) | 0.471 | 0.300 | 0.64 |
+| I→F (ELSA) | 0.072 | 0.375 | 5.22 |
+| M→I (ELSA) | 0.070 | 0.375 | 5.40 |
+
+Geometric-mean ratio **1.99, 95% CI [0.75, 5.31]**, log-ratio SD 0.935 (a
+multiplicative spread of ×2.55), n = 6, one-sample t on the log ratio
+**p = 0.132** (`results/units_convention_numerics.json`, key
+`scale_diagnostic`).
+
+So the compiled tiers are *not* demonstrably biased — but they are only pinned
+to within roughly a factor of 2 either way, on six usable pairs, and the point
+estimate sits at 2×.  The consequence is sharper than a bias claim:
+
+- the **level** of `G` is essentially unidentified by the data we have. The
+  scale uncertainty (CI spanning 0.75–5.31) is an order of magnitude wider than
+  the Monte Carlo band in §5, which only propagates the per-entry confidence
+  grades and implicitly assumes the level is right;
+- the **structure** is better supported than the level: the ordering
+  healthy < pre-disease < disease is driven by the tier→basin map, not by the
+  absolute values, and survives any global rescaling;
+- therefore `ρ(G_pre-disease) ≈ 0.97` must not be reported as evidence that the
+  pre-disease basin sits at the edge of stability. The distance of that number
+  from 1 is smaller than the scale uncertainty on `G` itself. See §5.
+
+Task 1.3 should either estimate a single global scale on `G` from these pairs —
+one parameter from six anchors is tractable, and preserves the tier structure
+while fixing the level — or carry the scale explicitly as a nuisance parameter
+and report `ρ` as a distribution over it. It should not treat the compiled
+values as measurements.
 
 **(d) A smaller point, recorded for completeness.** Under G the magnitude tier
 loses its only τ-dependent content, so the tier→value map in
@@ -284,15 +313,17 @@ entries only (31 / 31 / 33 non-zero):
 
 Monte Carlo: 20 000 draws, lognormal multiplicative noise with CV by confidence
 grade (A 0.20, B 0.40, C 0.70), the specification already used in
-`scripts/run_figure_uncertainty.py` for Supplementary Note 1.
+`scripts/run_figure_uncertainty.py` for Supplementary Note 1.  Note what this
+band does and does not cover: it propagates per-entry grade uncertainty around
+the compiled values, holding their overall level fixed.
 
 **This is a property of the compiled tiers, not a result.**  `ρ(pre-disease) =
 0.969` is a restatement of the tier values and the tier→basin map; the 95% band
 [0.903, 1.109] straddles unity and `P(ρ ≥ 1) = 0.50` is, precisely, a coin flip.
-Taken with §3(c) — the compiled magnitudes run 3–7× above the measured gains on
-every pair we can check — the honest reading is that the point estimate's
-proximity to 1 carries no information about where the real pre-disease basin
-sits.  It must not be presented as confirmation that the pre-disease state is
+Taken with §3(c) — the level of `G` is pinned only to within a factor of ~2,
+95% CI [0.75, 5.31], which is far wider than this band — the honest reading is
+that the point estimate's proximity to 1 carries no information about where the
+real pre-disease basin sits.  It must not be presented as confirmation that the pre-disease state is
 near-critical, must not be used as a calibration target, and must not appear in
 the manuscript as a finding.  What *is* reportable is the ordering and its
 robustness: healthy is inside the boundary with P(ρ ≥ 1) = 0.000 and disease is

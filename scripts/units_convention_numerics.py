@@ -225,24 +225,47 @@ def section_tau_sensitivity(rows, reg):
     c_star = brentq(
         lambda c: alpha_rate(tau_vec(reg, ANCHOR_AGE), J_noF, c) - ANCHOR_ALPHA,
         0.0, 50.0, xtol=1e-12)
+    # Each alternative substitutes the rejected value for one axis. The
+    # rejected mechanistic values for C and F carry their own age formula
+    # (HDR-mechanistic docs/tau_reconciliation.md:
+    #  tau = lo + (hi-lo)*(age-30)/50, clipped), so they are substituted as
+    # trajectories, not as single numbers -- substituting a constant would
+    # flatten the age trajectory by construction and overstate the case.
+    def _mech_traj(lo, hi):
+        return lambda age: lo + (hi - lo) * float(np.clip((age - 30) / 50, 0, 1))
+
     alts = {
-        "N_hpa_sub_channel_1d": ("N", 1.0),
-        "C_mechanistic_2d": ("C", 2.0),
-        "F_mechanistic_25d": ("F", 25.0),
+        "N_hpa_sub_channel": ("N", _mech_traj(0.5, 2.0)),
+        "C_mechanistic_1_to_3d": ("C", _mech_traj(1.0, 3.0)),
+        "F_mechanistic_8_to_42d": ("F", _mech_traj(8.0, 42.0)),
     }
+    ages = (25, 40, 55, 70, 80, 100, 120)
     out = {}
-    for age in (25, 80, 120):
+    for age in ages:
         tau = tau_vec(reg, age)
         row = {"adopted": {
+            "slowest_fast_axis": FAST7[int(np.argmax(tau))],
             "alpha_healthy_c089": alpha_rate(tau, Jh, PUBLISHED_C),
             "alpha_healthy_F_removed_c_star": alpha_rate(tau, J_noF, c_star)}}
-        for name, (axis, val) in alts.items():
+        for name, (axis, fn) in alts.items():
             t2 = tau.copy()
-            t2[FAST7.index(axis)] = val
+            t2[FAST7.index(axis)] = fn(age)
             row[name] = {
+                "slowest_fast_axis": FAST7[int(np.argmax(t2))],
+                "tau_substituted": float(fn(age)),
                 "alpha_healthy_c089": alpha_rate(t2, Jh, PUBLISHED_C),
                 "alpha_healthy_F_removed_c_star": alpha_rate(t2, J_noF, c_star)}
         out[str(age)] = row
+
+    # Fold change in the recalibrated margin across the lifespan, per variant:
+    # this is the quantity that says whether the age trajectory survives the
+    # alternative tau, as distinct from whether the level moves.
+    folds = {}
+    for name in ["adopted"] + list(alts):
+        a25 = out["25"][name]["alpha_healthy_F_removed_c_star"]
+        a120 = out["120"][name]["alpha_healthy_F_removed_c_star"]
+        folds[name] = float(a25 / a120) if a120 != 0 else None
+    out["fold_change_25_to_120_F_removed_c_star"] = folds
     out["c_star_used"] = float(c_star)
     return out
 
@@ -276,6 +299,59 @@ def section_empirical_gains(rows, reg):
             rec["rate_implied_gain_80_disease"] = jd * tau_at(reg, p["target"], 80)
         out.append(rec)
     return out
+
+
+def section_scale_diagnostic(rows, reg):
+    """Is the compiled level consistent with the measured gains?
+
+    Compares each significant, positively-signed cross-lagged pair's empirical
+    steady-state gain against the midpoint of its compiled healthy/disease
+    values read as gains.  Protective (F- and B-row) sources are EXCLUDED:
+    their compiled values move to kappa and are no longer gains, so including
+    them compares two different quantities and inflates the ratio.
+
+    Reports the geometric-mean ratio, its dispersion, and a one-sample t-test
+    on the log ratio against 1.  A ratio significantly above 1 would mean the
+    compiled tiers are systematically too large.
+    """
+    from scipy import stats
+
+    kept, excluded = [], []
+    for e in section_empirical_gains(rows, reg):
+        g = e.get("empirical_long_run_gain")
+        jh, jd = e.get("compiled_as_gain_healthy"), e.get("compiled_as_gain_disease")
+        if g is None or jh is None or jd is None or g <= 0:
+            continue
+        rec = {"model": e["model"], "pair": e["pair"],
+               "empirical_gain": g,
+               "compiled_gain_midpoint": (abs(jh) + abs(jd)) / 2.0}
+        rec["ratio"] = rec["compiled_gain_midpoint"] / g
+        (excluded if jh < 0 else kept).append(rec)
+
+    lr = np.log([r["ratio"] for r in kept])
+    t = stats.ttest_1samp(lr, 0.0)
+    gm = float(np.exp(lr.mean()))
+    # 95% CI on the geometric mean
+    se = float(lr.std(ddof=1) / np.sqrt(len(lr)))
+    crit = float(stats.t.ppf(0.975, len(lr) - 1))
+    ci = [float(np.exp(lr.mean() - crit * se)), float(np.exp(lr.mean() + crit * se))]
+
+    return {
+        "pairs_used": kept,
+        "pairs_excluded_protective": excluded,
+        "n": int(len(lr)),
+        "geometric_mean_ratio": gm,
+        "geometric_mean_ratio_ci95": ci,
+        "log_ratio_sd": float(lr.std(ddof=1)),
+        "multiplicative_spread": float(np.exp(lr.std(ddof=1))),
+        "ratio_range": [float(min(r["ratio"] for r in kept)),
+                        float(max(r["ratio"] for r in kept))],
+        "t_test_log_ratio_vs_zero": {"t": float(t.statistic), "p": float(t.pvalue)},
+        "interpretation": (
+            "A geometric-mean ratio of 1 means the compiled level agrees with "
+            "the measured gains. The CI is what matters: it bounds how far the "
+            "level of G is identified by the data we have."),
+    }
 
 
 def section_entries_moving(rows):
@@ -319,6 +395,7 @@ def main():
         "recalibration": section_recalibration(rows, reg),
         "tau_sensitivity": section_tau_sensitivity(rows, reg),
         "empirical_gains": section_empirical_gains(rows, reg),
+        "scale_diagnostic": section_scale_diagnostic(rows, reg),
         "entries": section_entries_moving(rows),
     }
 
@@ -347,6 +424,13 @@ def main():
         print(f"  {k:<52} c* = {d['c_star']:.3f}   "
               f"a(25) = {d['alpha_fast_25_healthy']:+.4f}   "
               f"a(80) = {d['alpha_fast_80_healthy']:+.4f}")
+
+    sd = result["scale_diagnostic"]
+    print(f"\ncompiled level vs measured gains (protective sources excluded)")
+    print(f"  n = {sd['n']}   geometric-mean ratio = {sd['geometric_mean_ratio']:.2f}  "
+          f"95% CI [{sd['geometric_mean_ratio_ci95'][0]:.2f}, "
+          f"{sd['geometric_mean_ratio_ci95'][1]:.2f}]  "
+          f"p = {sd['t_test_log_ratio_vs_zero']['p']:.3f}")
 
     print(f"\nentries moving to kappa: {result['entries']['n_move_to_kappa']}")
     print(f"wrote {out}")

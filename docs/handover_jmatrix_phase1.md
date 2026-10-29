@@ -34,10 +34,15 @@ gains of 10–440 SD/SD, which would need an autoregressive coefficient
 B-axis pairs land on the gain reading — `I→B` empirical long-run gain
 0.254 ± 0.087 against a compiled-as-gain 0.25 and a rate-implied 13.5–62.5.
 
-**Carry this caveat forward.** On the pairs we can measure, the empirical gains
-run 3–7× *below* the compiled tiers (`M→I` 0.069 vs 0.25–0.50; `I→F` 0.072 vs
-0.25–0.50). Adopting gains fixes the units; it does not validate the magnitudes.
-Every `ρ(G)` from the compiled tiers is an upper bound.
+**Carry this caveat forward.** Adopting gains fixes the units; it says nothing
+about the magnitudes. Comparing the six usable pairs (protective sources
+excluded — their compiled values move to κ and are no longer gains) gives a
+geometric-mean compiled/empirical ratio of **1.99, 95% CI [0.75, 5.31]**,
+p = 0.132. The tiers are not demonstrably biased, but the *level* of `G` is
+pinned only to within a factor of ~2 either way. That scale uncertainty is an
+order of magnitude wider than the Monte Carlo band, which holds the level fixed.
+The tier *structure* (the healthy < pre-disease < disease ordering) is better
+supported than the level and survives any global rescaling.
 
 ## 2. Unified τ: `data/tau_registry.json`
 
@@ -61,8 +66,12 @@ sub-channel lacks a dedicated perturbation-recovery citation; and
 `src/hdr_sim/csv_loader.py` fits axis I with a Gompertz trajectory that
 overshoots its own declared 120 anchor (48.60 d vs 45.0 d).
 
-The F decision is load-bearing: at τ_F = 25 d the published model is unstable
-from mid-life (`α_fast(80, healthy) = +0.0108`). Attack it first.
+The F decision determines whether the *published calibration* is admissible —
+under the mechanistic trajectory (8→42 d) the model crosses zero at ~age 70 and
+is unstable at 80 (`α_fast(80, healthy) = +0.0190`) — but not the framework's
+central claim: the recalibrated margin still erodes 31× from 25 to 120 under
+that τ_F, against 40× under the adopted value. Attack it first anyway; it also
+changes which axis sets the margin (F throughout, vs C then I).
 
 ## 3. CSV re-expression spec
 

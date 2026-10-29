@@ -268,22 +268,47 @@ only move `α` toward zero. The published −0.19 was never reachable with
 non-negative coupling. Do not report the agreement as a validation; report
 −0.1615 as what the single-anchor fit yields.
 
-**τ sensitivity of the recalibrated margin** (`tau_sensitivity`, F row removed,
-`c* = 0.209`):
+**τ sensitivity** (`tau_sensitivity`). Each rejected value is substituted as
+its own *age trajectory* (HDR-mechanistic's formula
+`τ = lo + (hi−lo)·(age−30)/50`), not as a single number — substituting a
+constant flattens the age trajectory by construction and overstates the case.
 
-| τ variant | α_fast(25) | α_fast(80) | α_fast(120) |
-|---|---|---|---|
-| adopted registry | −0.1615 | −0.0456 | −0.0040 |
-| N → HPA sub-channel (1 d) | −0.1583 | −0.0439 | −0.0023 |
-| C → mechanistic (2 d) | −0.2453 | −0.0527 | −0.0115 |
-| F → mechanistic (25 d) | −0.0400 | −0.0400 | −0.0040 |
+At the published `c = 0.89` with the signed J, i.e. the published model:
 
-The N sub-channel choice is worth ~0.002–0.003 in `α`. The F choice is
-structural: at τ_F = 25 d the F axis becomes the slowest fast axis at every age
-and pins `α` at −0.04 throughout, erasing the age trajectory entirely. The
-registry's rejection of the grip-strength value (`data/tau_registry.json`,
-axes.F.reconciliation) is therefore load-bearing and should be the first thing a
-reviewer attacks.
+| Age | adopted | N → HPA (0.5→2 d) | C → mech (1→3 d) | F → mech (8→42 d) |
+|---|---|---|---|---|
+| 25 | −0.1889 | −0.1722 | −0.3486 | −0.1336 |
+| 55 | −0.1542 | −0.1159 | −0.2036 | −0.0222 |
+| 80 | −0.1154 | −0.0705 | −0.1243 | **+0.0190** |
+| 120 | −0.0150 | **+0.0023** | −0.0269 | **+0.0578** |
+
+Fold change in the recalibrated margin from age 25 to 120, F row removed at
+`c* = 0.209`: adopted 40.4×, C → mechanistic 22.3×, F → mechanistic 31.3×,
+N → HPA 309×.
+
+Read this carefully, because it does not say what a single-value substitution
+would have suggested.
+
+- **The age trajectory is robust to all three.** Under the mechanistic τ_F the
+  margin still erodes 31× across the lifespan. The qualitative claim — recovery
+  margin degrades with age — does not depend on the F decision.
+- **The published model's stability does.** Under the mechanistic τ_F at
+  `c = 0.89` the fast subsystem crosses zero at roughly age 70 and is unstable
+  at 80 (+0.0190). So τ_F decides whether the *published calibration* is
+  admissible, not whether the framework's central claim holds.
+- **τ_F changes which axis sets the margin.** Under the adopted value the
+  slowest fast axis is C up to ~45 and I thereafter; under the mechanistic
+  value it is F at every age up to ~100. That is a substantive structural
+  difference and a reviewer will see it.
+- The N sub-channel choice is worth 0.002–0.05 in `α` and flips the sign at
+  age 120 (−0.0150 → +0.0023), so it is not quite free either, though it does
+  not touch the ages the cohorts cover.
+
+The registry's rejection of the grip-strength value
+(`data/tau_registry.json`, axes.F.reconciliation) rests on the
+perturbation-recovery criterion, not on which answer is convenient. It is still
+the first thing a reviewer should attack, and §6 of
+`docs/units_convention.md` records what would settle it empirically.
 
 ---
 
